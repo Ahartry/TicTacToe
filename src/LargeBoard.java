@@ -97,6 +97,50 @@ public class LargeBoard {
         
         return result;
     }
+
+    public int checkEntireBoard(){
+        int result = 0;
+
+        //verticals
+        for(int i = 0; i < 3; i++){
+            if(boardArray[i][0].getState().equals(boardArray[i][1].getState()) && (boardArray[i][0].getState().equals(boardArray[i][2].getState()))){
+                if(boardArray[i][0].getState().equals(State.Player1)){
+                    result = 1;
+                }else if(boardArray[i][0].getState().equals(State.Player2)){
+                    result = 2;
+                }
+            }
+        }
+
+        //horizontals
+        for(int i = 0; i < 3; i++){
+            if(boardArray[0][i].getState().equals(boardArray[1][i].getState()) && (boardArray[0][i].getState().equals(boardArray[2][i].getState()))){
+                if(boardArray[0][i].getState().equals(State.Player1)){
+                    result = 1;
+                }else if(boardArray[0][i].getState().equals(State.Player2)){
+                    result = 2;
+                }
+            }
+        }
+
+        //diagonals
+        if(boardArray[0][0].getState().equals(boardArray[1][1].getState()) && boardArray[0][0].getState().equals(boardArray[2][2].getState())){
+            if(boardArray[1][1].getState().equals(State.Player1)){
+                result = 1;
+            }else if(boardArray[1][1].getState().equals(State.Player2)){
+                result = 2;
+            }
+        }
+        if(boardArray[2][0].getState().equals(boardArray[1][1].getState()) && boardArray[2][0].getState().equals(boardArray[0][2].getState())){
+            if(boardArray[1][1].getState().equals(State.Player1)){
+                result = 1;
+            }else if(boardArray[1][1].getState().equals(State.Player2)){
+                result = 2;
+            }
+        }
+        
+        return result;
+    }
     
 }
 

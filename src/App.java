@@ -184,10 +184,14 @@ public class App {
                 xc = cell % 3;
                 yc = (int) Math.floor(cell / 3);
     
-                inputboard.getBoardArray(large % 3, (int) Math.floor(large / 3)).getBoardArray(board % 3, (int) Math.floor(board / 3)).getBoardArray(cell % 3, (int) Math.floor(cell / 3)).setState(state);
+                inputboard.getBoardArray(xl, yl).getBoardArray(xb, yb).getBoardArray(xc, yc).setState(state);
                 
                 int resultsmall = inputboard.getBoardArray(xl, yl).getBoardArray(xb, yb).checkBoard(xc, yc);
+
+                //this doesn't seem to be working
                 int resultlarge = inputboard.getBoardArray(xl, yl).checkBoard(xb, yb);
+
+                //this is irrelevant
                 //int resultmassive = inputboard.checkBoard(xl, yl);
     
                 if(resultsmall == 1){
@@ -204,10 +208,24 @@ public class App {
     
                 //System.out.println("xl: " + xl + ", yl: " + yl + ", xb: " + xb + ", yb: " + yb + ", xc: " + xc + ", yc: " + yc + " (input: " + large + " " + board + " " + cell + ")");
             }
+
+            //additional checks for larger victories
+            for(int k = 0; k < 3; k++){
+                for(int j = 0; j < 3; j++){
+
+                }
+            }
+
+            xl = recentLarge % 3;
+            yl = (int) Math.floor(recentLarge / 3);
+            xb = recentBoard % 3;
+            yb = (int) Math.floor(recentBoard / 3);
+            xc = recentCell % 3;
+            yc = (int) Math.floor(recentCell / 3);
     
             GFrame frame = new GFrame(gameType);
             inputboard.calculateActive(xl, yl, xb, yb, xc, yc);
-            frame.getGPanel().setMassiveBoard(inputboard, turn, recentLarge, recentBoard, recentCell);
+            frame.getGPanel().setMassiveBoard(inputboard, turn);
     
             scan.close();
         }else{

@@ -7,10 +7,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.awt.RenderingHints;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -68,7 +71,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     int recentSquare1 = 0;
     int recentSquare2 = 0;
 
-    public GPanel(int gameType, JLabel displayLabel1){
+    public GPanel(int gameType, JLabel displayLabel1, JButton button){
 
         game = gameType;
 
@@ -447,6 +450,17 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                 
                             }
 
+                            int blankCount = 0;
+                            for(int i = 0; i < 9; i++){
+                                if(quantumBoard.getBoardTile(i % 3, (int) Math.floor(i /3)).getState().equals(State.Blank)){
+                                    blankCount++;
+                                }
+                            }
+                            if(blankCount < 2){
+                                displayLabel.setText("Stalemate");
+                                displayLabel.setForeground(Color.BLACK);
+                            }
+
                             int boardresult = quantumBoard.checkEntireBoard();
 
                             if(boardresult == 1){
@@ -457,17 +471,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                 quantumBoard.setState(State.Player2);
                                 displayLabel.setText("Player 2 wins");
                                 displayLabel.setForeground(blue);
-                            }
-
-                            int blankCount = 0;
-                            for(int i = 0; i < 9; i++){
-                                if(quantumBoard.getBoardTile(i % 3, (int) Math.floor(1 /3)).getState().equals(State.Blank)){
-                                    blankCount++;
-                                }
-                            }
-                            if(blankCount < 2){
-                                displayLabel.setText("Stalemate");
-                                displayLabel.setForeground(Color.BLACK);
                             }
                         }
                     }
@@ -521,7 +524,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         // Add this panel as a MouseWheelListener
         this.addMouseWheelListener(this);
 
-        displayLabel.addMouseListener(new MouseAdapter() {
+        button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(gameType == 3){
@@ -533,6 +536,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
                     }
                 }else if(gameType == 4){
                     quantumLineMode = !quantumLineMode;
+                    if(quantumLineMode){
+                        button.setText("Hide Lines");
+                    }else{
+                        button.setText("Show Lines");
+                    }
                     repaint();
                 }
                 
@@ -1075,9 +1083,23 @@ public class GPanel extends JPanel implements MouseWheelListener{
         try (PrintWriter out = new PrintWriter("save.txt")) {
             out.println(output);
         }
+
+        JFileChooser chooser = new JFileChooser();
+        //chooser.setCurrentDirectory(new File("/home/me/Documents"));
+        int retrival = chooser.showSaveDialog(null);
+        if (retrival == JFileChooser.APPROVE_OPTION) {
+            try {
+                FileWriter fw = new FileWriter(chooser.getSelectedFile()+".txt");
+                fw.write(output.toString());
+                fw.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    
     }
 
-    public void setMassiveBoard(MassiveBoard board, boolean turn1, int recentLarge, int recentBoard, int recentCell){
+    public void setMassiveBoard(MassiveBoard board, boolean turn1){
         this.massiveBoard = board;
         turn = turn1;
 

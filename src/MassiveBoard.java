@@ -105,6 +105,7 @@ public class MassiveBoard {
 
         //check if last move was victory
         if(boardArray[xl][yl].getBoardArray(xb, yb).checkBoard(xc, yc) != 0){
+            System.out.println("This should run once");
             if(boardArray[xb][yb].getState() == State.Blank){
                 boardArray[xb][yb].setActive(true);
             }else{
