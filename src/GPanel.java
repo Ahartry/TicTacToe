@@ -771,14 +771,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
             g.setColor(Color.BLACK);
         }
 
-        for(int i = 0; i < 9; i++){
-
-            int x = i % 3;
-            int y = (int) Math.floor(i / 3);
-
-            drawLargeBoard(g, massiveBoard.getBoardArray(x, y), false, i);
-        }
-
         //larger lines
         if(board.getActive()){
             if(turn){
@@ -824,6 +816,22 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         g.fillRect(xbound + buffer, ybound + (boundingSize * 3) - (thickness / 2), boundingSize * 9 - buffer- buffer, thickness);
         g.fillRect(xbound + buffer, ybound + (6 * boundingSize) - (thickness / 2), boundingSize * 9 - buffer- buffer, thickness);
+
+        for(int i = 0; i < 9; i++){
+
+            int x = i % 3;
+            int y = (int) Math.floor(i / 3);
+
+            drawLargeBoard(g, massiveBoard.getBoardArray(x, y), false, i);
+
+            double iconScale = 0.9;
+            double iconOffset = ((3 * boundingSize) - (3 * boundingSize * iconScale)) / 2;
+            if(board.getBoardArray(x, y).getState() == State.Player1){
+                g.drawImage(xImage, (int) (xbound + iconOffset) + (x * boundingSize * 3), (int) (ybound + iconOffset) + (y * boundingSize * 3), (int) (boundingSize * 3 * iconScale), (int) (boundingSize * 3 * iconScale), null);
+            }else if (board.getBoardArray(x, y).getState() == State.Player2){
+                g.drawImage(oImage, (int) (xbound + iconOffset) + (x * boundingSize * 3), (int) (ybound + iconOffset) + (y * boundingSize * 3), (int) (boundingSize * 3* iconScale), (int) (boundingSize * 3 * iconScale), null);
+            }
+        }
     }
 
     public void drawQuantumBoard(Graphics2D g, QuantumBoard board){

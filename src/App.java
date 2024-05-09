@@ -35,9 +35,9 @@ public class App {
         
         startFrame.add(startPanel);
 
-        JButton regButton = new JButton("Regular");
-        JButton ultButton = new JButton("Massive");
-        JButton tranButton = new JButton("Ultimate");
+        JButton regButton = new JButton("Tier 1");
+        JButton ultButton = new JButton("Tier 2");
+        JButton tranButton = new JButton("Tier 3");
         JButton quanButton = new JButton("Quantum");
         JButton loadButton = new JButton("Load");
         
@@ -212,6 +212,13 @@ public class App {
             //additional checks for larger victories
             for(int k = 0; k < 3; k++){
                 for(int j = 0; j < 3; j++){
+                    int result = inputboard.getBoardArray(k, j).checkEntireBoard();
+
+                    if(result == 1){
+                        inputboard.getBoardArray(k, j).setState(State.Player1);
+                    }else if(result == 2){
+                        inputboard.getBoardArray(k, j).setState(State.Player2);
+                    }
 
                 }
             }
