@@ -6,6 +6,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,6 +26,10 @@ public class GFrame extends JFrame{
         JPanel topPanel = new JPanel();
         JLabel topLabel = new JLabel("Player 1 goes");
         JButton functionButton = new JButton();
+        functionButton.setFocusable(false);
+        JButton helpButton = new JButton("Help");
+        helpButton.setFocusable(false);
+
         bottomPanel = new GPanel(gameType, topLabel, functionButton);
 
         topLabel.setFont(new Font("Sans Serif", Font.BOLD, 30));
@@ -30,11 +38,23 @@ public class GFrame extends JFrame{
         topPanel.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1;
-        gbc.gridwidth = 2;
+
+        //stupid
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.gridx = 0;
+        if(gameType == 3){
+            topPanel.add(Box.createRigidArea(new Dimension(120, 0)));
+        }else if(gameType ==4){
+            topPanel.add(Box.createRigidArea(new Dimension(140, 0)));
+        }else{
+            topPanel.add(Box.createRigidArea(new Dimension(80, 0)));
+        }
+
+        //gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridx = 2;
 
         topPanel.setSize(new Dimension(1000, 50));
         topPanel.setBackground(Color.GRAY);
@@ -43,10 +63,13 @@ public class GFrame extends JFrame{
         bottomPanel.setSize(new Dimension(1000, 500));
         bottomPanel.requestFocus();
 
-        gbc.gridx = 1;
         gbc.weightx = 0;
-        gbc.gridwidth = 1;
+
         gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.gridx = 3;
+        topPanel.add(helpButton);
+
+        gbc.gridx = 4;
 
         if(gameType == 3){
             topPanel.add(functionButton, gbc);
@@ -63,6 +86,17 @@ public class GFrame extends JFrame{
         add(topPanel, BorderLayout.NORTH);
         add(bottomPanel);
         setVisible(true);
+
+        //help function
+        helpButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                //System.out.println("Clicked");
+                new HFrame(gameType);
+                
+            }
+
+        });
 
         addComponentListener(new ComponentAdapter() {
             @Override

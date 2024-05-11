@@ -6,10 +6,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Scanner;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 
@@ -21,12 +23,14 @@ public class App {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.weightx = 1;
         gbc.weighty = 1;
+        //gbc.fill = GridBagConstraints.BOTH;
         
         JFrame startFrame = new JFrame();
         startFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         startFrame.setSize(400, 300);
         startFrame.setLocationRelativeTo(null);
         startFrame.setTitle("Tic Tac Toe Game");
+        startFrame.setResizable(false);
 
         JPanel startPanel = new JPanel();
         startPanel.setLayout(new GridBagLayout());
@@ -35,9 +39,9 @@ public class App {
         
         startFrame.add(startPanel);
 
-        JButton regButton = new JButton("Tier 1");
-        JButton ultButton = new JButton("Tier 2");
-        JButton tranButton = new JButton("Tier 3");
+        JButton regButton = new JButton("Regular");
+        JButton ultButton = new JButton("Massive");
+        JButton tranButton = new JButton("Ultimate");
         JButton quanButton = new JButton("Quantum");
         JButton loadButton = new JButton("Load");
         
@@ -47,27 +51,58 @@ public class App {
         quanButton.setFont(new Font("Sans Serif", Font.BOLD, 18));
         loadButton.setFont(new Font("Sans Serif", Font.BOLD, 18));
 
+        regButton.setFocusable(false);
+        ultButton.setFocusable(false);
+        tranButton.setFocusable(false);
+        quanButton.setFocusable(false);
+        loadButton.setFocusable(false);
+
+        regButton.setPreferredSize(new Dimension(150, 40));
+        ultButton.setPreferredSize(new Dimension(150, 40));
+        tranButton.setPreferredSize(new Dimension(150, 40));
+        quanButton.setPreferredSize(new Dimension(150, 40));
+
         //adds the items to the panel
+        // gbc.gridx = 1;
+        // gbc.gridy = 5;
+
+        Insets i = new Insets(30, 0, 0, 0);
+
+        gbc.insets = i;
+
         gbc.gridx = 1;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
 
         startPanel.add(loadButton, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
+        //this is a silly solution, but it definitely works
+        i = new Insets(0, 0, 0, 0);
+        gbc.insets = i;
+
+        // gbc.gridx = 0;
+        // gbc.gridy = 0;
+
+        //gbc.gridx = 0;
+        gbc.gridy = 1;
 
         startPanel.add(regButton, gbc);
 
-        gbc.gridx = 2;
+        // gbc.gridx = 2;
+
+        gbc.gridy = 2;
 
         startPanel.add(ultButton, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
+        // gbc.gridx = 0;
+        // gbc.gridy = 2;
+
+        gbc.gridy = 3;
 
         startPanel.add(tranButton, gbc);
 
-        gbc.gridx = 2;
+        // gbc.gridx = 2;
+
+        gbc.gridy = 4;
 
         startPanel.add(quanButton, gbc);
 

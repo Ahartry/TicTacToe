@@ -193,7 +193,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     // displayLabel.setForeground(blue);
                                 }
 
-                                if(largeBoard.getBoardArray(xcell, ycell).getState() == State.Blank){
+                                if(largeBoard.getBoardArray(xcell, ycell).getState() == State.Blank && largeBoard.getBoardArray(xcell, ycell).getMoveTally() != 9){
                                     for(int i = 0; i < 9; i++){
                                         int x = i % 3;
                                         int y = (int) Math.floor(i / 3);
@@ -267,10 +267,17 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                                 massiveBoard.setActive(false);
 
-                                if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).getState() == State.Blank){
+                                if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).getState() == State.Blank && massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).getMoveTally() != 9){
                                     massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).setActive(true);
                                 }else{
                                     massiveBoard.getBoardArray(xlargeboard, ylargeboard).setActive(true);
+                                }
+
+                                //I think this is needed
+                                if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getState() == State.Blank && massiveBoard.getBoardArray(xlargeboard, ylargeboard).getMoveTally() != 9){
+                                    massiveBoard.getBoardArray(xlargeboard, ylargeboard).setActive(true);
+                                }else{
+                                    massiveBoard.setActive(true);
                                 }
 
                                 if(turn){

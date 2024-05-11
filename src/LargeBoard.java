@@ -52,6 +52,18 @@ public class LargeBoard {
         }
     }
 
+    public int getMoveTally(){
+        int blankTally = 0;
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                if(boardArray[i][j].getState() == State.Blank){
+                    blankTally++;
+                }
+            }
+        }
+        return 9 - blankTally;
+    }
+
     public boolean getActive(){
         return active;
     }
