@@ -1,5 +1,11 @@
 import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.InputStream;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -7,25 +13,34 @@ import javax.swing.SwingConstants;
 
 public class HFrame extends JFrame{
     
-    public HFrame(int gameType){
+    public HFrame(int gameType) throws FontFormatException, IOException{
 
         int width = 500;
-        int height = 300;
+        int height = 350;
 
         //I need more explanation space
         if(gameType == 4){
-            height *= 1.5;
+            height *= 1.2;
         }
+
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(18f);
 
         JPanel panel = new JPanel();
         JLabel infoLabel = new JLabel();
-        infoLabel.setFont(new Font("Sans Serif", Font.BOLD, 18));
-        infoLabel.setPreferredSize(new java.awt.Dimension(width, height));
+        infoLabel.setFont(font);
+        infoLabel.setPreferredSize(new java.awt.Dimension(width, height - 80));
         infoLabel.setVerticalAlignment(SwingConstants.TOP);
+
+        JButton okButton = new JButton("Ok");
+        okButton.setFont(font);
+        okButton.setVerticalAlignment(SwingConstants.BOTTOM);
+        okButton.setHorizontalAlignment(SwingConstants.CENTER);
 
         add(panel);
 
         panel.add(infoLabel);
+        panel.add(okButton);
 
         //Explanation strings:
         String regular = "<html>This button is only here for consistency. I hope you don't need an explanation of how this works</html>";
@@ -48,5 +63,15 @@ public class HFrame extends JFrame{
         setTitle("Help Window");
         setResizable(false);
         setVisible(true);
+
+        okButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                setVisible(false);
+                dispose();
+                
+            }
+
+        });
     }
 }

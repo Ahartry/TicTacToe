@@ -1,4 +1,7 @@
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Graphics;
@@ -8,12 +11,17 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.awt.RenderingHints;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -56,6 +64,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     JLabel displayLabel;
 
+    JButton replayButton;
+
     int count = 0;
     int turnCount = 0;
     boolean quantumMove = false;
@@ -71,11 +81,13 @@ public class GPanel extends JPanel implements MouseWheelListener{
     int recentSquare1 = 0;
     int recentSquare2 = 0;
 
-    public GPanel(int gameType, JLabel displayLabel1, JButton button){
+    public GPanel(int gameType, JLabel displayLabel1, JButton button) throws FontFormatException, IOException{
 
         game = gameType;
 
         displayLabel = displayLabel1;
+
+        replayButton = new JButton("Replay");
 
         //instantiates boards
         if(game == 1){
@@ -96,6 +108,15 @@ public class GPanel extends JPanel implements MouseWheelListener{
             offsety = height / 2;
             turnCount = 1;
         }
+
+        //replay button stuff
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(30f);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        replayButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(Box.createVerticalGlue());
+        replayButton.setFont(font);
+        replayButton.setFocusable(false);
 
         displayLabel.setForeground(red);
 
@@ -122,11 +143,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                 turn = !turn;
 
                                 if(turn){
-                                    displayLabel.setText("Player 2 goes");
+                                    displayLabel.setText("Player 2's turn");
                                     displayLabel.setForeground(blue);
 
                                 }else{
-                                    displayLabel.setText("Player 1 goes");
+                                    displayLabel.setText("Player 1's turn");
                                     displayLabel.setForeground(red);
                                     
                                 }
@@ -135,15 +156,27 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     simpleBoard.setState(State.Player1);
                                     displayLabel.setText("Player 1 wins");
                                     displayLabel.setForeground(red);
+
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
                                 }else if(result == 2){
                                     simpleBoard.setState(State.Player2);
                                     displayLabel.setText("Player 2 wins");
                                     displayLabel.setForeground(blue);
+
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
                                 }
 
                                 if(count == 9 && result == 0){
                                     displayLabel.setText("Stalemate");
                                     displayLabel.setForeground(Color.BLACK);
+
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
                                 }
 
                                 repaint();
@@ -174,11 +207,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                 turn = !turn;
 
                                 if(turn){
-                                    displayLabel.setText("Player 2 goes");
+                                    displayLabel.setText("Player 2's turn");
                                     displayLabel.setForeground(blue);
 
                                 }else{
-                                    displayLabel.setText("Player 1 goes");
+                                    displayLabel.setText("Player 1's turn");
                                     displayLabel.setForeground(red);
                                     
                                 }
@@ -214,6 +247,16 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     largeBoard.setActive(true);
                                 }
 
+                                if(largeBoard.getMoveTally() == 9){
+                                    displayLabel.setText("Stalemate");
+                                    displayLabel.setForeground(Color.BLACK);
+                                    largeBoard.setActive(false);
+
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
+                                }
+
                                 //checks the larger board
                                 result = largeBoard.checkBoard(xboard, yboard);
                                 if(result == 1){
@@ -221,11 +264,19 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setText("Player 1 wins");
                                     displayLabel.setForeground(red);
                                     largeBoard.setActive(false);
+
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
                                 }else if(result == 2){
                                     largeBoard.setState(State.Player2);
                                     displayLabel.setText("Player 2 wins");
                                     displayLabel.setForeground(blue);
                                     largeBoard.setActive(false);
+
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
                                 }
 
                                 repaint();
@@ -273,19 +324,20 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     massiveBoard.getBoardArray(xlargeboard, ylargeboard).setActive(true);
                                 }
 
-                                //I think this is needed
-                                if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getState() == State.Blank && massiveBoard.getBoardArray(xlargeboard, ylargeboard).getMoveTally() != 9){
-                                    massiveBoard.getBoardArray(xlargeboard, ylargeboard).setActive(true);
-                                }else{
-                                    massiveBoard.setActive(true);
-                                }
+                                // //I think this is needed 
+                                // //nope, it is not
+                                // if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getState() == State.Blank && massiveBoard.getBoardArray(xlargeboard, ylargeboard).getMoveTally() != 9){
+                                //     massiveBoard.getBoardArray(xlargeboard, ylargeboard).setActive(true);
+                                // }else{
+                                //     massiveBoard.setActive(true);
+                                // }
 
                                 if(turn){
-                                    displayLabel.setText("Player 2 goes");
+                                    displayLabel.setText("Player 2's turn");
                                     displayLabel.setForeground(blue);
 
                                 }else{
-                                    displayLabel.setText("Player 1 goes");
+                                    displayLabel.setText("Player 1's turn");
                                     displayLabel.setForeground(red);
                                     
                                 }
@@ -333,15 +385,33 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                         massiveBoard.setActive(true);
                                     }
                                 }
+
+                                if(massiveBoard.getMoveTally() == 9){
+                                    displayLabel.setText("Stalemate");
+                                    displayLabel.setForeground(Color.BLACK);
+                                    massiveBoard.setActive(false);
+
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
+                                }
                                 
                                 if(resultmassive == 1){
                                     displayLabel.setText("Player 1 wins");
                                     displayLabel.setForeground(red);
                                     massiveBoard.setActive(false);
+
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
                                 }else if(resultmassive == 2){
                                     displayLabel.setText("Player 2 wins");
                                     displayLabel.setForeground(blue);
                                     massiveBoard.setActive(false);
+
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
                                 }
 
                                 repaint();
@@ -386,11 +456,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     recentCell = -1;
 
                                     if(turn){
-                                        displayLabel.setText("Player 2 goes");
+                                        displayLabel.setText("Player 2's turn");
                                         displayLabel.setForeground(blue);
     
                                     }else{
-                                        displayLabel.setText("Player 1 goes");
+                                        displayLabel.setText("Player 1's turn");
                                         displayLabel.setForeground(red);
                                         
                                     }
@@ -448,11 +518,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             }
                             result = 0;
                             if(turn){
-                                displayLabel.setText("Player 2 goes");
+                                displayLabel.setText("Player 2's turn");
                                 displayLabel.setForeground(blue);
 
                             }else{
-                                displayLabel.setText("Player 1 goes");
+                                displayLabel.setText("Player 1's turn");
                                 displayLabel.setForeground(red);
                                 
                             }
@@ -466,6 +536,10 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             if(blankCount < 2){
                                 displayLabel.setText("Stalemate");
                                 displayLabel.setForeground(Color.BLACK);
+
+                                //replay button stuff
+                                add(replayButton);
+                                add(Box.createVerticalStrut(50));
                             }
 
                             int boardresult = quantumBoard.checkEntireBoard();
@@ -474,10 +548,18 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                 quantumBoard.setState(State.Player1);
                                 displayLabel.setText("Player 1 wins");
                                 displayLabel.setForeground(red);
+
+                                //replay button stuff
+                                add(replayButton);
+                                add(Box.createVerticalStrut(50));
                             }else if(boardresult == 2){
                                 quantumBoard.setState(State.Player2);
                                 displayLabel.setText("Player 2 wins");
                                 displayLabel.setForeground(blue);
+
+                                //replay button stuff
+                                add(replayButton);
+                                add(Box.createVerticalStrut(50));
                             }
                         }
                     }
@@ -555,6 +637,21 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         });
 
+        replayButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                closeWindow();
+                try {
+                    new GFrame(gameType);
+                } catch (FontFormatException | IOException e1) {
+                    e1.printStackTrace();
+                }
+                
+            }
+
+        });
+
     }
 
     @Override
@@ -577,6 +674,12 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
 
 
+    }
+
+    public void closeWindow(){
+        setVisible(false);
+        JFrame parent = (JFrame) this.getTopLevelAncestor();
+        parent.dispose();
     }
 
     public void drawSimpleBoard(Graphics2D g, SimpleBoard board, boolean single, int boardIndex, int secondBoardIndex){

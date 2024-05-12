@@ -2,12 +2,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -19,12 +22,12 @@ public class GFrame extends JFrame{
 
     GPanel bottomPanel;
     
-    public GFrame(int gameType){
+    public GFrame(int gameType) throws FontFormatException, IOException{
 
         System.out.println("\nStarting game type " + gameType + "\n");
 
         JPanel topPanel = new JPanel();
-        JLabel topLabel = new JLabel("Player 1 goes");
+        JLabel topLabel = new JLabel("Player 1's turn");
         JButton functionButton = new JButton();
         functionButton.setFocusable(false);
         JButton helpButton = new JButton("Help");
@@ -32,7 +35,10 @@ public class GFrame extends JFrame{
 
         bottomPanel = new GPanel(gameType, topLabel, functionButton);
 
-        topLabel.setFont(new Font("Sans Serif", Font.BOLD, 30));
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(30f);
+
+        topLabel.setFont(font);
         topLabel.setHorizontalAlignment(JLabel.CENTER);
 
         topPanel.setLayout(new GridBagLayout());
@@ -92,7 +98,11 @@ public class GFrame extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 //System.out.println("Clicked");
-                new HFrame(gameType);
+                try {
+                    new HFrame(gameType);
+                } catch (FontFormatException | IOException e1) {
+                    e1.printStackTrace();
+                }
                 
             }
 

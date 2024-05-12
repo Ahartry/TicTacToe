@@ -10,9 +10,12 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Scanner;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.GridBagConstraints;
 
 public class App {
@@ -39,17 +42,22 @@ public class App {
         
         startFrame.add(startPanel);
 
+
+
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
+
         JButton regButton = new JButton("Regular");
         JButton ultButton = new JButton("Massive");
         JButton tranButton = new JButton("Ultimate");
         JButton quanButton = new JButton("Quantum");
         JButton loadButton = new JButton("Load");
         
-        regButton.setFont(new Font("Sans Serif", Font.BOLD, 18));
-        ultButton.setFont(new Font("Sans Serif", Font.BOLD, 18));
-        tranButton.setFont(new Font("Sans Serif", Font.BOLD, 18));
-        quanButton.setFont(new Font("Sans Serif", Font.BOLD, 18));
-        loadButton.setFont(new Font("Sans Serif", Font.BOLD, 18));
+        regButton.setFont(font);
+        ultButton.setFont(font);
+        tranButton.setFont(font);
+        quanButton.setFont(font);
+        loadButton.setFont(font);
 
         regButton.setFocusable(false);
         ultButton.setFocusable(false);
@@ -111,28 +119,44 @@ public class App {
         regButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 //starts regular game
-                new GFrame(1);
+                try {
+                    new GFrame(1);
+                } catch (FontFormatException | IOException e1) {
+                    e1.printStackTrace();
+                }
             } 
         });
 
         ultButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 //starts regular game
-                new GFrame(2);
+                try {
+                    new GFrame(2);
+                } catch (FontFormatException | IOException e1) {
+                    e1.printStackTrace();
+                }
             } 
         });
 
         tranButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 //starts regular game
-                new GFrame(3);
+                try {
+                    new GFrame(3);
+                } catch (FontFormatException | IOException e1) {
+                    e1.printStackTrace();
+                }
             } 
         });
 
         quanButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 //starts regular game
-                new GFrame(4);
+                try {
+                    new GFrame(4);
+                } catch (FontFormatException | IOException e1) {
+                    e1.printStackTrace();
+                }
             } 
         });
 
