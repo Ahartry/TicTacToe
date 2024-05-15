@@ -45,7 +45,7 @@ public class App {
 
 
 
-        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("com/Game/Files/font.ttf");
         Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
 
         JButton regButton = new JButton("Regular");

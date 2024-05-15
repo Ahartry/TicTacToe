@@ -25,7 +25,7 @@ public class HFrame extends JFrame{
             height *= 1.2;
         }
 
-        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("com/Game/Files/font.ttf");
         Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(18f);
 
         JPanel panel = new JPanel();
