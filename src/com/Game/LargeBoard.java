@@ -1,4 +1,4 @@
-package com.Game.Files;
+package com.Game;
 
 public class LargeBoard {
 
@@ -156,12 +156,4 @@ public class LargeBoard {
         return result;
     }
     
-}
-
-enum State{
-
-    Blank,
-    Player1,
-    Player2
-
 }

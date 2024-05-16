@@ -1,4 +1,4 @@
-package com.Game.Files;
+package com.Game;
 
 public class Tile{
 
@@ -18,14 +18,6 @@ public class Tile{
         return state;
     }
     
-}
-
-enum State{
-
-    Blank,
-    Player1,
-    Player2
-
 }
 
 

@@ -1,4 +1,4 @@
-package com.Game.Files;
+package com.Game;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -37,7 +37,7 @@ public class GFrame extends JFrame{
 
         bottomPanel = new GPanel(gameType, topLabel, functionButton);
 
-        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("com/Game/Files/font.ttf");
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("com/Res/font.ttf");
         Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(30f);
 
         topLabel.setFont(font);

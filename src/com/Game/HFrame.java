@@ -1,4 +1,4 @@
-package com.Game.Files;
+package com.Game;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -25,7 +25,7 @@ public class HFrame extends JFrame{
             height *= 1.2;
         }
 
-        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("com/Game/Files/font.ttf");
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("com/Res/font.ttf");
         Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(18f);
 
         JPanel panel = new JPanel();

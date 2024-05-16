@@ -1,4 +1,4 @@
-package com.Game.Files;
+package com.Game;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -45,7 +45,7 @@ public class App {
 
 
 
-        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("com/Game/Files/font.ttf");
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("com/Res/font.ttf");
         Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
 
         JButton regButton = new JButton("Regular");

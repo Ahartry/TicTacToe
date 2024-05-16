@@ -1,4 +1,4 @@
-package com.Game.Files;
+package com.Game;
 
 public class SimpleBoard {
 
