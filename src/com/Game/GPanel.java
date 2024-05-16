@@ -30,17 +30,17 @@ import javax.swing.JPanel;
 
 public class GPanel extends JPanel implements MouseWheelListener{
 
-    Image xImage = new ImageIcon(getClass().getClassLoader().getResource("com/Res/x.png")).getImage();
-    Image oImage = new ImageIcon(getClass().getClassLoader().getResource("com/Res/o.png")).getImage();
-    Image Image1 = new ImageIcon(getClass().getClassLoader().getResource("com/Res/1.png")).getImage();
-    Image Image2 = new ImageIcon(getClass().getClassLoader().getResource("com/Res/2.png")).getImage();
-    Image Image3 = new ImageIcon(getClass().getClassLoader().getResource("com/Res/3.png")).getImage();
-    Image Image4 = new ImageIcon(getClass().getClassLoader().getResource("com/Res/4.png")).getImage();
-    Image Image5 = new ImageIcon(getClass().getClassLoader().getResource("com/Res/5.png")).getImage();
-    Image Image6 = new ImageIcon(getClass().getClassLoader().getResource("com/Res/6.png")).getImage();
-    Image Image7 = new ImageIcon(getClass().getClassLoader().getResource("com/Res/7.png")).getImage();
-    Image Image8 = new ImageIcon(getClass().getClassLoader().getResource("com/Res/8.png")).getImage();
-    Image Image9 = new ImageIcon(getClass().getClassLoader().getResource("com/Res/9.png")).getImage();
+    Image xImage = new ImageIcon(getClass().getClassLoader().getResource("src/com/Res/x.png")).getImage();
+    Image oImage = new ImageIcon(getClass().getClassLoader().getResource("src/com/Res/o.png")).getImage();
+    Image Image1 = new ImageIcon(getClass().getClassLoader().getResource("src/com/Res/1.png")).getImage();
+    Image Image2 = new ImageIcon(getClass().getClassLoader().getResource("src/com/Res/2.png")).getImage();
+    Image Image3 = new ImageIcon(getClass().getClassLoader().getResource("src/com/Res/3.png")).getImage();
+    Image Image4 = new ImageIcon(getClass().getClassLoader().getResource("src/com/Res/4.png")).getImage();
+    Image Image5 = new ImageIcon(getClass().getClassLoader().getResource("src/com/Res/5.png")).getImage();
+    Image Image6 = new ImageIcon(getClass().getClassLoader().getResource("src/com/Res/6.png")).getImage();
+    Image Image7 = new ImageIcon(getClass().getClassLoader().getResource("src/com/Res/7.png")).getImage();
+    Image Image8 = new ImageIcon(getClass().getClassLoader().getResource("src/com/Res/8.png")).getImage();
+    Image Image9 = new ImageIcon(getClass().getClassLoader().getResource("src/com/Res/9.png")).getImage();
 
     int game;
     int offsetx = 0;
@@ -113,7 +113,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
 
         //replay button stuff
-        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("com/Res/font.ttf");
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("src/com/Res/font.ttf");
         Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(30f);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         replayButton.setAlignmentX(Component.CENTER_ALIGNMENT);

@@ -37,7 +37,7 @@ public class GFrame extends JFrame{
 
         bottomPanel = new GPanel(gameType, topLabel, functionButton);
 
-        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("com/Res/font.ttf");
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("src/com/Res/font.ttf");
         Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(30f);
 
         topLabel.setFont(font);
