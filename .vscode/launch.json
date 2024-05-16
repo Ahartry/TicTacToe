@@ -8,6 +8,13 @@
             "type": "java",
             "name": "App",
             "request": "launch",
+            "mainClass": "com.Game.App",
+            "projectName": "TicTacToe_36f51ddd"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
             "mainClass": "TicTacToe/com.Game.App",
             "projectName": "TicTacToe_36f51ddd"
         },
