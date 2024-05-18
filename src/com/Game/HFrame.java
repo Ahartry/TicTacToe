@@ -1,5 +1,6 @@
 package com.Game;
 
+import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.event.MouseAdapter;
@@ -7,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,7 +24,10 @@ public class HFrame extends JFrame{
 
         //I need more explanation space
         if(gameType == 4){
-            height *= 1.2;
+            height *= 1.4;
+        }
+        if(gameType == 1){
+            height /= 2;
         }
 
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -40,6 +45,10 @@ public class HFrame extends JFrame{
         okButton.setHorizontalAlignment(SwingConstants.CENTER);
 
         add(panel);
+
+        infoLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        panel.add(infoLabel, BorderLayout.CENTER);
 
         panel.add(infoLabel);
         panel.add(okButton);

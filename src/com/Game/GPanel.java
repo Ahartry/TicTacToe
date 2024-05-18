@@ -16,7 +16,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.awt.RenderingHints;
 
 import javax.swing.Box;
@@ -83,6 +82,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     int recentSquare1 = 0;
     int recentSquare2 = 0;
+
+    boolean collapseMove = false;
 
     public GPanel(int gameType, JLabel displayLabel1, JButton button) throws FontFormatException, IOException{
 
@@ -518,52 +519,55 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                 int otherLink = quantumBoard.getLink(turnCount - 1, selection);
                                 quantumBoard.getBoardTile(otherLink % 3, (int) Math.floor(otherLink / 3)).getMovesList().remove(quantumBoard.getMoveLocationInArray(otherLink, turnCount - 1));
                                 quantumBoard.collapseTile(selection, turnCount - 1);
-                            }
-                            result = 0;
-                            if(turn){
-                                displayLabel.setText("Player 2's turn");
-                                displayLabel.setForeground(blue);
+                                result = 0;
 
-                            }else{
-                                displayLabel.setText("Player 1's turn");
-                                displayLabel.setForeground(red);
-                                
-                            }
-
-                            int blankCount = 0;
-                            for(int i = 0; i < 9; i++){
-                                if(quantumBoard.getBoardTile(i % 3, (int) Math.floor(i /3)).getState().equals(State.Blank)){
-                                    blankCount++;
+                                //all the other stuff
+                                if(turn){
+                                    displayLabel.setText("Player 2's turn");
+                                    displayLabel.setForeground(blue);
+    
+                                }else{
+                                    displayLabel.setText("Player 1's turn");
+                                    displayLabel.setForeground(red);
+                                    
+                                }
+    
+                                int blankCount = 0;
+                                for(int i = 0; i < 9; i++){
+                                    if(quantumBoard.getBoardTile(i % 3, (int) Math.floor(i /3)).getState().equals(State.Blank)){
+                                        blankCount++;
+                                    }
+                                }
+                                if(blankCount < 2){
+                                    displayLabel.setText("Stalemate");
+                                    displayLabel.setForeground(Color.BLACK);
+    
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
+                                }
+    
+                                int boardresult = quantumBoard.checkEntireBoard();
+    
+                                if(boardresult == 1){
+                                    quantumBoard.setState(State.Player1);
+                                    displayLabel.setText("Player 1 wins");
+                                    displayLabel.setForeground(red);
+    
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
+                                }else if(boardresult == 2){
+                                    quantumBoard.setState(State.Player2);
+                                    displayLabel.setText("Player 2 wins");
+                                    displayLabel.setForeground(blue);
+    
+                                    //replay button stuff
+                                    add(replayButton);
+                                    add(Box.createVerticalStrut(50));
                                 }
                             }
-                            if(blankCount < 2){
-                                displayLabel.setText("Stalemate");
-                                displayLabel.setForeground(Color.BLACK);
-
-                                //replay button stuff
-                                add(replayButton);
-                                add(Box.createVerticalStrut(50));
-                            }
-
-                            int boardresult = quantumBoard.checkEntireBoard();
-
-                            if(boardresult == 1){
-                                quantumBoard.setState(State.Player1);
-                                displayLabel.setText("Player 1 wins");
-                                displayLabel.setForeground(red);
-
-                                //replay button stuff
-                                add(replayButton);
-                                add(Box.createVerticalStrut(50));
-                            }else if(boardresult == 2){
-                                quantumBoard.setState(State.Player2);
-                                displayLabel.setText("Player 2 wins");
-                                displayLabel.setForeground(blue);
-
-                                //replay button stuff
-                                add(replayButton);
-                                add(Box.createVerticalStrut(50));
-                            }
+                            
                         }
                     }
                                       
@@ -1199,10 +1203,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 }
 
             }
-        }
-
-        try (PrintWriter out = new PrintWriter("save.txt")) {
-            out.println(output);
         }
 
         String path = System.getProperty("user.dir") + File.separator + "Saves";

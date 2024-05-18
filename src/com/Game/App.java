@@ -1,6 +1,5 @@
 package com.Game;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -46,11 +45,11 @@ public class App {
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
         Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
 
-        JButton regButton = new JButton("Regular");
-        JButton ultButton = new JButton("Massive");
-        JButton tranButton = new JButton("Ultimate");
-        JButton quanButton = new JButton("Quantum");
-        JButton loadButton = new JButton("Load");
+        GButton regButton = new GButton("Regular");
+        GButton ultButton = new GButton("Massive");
+        GButton tranButton = new GButton("Ultimate");
+        GButton quanButton = new GButton("Quantum");
+        GButton loadButton = new GButton("Load");
         
         regButton.setFont(font);
         ultButton.setFont(font);
