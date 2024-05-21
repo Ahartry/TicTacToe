@@ -1,18 +1,13 @@
 package com.Game;
 
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Scanner;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -139,11 +134,7 @@ public class App {
         tranButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 //starts regular game
-                try {
-                    new GFrame(3);
-                } catch (FontFormatException | IOException e1) {
-                    e1.printStackTrace();
-                }
+                new SFrame();
             } 
         });
 
@@ -161,146 +152,11 @@ public class App {
         loadButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
 
-                String path = System.getProperty("user.dir") + File.separator + "Saves";
-                File filepath = new File(path);
+                new LFrame();
 
-                //starts regular game
-                //old JFileChooser argument: FileSystemView.getFileSystemView().getHomeDirectory()
-                JFileChooser chooser = new JFileChooser(filepath);
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
-                chooser.setFileFilter(filter);
-                chooser.showOpenDialog(null);
-
-                File file = chooser.getSelectedFile();
-
-                try {
-                    loadSave(file);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
             } 
             
         });
     }
 
-    public static void loadSave(File file) throws Exception{
-        System.out.println(file.getPath());
-        Scanner scan = new Scanner(file);
-
-        String firstBlock = scan.next();
-
-        int gameType = Integer.parseInt(firstBlock.substring(0, 1));
-
-        if(gameType == 3){
-            boolean turn;
-            //opposite based on last move
-            if(firstBlock.substring(1, 2).equals("2")){
-                turn = false;
-            }else{
-                turn = true;
-            }
-
-            turn = !turn;
-    
-            int recentLarge = Integer.parseInt(firstBlock.substring(2, 3));
-            int recentBoard = Integer.parseInt(firstBlock.substring(3, 4));
-            int recentCell = Integer.parseInt(firstBlock.substring(4, 5));
-    
-            int xl = recentLarge % 3;
-            int yl = (int) Math.floor(recentLarge / 3);
-            int xb = recentBoard % 3;
-            int yb = (int) Math.floor(recentBoard / 3);
-            int xc = recentCell % 3;
-            int yc = (int) Math.floor(recentCell / 3);
-    
-            System.out.println("Loading gametype: " + gameType + ", Board Location: " + recentLarge + " " + recentBoard + " " + recentCell);
-            
-            MassiveBoard inputboard = new MassiveBoard();
-    
-            String input;
-    
-    
-            int i = 0;
-            while(scan.hasNext()){
-                System.out.println(i);
-                i++;
-                
-                input = scan.next();
-    
-                State state;
-                
-                if(input.substring(0, 1).equals("2")){
-                    state = State.Player2;
-                }else{
-                    state = State.Player1;
-                }
-    
-                int large = Integer.parseInt(input.substring(1, 2));
-                int board = Integer.parseInt(input.substring(2, 3));
-                int cell = Integer.parseInt(input.substring(3, 4));
-    
-                xl = large % 3;
-                yl = (int) Math.floor(large / 3);
-                xb = board % 3;
-                yb = (int) Math.floor(board / 3);
-                xc = cell % 3;
-                yc = (int) Math.floor(cell / 3);
-    
-                inputboard.getBoardArray(xl, yl).getBoardArray(xb, yb).getBoardArray(xc, yc).setState(state);
-                
-                int resultsmall = inputboard.getBoardArray(xl, yl).getBoardArray(xb, yb).checkBoard(xc, yc);
-
-                //this doesn't seem to be working
-                int resultlarge = inputboard.getBoardArray(xl, yl).checkBoard(xb, yb);
-
-                //this is irrelevant
-                //int resultmassive = inputboard.checkBoard(xl, yl);
-    
-                if(resultsmall == 1){
-                    inputboard.getBoardArray(xl, yl).getBoardArray(xb, yb).setState(State.Player1);
-                }else if(resultsmall == 2){
-                    inputboard.getBoardArray(xl, yl).getBoardArray(xb, yb).setState(State.Player2);
-                }
-    
-                if(resultlarge == 1){
-                    inputboard.getBoardArray(xl, yl).setState(State.Player1);
-                }else if(resultlarge == 2){
-                    inputboard.getBoardArray(xl, yl).setState(State.Player2);
-                }
-    
-                //System.out.println("xl: " + xl + ", yl: " + yl + ", xb: " + xb + ", yb: " + yb + ", xc: " + xc + ", yc: " + yc + " (input: " + large + " " + board + " " + cell + ")");
-            }
-
-            //additional checks for larger victories
-            for(int k = 0; k < 3; k++){
-                for(int j = 0; j < 3; j++){
-                    int result = inputboard.getBoardArray(k, j).checkEntireBoard();
-
-                    if(result == 1){
-                        inputboard.getBoardArray(k, j).setState(State.Player1);
-                    }else if(result == 2){
-                        inputboard.getBoardArray(k, j).setState(State.Player2);
-                    }
-
-                }
-            }
-
-            xl = recentLarge % 3;
-            yl = (int) Math.floor(recentLarge / 3);
-            xb = recentBoard % 3;
-            yb = (int) Math.floor(recentBoard / 3);
-            xc = recentCell % 3;
-            yc = (int) Math.floor(recentCell / 3);
-    
-            GFrame frame = new GFrame(gameType);
-            inputboard.calculateActive(xl, yl, xb, yb, xc, yc);
-            frame.getGPanel().setMassiveBoard(inputboard, turn);
-    
-            scan.close();
-        }else{
-            System.out.println("Unsupported game type");
-        }
-
-        
-    }
 }

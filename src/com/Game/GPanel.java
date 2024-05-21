@@ -2,10 +2,14 @@ package com.Game;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -17,12 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.awt.RenderingHints;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -66,7 +65,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     JLabel displayLabel;
 
-    JButton replayButton;
+    GButton replayButton;
 
     int count = 0;
     int turnCount = 0;
@@ -85,13 +84,16 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     boolean collapseMove = false;
 
-    public GPanel(int gameType, JLabel displayLabel1, JButton button) throws FontFormatException, IOException{
+    File outputDir;
+    String outputPath;
+
+    public GPanel(int gameType, JLabel displayLabel1, GButton button) throws FontFormatException, IOException{
 
         game = gameType;
 
         displayLabel = displayLabel1;
 
-        replayButton = new JButton("Replay");
+        replayButton = new GButton("Replay");
 
         //instantiates boards
         if(game == 1){
@@ -115,12 +117,15 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         //replay button stuff
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
-        Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(30f);
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(80f);
+        setLayout(new GridBagLayout());
         replayButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        add(Box.createVerticalGlue());
         replayButton.setFont(font);
         replayButton.setFocusable(false);
+        replayButton.setPreferredSize(new Dimension(150, 80));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(350, 50, 10, 50);
 
         displayLabel.setForeground(red);
 
@@ -162,16 +167,16 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(red);
 
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }else if(result == 2){
                                     simpleBoard.setState(State.Player2);
                                     displayLabel.setText("Player 2 wins");
                                     displayLabel.setForeground(blue);
 
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }
 
                                 if(count == 9 && result == 0){
@@ -179,8 +184,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(Color.BLACK);
 
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }
 
                                 repaint();
@@ -257,8 +262,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     largeBoard.setActive(false);
 
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }
 
                                 //checks the larger board
@@ -270,8 +275,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     largeBoard.setActive(false);
 
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }else if(result == 2){
                                     largeBoard.setState(State.Player2);
                                     displayLabel.setText("Player 2 wins");
@@ -279,8 +284,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     largeBoard.setActive(false);
 
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }
 
                                 repaint();
@@ -396,8 +401,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     massiveBoard.setActive(false);
 
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }
                                 
                                 if(resultmassive == 1){
@@ -406,16 +411,16 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     massiveBoard.setActive(false);
 
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }else if(resultmassive == 2){
                                     displayLabel.setText("Player 2 wins");
                                     displayLabel.setForeground(blue);
                                     massiveBoard.setActive(false);
 
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }
 
                                 repaint();
@@ -423,6 +428,12 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                 recentLarge = xlargeboard + (3 * ylargeboard);
                                 recentSimple = xboard + (3 * yboard);
                                 recentCell = xcell + (3 * ycell);
+
+                                try {
+                                    outputBoard(massiveBoard);
+                                } catch (FileNotFoundException e1) {
+                                    e1.printStackTrace();
+                                }
 
                                 //System.out.println(recentLarge + ", " + recentSimple + ", " + recentCell);
                             }
@@ -543,8 +554,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(Color.BLACK);
     
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }
     
                                 int boardresult = quantumBoard.checkEntireBoard();
@@ -555,16 +566,16 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(red);
     
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }else if(boardresult == 2){
                                     quantumBoard.setState(State.Player2);
                                     displayLabel.setText("Player 2 wins");
                                     displayLabel.setForeground(blue);
     
                                     //replay button stuff
-                                    add(replayButton);
-                                    add(Box.createVerticalStrut(50));
+                                    add(replayButton, gbc);
+                                    
                                 }
                             }
                             
@@ -627,7 +638,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
                     try {
                         outputBoard(massiveBoard);
                     } catch (FileNotFoundException e1) {
-                        // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }
                 }else if(gameType == 4){
@@ -650,7 +660,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                 closeWindow();
                 try {
-                    new GFrame(gameType);
+                    if(gameType != 3){
+                        new GFrame(gameType);
+                    }else{
+                        new SFrame();
+                    }
                 } catch (FontFormatException | IOException e1) {
                     e1.printStackTrace();
                 }
@@ -1146,25 +1160,28 @@ public class GPanel extends JPanel implements MouseWheelListener{
     }
 
     public void outputBoard(MassiveBoard board) throws FileNotFoundException{
+
         String output = "";
         output += game;
-        System.out.print("\n\n" + game);
+        //System.out.print("\n\n" + game);
         if(turn){
-            System.out.print("2");
+            //System.out.print("2");
             output += 2;
         }else{
-            System.out.print("1");
+            //System.out.print("1");
             output += 1;
         }
         //prints recent move
-        System.out.print(recentLarge);
+        //System.out.print(recentLarge);
         output += recentLarge;
 
-        System.out.print(recentSimple);
+        //System.out.print(recentSimple);
         output += recentSimple;
 
-        System.out.print(recentCell + " ");
+        //System.out.print(recentCell + " ");
         output += recentCell + " ";
+
+        int moveTally = 0;
 
         for(int i = 0; i < 27; i++){
             for(int j = 0; j < 27; j++){
@@ -1183,21 +1200,23 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                 State state = board.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).getBoardArray(xcell, ycell).getState();
                 if(state == State.Player1){
-                    System.out.print("1");
+                    //System.out.print("1");
                     output += 1;
+                    moveTally++;
                 }else if(state == State.Player2){
-                    System.out.print("2");
+                    //System.out.print("2");
                     output += 2;
+                    moveTally++;
                 }
 
                 if(state != State.Blank){
-                    System.out.print(largeBoard);
+                    //System.out.print(largeBoard);
                     output += largeBoard;
 
-                    System.out.print(Board);
+                    //System.out.print(Board);
                     output += Board;
 
-                    System.out.print(cell + " ");
+                    //System.out.print(cell + " ");
                     output += cell + " ";
 
                 }
@@ -1205,20 +1224,16 @@ public class GPanel extends JPanel implements MouseWheelListener{
             }
         }
 
-        String path = System.getProperty("user.dir") + File.separator + "Saves";
+        String path = outputDir + File.separator + "move" + moveTally;
         File filepath = new File(path);
         
-        JFileChooser chooser = new JFileChooser(filepath);
-        //chooser.setCurrentDirectory(new File("/home/me/Documents"));
-        int retrival = chooser.showSaveDialog(null);
-        if (retrival == JFileChooser.APPROVE_OPTION) {
-            try {
-                FileWriter fw = new FileWriter(chooser.getSelectedFile()+".txt");
-                fw.write(output.toString());
-                fw.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+        FileWriter fw;
+        try {
+            fw = new FileWriter(filepath);
+            fw.write(output.toString());
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     
     }
@@ -1236,6 +1251,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
             displayLabel.setForeground(red);
             
         }
+    }
+
+    public void setOutputDir(File file){
+        outputDir = file;
+        outputPath = outputDir.toString();
     }
 
     public Image getTurnImage(int turn){

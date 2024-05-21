@@ -29,11 +29,11 @@ public class GButton extends JButton{
 	private int paddingX = 0;
 	private int paddingY = 0;
 	
-	private Color mainColor = new Color(0,100,200,255);
+	private Color mainColor = new Color(0,150,50,255);
 //	private Color mainColor2 = new Color(0,100,200,127);
-	private Color clickedColor = new Color(0,70,170,255);
+	private Color clickedColor = new Color(0,120,20,255);
 //	private Color clickedColor2 = new Color(0,70,170,127);
-	private Color hoverColor = new Color(0,150,250,255);
+	private Color hoverColor = new Color(0,200,100,255);
 //	private Color hoverColor2 = new Color(0,150,250,127);
 	private Color disabledColor = new Color(180, 180, 180, 255);
 	
@@ -142,7 +142,6 @@ public class GButton extends JButton{
 			Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont((float) si);
 			text.setFont(font);
 		} catch (FontFormatException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

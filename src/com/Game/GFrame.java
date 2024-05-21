@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,9 +29,9 @@ public class GFrame extends JFrame{
 
         JPanel topPanel = new JPanel();
         JLabel topLabel = new JLabel("Player 1's turn");
-        JButton functionButton = new JButton();
+        GButton functionButton = new GButton("");
         functionButton.setFocusable(false);
-        JButton helpButton = new JButton("Help");
+        GButton helpButton = new GButton("Help");
         helpButton.setFocusable(false);
 
         bottomPanel = new GPanel(gameType, topLabel, functionButton);
@@ -52,12 +51,10 @@ public class GFrame extends JFrame{
         //stupid
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 0;
-        if(gameType == 3){
-            topPanel.add(Box.createRigidArea(new Dimension(120, 0)));
-        }else if(gameType ==4){
-            topPanel.add(Box.createRigidArea(new Dimension(140, 0)));
+        if(gameType ==4){
+            topPanel.add(Box.createRigidArea(new Dimension(250, 0)));
         }else{
-            topPanel.add(Box.createRigidArea(new Dimension(80, 0)));
+            topPanel.add(Box.createRigidArea(new Dimension(90, 0)));
         }
 
         //gbc.gridwidth = 1;
@@ -79,12 +76,22 @@ public class GFrame extends JFrame{
 
         gbc.gridx = 4;
 
+        //help button sizing
+        Dimension dd = helpButton.getPreferredSize();
+        dd.width = 90;
+        helpButton.setPreferredSize(dd); 
         if(gameType == 3){
-            topPanel.add(functionButton, gbc);
-            functionButton.setText("Save");
+            // topPanel.add(functionButton, gbc);
+            // functionButton.setText("Save");
+            // Dimension d = functionButton.getPreferredSize();
+            // d.width = 90;
+            // functionButton.setPreferredSize(d); 
         }else if(gameType == 4){
             topPanel.add(functionButton, gbc);
             functionButton.setText("Hide Lines");
+            Dimension d = functionButton.getPreferredSize();
+            d.width = 160;
+            functionButton.setPreferredSize(d); 
         }
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
