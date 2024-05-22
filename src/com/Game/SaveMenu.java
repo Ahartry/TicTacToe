@@ -36,7 +36,7 @@ public class SaveMenu extends JPanel{
 
         //set sizes
         Dimension d = label.getPreferredSize();
-        d.width = 180;
+        d.width = 150;
         label.setPreferredSize(d);
         
         add(label);

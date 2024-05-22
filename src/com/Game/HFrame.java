@@ -28,9 +28,12 @@ public class HFrame extends JFrame{
         if(gameType == 1){
             height /= 2;
         }
+        if(gameType == 3){
+            height *= 1.1;
+        }
 
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
-        Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(18f);
+        Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
 
         JPanel panel = new JPanel();
         JLabel infoLabel = new JLabel();
@@ -68,9 +71,12 @@ public class HFrame extends JFrame{
             infoLabel.setText(quantum);
         }
 
+        infoLabel.setFont(font);
+
         setSize(width, height);
         setLocationRelativeTo(null);
         setTitle("Help Window");
+        setFont(font);
         setResizable(false);
         setVisible(true);
 

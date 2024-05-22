@@ -577,6 +577,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     add(replayButton, gbc);
                                     
                                 }
+                                repaint();
                             }
                             
                         }
