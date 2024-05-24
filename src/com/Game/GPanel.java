@@ -10,6 +10,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -81,6 +84,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     int recentSquare1 = 0;
     int recentSquare2 = 0;
+
+    int theSquare = 0;
 
     boolean collapseMove = false;
 
@@ -449,6 +454,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
     
                             int xcell = (int) Math.floor(3 * xboard / boundingSize);
                             int ycell = (int) Math.floor(3 * yboard / boundingSize);
+
+                            theSquare = xcell + (ycell * 3);
     
                             if(quantumBoard.getBoardTile(xcell, ycell).getState() == State.Blank && e.getButton() == MouseEvent.BUTTON1){
 
@@ -693,6 +700,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
             drawMassiveBoard(g, massiveBoard);
         }else if(game == 4){
             drawQuantumBoard(g, quantumBoard);
+            if(quantumMove){
+                drawMouseLine(g, quantumBoard);
+            }
         }
 
 
@@ -1099,6 +1109,60 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 drawMove(g, moveDrawLoc, turnCount - 1);
             }
         }
+
+    }
+
+    public void drawMouseLine(Graphics2D g, QuantumBoard board){
+
+        if(!turn){
+            g.setColor(red);
+        }else{
+            g.setColor(blue);
+        }
+        
+        int x1 = theSquare % 3;
+        int y1 = (int) Math.floor(theSquare / 3);
+
+        int cell = board.getBoardTile(x1, y1).getMovesList().size();
+        int xcell = cell % 3;
+        int ycell = (int) Math.floor(cell / 3);
+
+        PointerInfo a = MouseInfo.getPointerInfo();
+        Point b = a.getLocation();
+        int x2 = (int) (b.getX() - this.getLocationOnScreen().getLocation().getX());
+        int y2 = (int) (b.getY() - this.getLocationOnScreen().getLocation().getY());
+
+        thickness = width / 100;
+        boundingSize = Math.min(width, height);
+        xbound = (width - boundingSize) / 2;
+        ybound = (height - boundingSize) / 2;
+        cellSize = (int) boundingSize / 3;
+
+        if(zoom > 1){
+            zoom = 1;
+        }
+
+        //applies zoom
+        buffer = (int) (buffer * zoom);
+        thickness = (int) (thickness * zoom);
+        boundingSize = (int) (boundingSize * zoom);
+        xbound = (int) (xbound * zoom);
+        ybound = (int) (ybound * zoom);
+        cellSize = (int) (cellSize * zoom);
+        int qcellSize = (int) cellSize / 3;
+
+        ybound = -1 * (boundingSize / 2);
+        xbound = -1 * (boundingSize / 2);
+
+        buffer = (int) ((width / 40) * zoom);
+
+        xbound = xbound + offsetx;
+        ybound = ybound + offsety;
+
+        int xNetOffset = (int) (xbound + (x1 * cellSize) + (xcell * qcellSize) + (qcellSize / 2));
+        int yNetOffset = (int) (ybound + (y1 * cellSize) + (ycell * qcellSize) + (qcellSize / 2));
+
+        g.drawLine(xNetOffset, yNetOffset, x2, y2);
 
     }
 
