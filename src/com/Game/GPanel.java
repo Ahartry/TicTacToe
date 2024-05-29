@@ -503,6 +503,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                         moveDrawLoc = recentSquare1;
                                     }
 
+                                //thing to unselect
+                                }else if(quantumMove && (xcell + (ycell * 3)) == recentCell){
+                                    quantumMove = false;
+                                    recentCell = -1;
+
                                 //handles second click
                                 }else if((xcell + (ycell * 3)) != recentCell){
                                     recentCell = xcell + (ycell * 3);
