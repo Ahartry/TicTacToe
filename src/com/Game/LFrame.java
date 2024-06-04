@@ -111,10 +111,10 @@ public class LFrame extends JFrame{
             String input;
     
     
-            int i = 0;
+            //int i = 0;
             while(scan.hasNext()){
-                System.out.println(i);
-                i++;
+                //System.out.println(i);
+                //i++;
                 
                 input = scan.next();
     
@@ -257,7 +257,7 @@ public class LFrame extends JFrame{
 
         Collections.reverse(output);
 
-        System.out.println("Input: " + input + ", output: " + output);
+        //System.out.println("Input: " + input + ", output: " + output);
         return output;
     }
 }

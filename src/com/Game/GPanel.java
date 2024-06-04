@@ -491,7 +491,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     if(result == 0){
                                         //System.out.println("No loop");
                                     }else{
-                                        System.out.println("Loop");
+                                        //System.out.println("Loop");
                                         if(turn){
                                             displayLabel.setText("Player 2 chooses collapse");
         
