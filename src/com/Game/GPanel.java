@@ -70,6 +70,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     GButton replayButton;
 
+    AI AI;
+
     int count = 0;
     int turnCount = 0;
     boolean quantumMove = false;
@@ -92,7 +94,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     File outputDir;
     String outputPath;
 
-    public GPanel(int gameType, JLabel displayLabel1, GButton button) throws FontFormatException, IOException{
+    public GPanel(int gameType, JLabel displayLabel1, GButton button, boolean bot) throws FontFormatException, IOException{
 
         game = gameType;
 
@@ -109,6 +111,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }else if(game == 2){
             largeBoard = new LargeBoard();
             largeBoard.setActive(true);
+            zoom = Math.pow(0.75, 4);
+            offsetx = 325;
+            offsety = 100;
         }else if(game == 3){
             massiveBoard = new MassiveBoard();
             massiveBoard.setActive(true);
@@ -119,6 +124,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
             offsety = height / 2;
             turnCount = 1;
         }
+        repaint();
+
+        AI = new AI(gameType);
 
         //replay button stuff
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -201,7 +209,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
     
                         }
                     }else if(game == 2){
+                        //System.out.println("\nclick1");
                         if((e.getX() > xbound && e.getX() < (xbound + (boundingSize * 3)) && e.getY() > ybound && e.getY() < (ybound + (boundingSize * 3))) && largeBoard.getState() == State.Blank){
+                            //System.out.println("click2");
                             int relativeX = e.getX() - xbound;
                             int relativeY = e.getY() - ybound;
     
@@ -215,90 +225,38 @@ public class GPanel extends JPanel implements MouseWheelListener{
     
                             if(largeBoard.getBoardArray(xboard, yboard).getBoardTile(xcell, ycell).getState() == State.Blank && largeBoard.getBoardArray(xboard, yboard).getActive()){
                                 largeBoard.getBoardArray(xboard, yboard).setBoardTile(xcell, ycell, turn);
+                                largeBoard.add(xboard, yboard, xcell, ycell, turn);
 
-                                int result = largeBoard.getBoardArray(xboard, yboard).checkBoard(xcell, ycell);
+                                largeMoveAftermath(xboard, yboard, xcell, ycell, gbc);
 
-                                turn = !turn;
-
-                                if(turn){
-                                    displayLabel.setText("Player 2's turn");
+                                if(turn && bot){
+                                    displayLabel.setText("Player 2 is thinking");
                                     displayLabel.setForeground(blue);
-
-                                }else{
-                                    displayLabel.setText("Player 1's turn");
-                                    displayLabel.setForeground(red);
-                                    
+                                    repaint();
+                                    int move = AI.checkLargeBoard(largeBoard, (((xboard + (yboard * 3)) * 10) + (xcell + (ycell * 3))));
+                                    largeBoard.move(move, turn);
+                                    System.out.println("Moving to " + move);
+                                    int board = (int) Math.floor(move / 10);
+                                    int xboard2 = board % 3;
+                                    int yboard2 = (int) Math.floor(board / 3);
+                                    int cell = move - (board * 10);
+                                    int xcell2 = cell % 3;
+                                    int ycell2 = (int) Math.floor(cell / 3);
+                                    largeMoveAftermath(xboard2, yboard2, xcell2, ycell2, gbc);
                                 }
 
-                                if(result == 1){
-                                    largeBoard.getBoardArray(xboard, yboard).setState(State.Player1);
-                                    // displayLabel.setText("Player 1 wins");
-                                    // displayLabel.setForeground(red);
-                                }else if(result == 2){
-                                    largeBoard.getBoardArray(xboard, yboard).setState(State.Player2);
-                                    // displayLabel.setText("Player 2 wins");
-                                    // displayLabel.setForeground(blue);
-                                }
-
-                                if(largeBoard.getBoardArray(xcell, ycell).getState() == State.Blank && largeBoard.getBoardArray(xcell, ycell).getMoveTally() != 9){
-                                    for(int i = 0; i < 9; i++){
-                                        int x = i % 3;
-                                        int y = (int) Math.floor(i / 3);
-                                        largeBoard.getBoardArray(x, y).setActive(false);
-                                    }
-                                    largeBoard.setActive(false);
-                                    largeBoard.getBoardArray(xcell, ycell).setActive(true);
-                                }else{
-                                    for(int i = 0; i < 9; i++){
-                                        int x = i % 3;
-                                        int y = (int) Math.floor(i / 3);
-                                        largeBoard.getBoardArray(x, y).setActive(true);
-                                        if(largeBoard.getBoardArray(x, y).getState() != State.Blank){
-                                            largeBoard.getBoardArray(x, y).setActive(false); 
-                                        }
-                                    }
-                                    largeBoard.getBoardArray(xcell, ycell).setActive(false);
-                                    largeBoard.setActive(true);
-                                }
-
-                                if(largeBoard.getMoveTally() == 9){
-                                    displayLabel.setText("Stalemate");
-                                    displayLabel.setForeground(Color.BLACK);
-                                    largeBoard.setActive(false);
-
-                                    //replay button stuff
-                                    add(replayButton, gbc);
-                                    
-                                }
-
-                                //checks the larger board
-                                result = largeBoard.checkBoard(xboard, yboard);
-                                if(result == 1){
-                                    largeBoard.setState(State.Player1);
-                                    displayLabel.setText("Player 1 wins");
-                                    displayLabel.setForeground(red);
-                                    largeBoard.setActive(false);
-
-                                    //replay button stuff
-                                    add(replayButton, gbc);
-                                    
-                                }else if(result == 2){
-                                    largeBoard.setState(State.Player2);
-                                    displayLabel.setText("Player 2 wins");
-                                    displayLabel.setForeground(blue);
-                                    largeBoard.setActive(false);
-
-                                    //replay button stuff
-                                    add(replayButton, gbc);
-                                    
-                                }
+                                //System.out.println("Eval: " + AI.evalBoard(largeBoard));
 
                                 repaint();
+                            }else{
+                                //System.out.println("Illegal click at board " + xboard + ", " + yboard + " and cell " + xcell + ", " + ycell);
                             }
 
                             
                             //System.out.println("X: " + xcell + ", Y: " + ycell);
     
+                        }else if((e.getX() > xbound && e.getX() < (xbound + (boundingSize * 3)) && e.getY() > ybound && e.getY() < (ybound + (boundingSize * 3))) && largeBoard.getState() != State.Blank){
+                            //System.out.println("Error here");
                         }
                     }else if(game == 3){
                         if((e.getX() > xbound && e.getX() < (xbound + (boundingSize * 9)) && e.getY() > ybound && e.getY() < (ybound + (boundingSize * 9))) && massiveBoard.getState() == State.Blank){
@@ -594,10 +552,10 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             
                         }
                     }
-                                      
+                             
                 }
               
-              movementCounter = 0;
+                movementCounter = 0;
             }
         }); 
         addMouseMotionListener(new MouseAdapter() { 
@@ -619,7 +577,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     
                 movementCounter++;
 
-                //System.out.println("X offset: " + offsetx + ", Y offset: " + offsety);
+                System.out.println("X offset: " + offsetx + ", Y offset: " + offsety);
 
                 //System.out.println(movementCounter);
                 //System.out.println(deltax);
@@ -674,7 +632,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 closeWindow();
                 try {
                     if(gameType != 3){
-                        new GFrame(gameType);
+                        new GFrame(gameType, false);
                     }else{
                         new SFrame();
                     }
@@ -686,6 +644,74 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         });
 
+    }
+
+    public void largeMoveAftermath(int xboard, int yboard, int xcell, int ycell, GridBagConstraints gbc){
+        int result = largeBoard.getBoardArray(xboard, yboard).checkBoard(xcell, ycell);
+
+        turn = !turn;
+
+        if(turn){
+            displayLabel.setText("Player 2's turn");
+            displayLabel.setForeground(blue);
+
+        }else{
+            displayLabel.setText("Player 1's turn");
+            displayLabel.setForeground(red);
+            
+        }
+
+        if(result == 1){
+            largeBoard.getBoardArray(xboard, yboard).setState(State.Player1);
+            largeBoard.clearLocationList(xboard, yboard);
+            // displayLabel.setText("Player 1 wins");
+            // displayLabel.setForeground(red);
+        }else if(result == 2){
+            largeBoard.getBoardArray(xboard, yboard).setState(State.Player2);
+            largeBoard.clearLocationList(xboard, yboard);
+            // displayLabel.setText("Player 2 wins");
+            // displayLabel.setForeground(blue);
+        }
+
+        //calculates new active tiles
+        if(largeBoard.getBoardArray(xcell, ycell).getState() == State.Blank && largeBoard.getBoardArray(xcell, ycell).getMoveTally() != 9){
+            largeBoard.setActive(false);
+            largeBoard.getBoardArray(xcell, ycell).setActive(true);
+        }else{
+            largeBoard.setActive(true);
+        }
+
+        if(largeBoard.getMoveTally() == 9){
+            displayLabel.setText("Stalemate");
+            displayLabel.setForeground(Color.BLACK);
+            largeBoard.setActive(false);
+
+            //replay button stuff
+            add(replayButton, gbc);
+            
+        }
+
+        //checks the larger board
+        result = largeBoard.checkBoard(xboard, yboard);
+        if(result == 1){
+            largeBoard.setState(State.Player1);
+            displayLabel.setText("Player 1 wins");
+            displayLabel.setForeground(red);
+            largeBoard.setActive(false);
+
+            //replay button stuff
+            add(replayButton, gbc);
+            
+        }else if(result == 2){
+            largeBoard.setState(State.Player2);
+            displayLabel.setText("Player 2 wins");
+            displayLabel.setForeground(blue);
+            largeBoard.setActive(false);
+
+            //replay button stuff
+            add(replayButton, gbc);
+            
+        }
     }
 
     @Override
@@ -1209,6 +1235,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
             offsetx = offsetx + (int) (diffx * zoom);
             offsety = offsety + (int) (diffy * zoom);
         }
+
+        System.out.println(zoom);
 
         repaint();
 

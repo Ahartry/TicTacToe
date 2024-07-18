@@ -16,12 +16,6 @@ import java.awt.GridBagConstraints;
 public class App {
 
     public static void main(String[] args) throws Exception {
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        //gbc.fill = GridBagConstraints.BOTH;
         
         JFrame startFrame = new JFrame();
         startFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,8 +28,23 @@ public class App {
         startPanel.setLayout(new GridBagLayout());
         startPanel.setFocusable(true);
         startPanel.requestFocus();
+
+        setupPanel(startPanel);
         
         startFrame.add(startPanel);
+
+        startFrame.setVisible(true);
+    }
+
+    public static void setupPanel(JPanel startPanel) throws Exception {
+        startPanel.removeAll();
+        startPanel.repaint();
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        //gbc.fill = GridBagConstraints.BOTH;
 
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
         Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
@@ -107,13 +116,11 @@ public class App {
 
         startPanel.add(quanButton, gbc);
 
-        startFrame.setVisible(true);
-
         regButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 //starts regular game
                 try {
-                    new GFrame(1);
+                    new GFrame(1, false);
                 } catch (FontFormatException | IOException e1) {
                     e1.printStackTrace();
                 }
@@ -122,27 +129,23 @@ public class App {
 
         ultButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
-                //starts regular game
-                try {
-                    new GFrame(2);
-                } catch (FontFormatException | IOException e1) {
-                    e1.printStackTrace();
-                }
+                //starts massive game
+                askIfUserWantsBot(2, startPanel, font);
             } 
         });
 
         tranButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
-                //starts regular game
+                //starts ultimate game
                 new SFrame();
             } 
         });
 
         quanButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
-                //starts regular game
+                //starts quantum game
                 try {
-                    new GFrame(4);
+                    new GFrame(4, false);
                 } catch (FontFormatException | IOException e1) {
                     e1.printStackTrace();
                 }
@@ -153,6 +156,69 @@ public class App {
             public void actionPerformed(ActionEvent e) { 
 
                 new LFrame();
+
+            } 
+            
+        });
+
+        startPanel.repaint();
+        startPanel.revalidate();
+        startPanel.setVisible(true);
+    }
+
+    public static void askIfUserWantsBot(int gameType, JPanel panel, Font font){
+        panel.removeAll();
+        panel.repaint();
+        panel.setLayout(new GridBagLayout());
+
+        GButton singleplayerButton = new GButton("Singleplayer");
+        GButton multiplayerButton = new GButton("Multiplayer");
+
+        singleplayerButton.setFont(font);
+        multiplayerButton.setFont(font);
+
+        singleplayerButton.setPreferredSize(new Dimension(200, 40));
+        multiplayerButton.setPreferredSize(new Dimension(200, 40));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+
+        gbc.gridx = 0;
+
+        panel.add(singleplayerButton, gbc);
+
+        gbc.gridx = 1;
+
+        panel.add(multiplayerButton, gbc);
+
+        panel.repaint();
+        panel.revalidate();
+        panel.setVisible(true);
+
+        singleplayerButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+
+                try {
+                    new GFrame(gameType, true);
+                    setupPanel(panel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+
+            } 
+            
+        });
+        multiplayerButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+
+                try {
+                    new GFrame(gameType, false);
+                    setupPanel(panel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
 
             } 
             

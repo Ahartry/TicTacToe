@@ -17,6 +17,10 @@ public class Tile{
     public State getState(){
         return state;
     }
+
+    public int toNum(){
+        return state.toNum();
+    }
     
 }
 

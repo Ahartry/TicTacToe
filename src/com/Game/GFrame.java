@@ -23,7 +23,7 @@ public class GFrame extends JFrame{
 
     GPanel bottomPanel;
     
-    public GFrame(int gameType) throws FontFormatException, IOException{
+    public GFrame(int gameType, boolean bot) throws FontFormatException, IOException{
 
         System.out.println("\nStarting game type " + gameType + "\n");
 
@@ -34,7 +34,7 @@ public class GFrame extends JFrame{
         GButton helpButton = new GButton("Help");
         helpButton.setFocusable(false);
 
-        bottomPanel = new GPanel(gameType, topLabel, functionButton);
+        bottomPanel = new GPanel(gameType, topLabel, functionButton, bot);
 
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
         Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(30f);

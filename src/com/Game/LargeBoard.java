@@ -1,9 +1,12 @@
 package com.Game;
 
+import java.util.ArrayList;
+
 public class LargeBoard {
 
     private SimpleBoard[][] boardArray;
     private boolean active = false;
+    private ArrayList<LargeLocation> locationList = new ArrayList<>();
 
     public LargeBoard(SimpleBoard[][] inputBoard){
 
@@ -155,5 +158,190 @@ public class LargeBoard {
         
         return result;
     }
-    
+
+    public ArrayList<Integer> listActiveBoards(){
+        ArrayList<Integer> activeList = new ArrayList<>();
+
+        for(int i = 0; i < 9; i++){
+            int x1 = i % 3;
+            int y1 = (int) Math.floor(i / 3);
+
+            if(getBoardArray(x1, y1).getActive()){
+                activeList.add(i);
+            }
+        }
+
+        return activeList;
+    }
+
+    public ArrayList<Integer> listActiveCells(){
+        ArrayList<Integer> activeList = new ArrayList<>();
+
+        for(int i = 0; i < 9; i++){
+            int x1 = i % 3;
+            int y1 = (int) Math.floor(i / 3);
+
+            if(getBoardArray(x1, y1).getActive()){
+                for(int j = 0; j < 9; j++){
+                    int x2 = j % 3;
+                    int y2 = (int) Math.floor(j / 3);
+                    if(getBoardArray(x1, y1).getBoardTile(x2, y2).getState() == State.Blank){
+                        activeList.add((i * 10) + j);
+                        //System.out.println("Adding active tile: " + ((i * 10) + j));
+                    }
+                }
+                
+            }
+        }
+
+        return activeList;
+    }
+
+    public void move(int move, boolean player){
+        //player true is player two
+        //huh wait that rhymes, good mnemonic
+
+        //silly preamble
+        int board = (int) Math.floor(move / 10);
+        int boardX = board % 3;
+        int boardY = (int) Math.floor(board / 3);
+        int cell = move - (board * 10);
+        int cellX = cell % 3;
+        int cellY = (int) Math.floor(cell / 3);
+
+        //System.out.println("Move " + move + ", board: " + boardX + ", " + boardY + ", cell: " + cellX + ", " + cellY + " (Cell: " + cell + ")");
+
+        getBoardArray(boardX, boardY).setBoardTile(cellX, cellY, player);
+        add(boardX, boardY, cellX, cellY, player);
+
+        //does stuff in case of victory
+        int result = getBoardArray(boardX, boardY).checkBoard(cellX, cellY);
+        if(result == 1){
+            getBoardArray(boardX, boardY).setState(State.Player1);
+            //clearLocationList(boardX, boardY);
+        }else if(result == 2){
+            getBoardArray(boardX, boardY).setState(State.Player2);
+            //clearLocationList(boardX, boardY);
+        }
+        result = checkBoard(boardX, boardY);
+        if(result == 1){
+            setState(State.Player1);
+            //clearLocationList(boardX, boardY);
+        }else if(result == 2){
+            setState(State.Player2);
+            //clearLocationList(boardX, boardY);
+        }
+    }
+
+    public void unmove(int move){
+        //player true is player two
+        //huh wait that rhymes, good mnemonic
+
+        //silly preamble
+        int board = (int) Math.floor(move / 10);
+        int boardX = board % 3;
+        int boardY = (int) Math.floor(board / 3);
+        int cell = move - (board * 10);
+        int cellX = cell % 3;
+        int cellY = (int) Math.floor(cell / 3);
+
+        int result = checkBoard(boardX, boardY);
+        if(result != 0){
+            //System.out.println("test");
+            setState(State.Blank);
+        }
+        result = getBoardArray(boardX, boardY).checkBoard(cellX, cellY);
+        if(result != 0){
+            //System.out.println("test");
+            getBoardArray(boardX, boardY).setState(State.Blank);
+        }
+
+        //System.out.println("unMove " + move + ", board: " + boardX + ", " + boardY + ", cell: " + cellX + ", " + cellY + " (Cell: " + cell + ")");
+
+        getBoardArray(boardX, boardY).getBoardTile(cellX, cellY).setState(State.Blank);
+        //remove(boardX, boardY, cellX, cellY);
+        removeLast();
+
+        //silly preamble
+        // board = (int) Math.floor(previous / 10);
+        // boardX = board % 3;
+        // boardY = (int) Math.floor(board / 3);
+        // cell = previous - (board * 10);
+        // cellX = cell % 3;
+        // cellY = (int) Math.floor(cell / 3);
+
+        // calculateActive(cellX, cellY);
+    }
+
+    public void calculateActive(int xc, int yc){
+        //clear active
+        if(getBoardArray(xc, yc).getState() == State.Blank){
+            setActive(false);
+            getBoardArray(xc, yc).setActive(true);
+        }else{
+            setActive(true);
+        }
+    }
+
+    public void calculateActive(int move){
+        int board = (int) Math.floor(move / 10);
+        int cell = move - (board * 10);
+        int cellX = cell % 3;
+        int cellY = (int) Math.floor(cell / 3);
+
+        if(getBoardArray(cellX, cellY).getState() == State.Blank){
+            setActive(false);
+            getBoardArray(cellX, cellY).setActive(true);
+        }else{
+            setActive(true);
+        }
+    }
+
+    public void add(int x1, int y1, int x2, int y2, boolean turn){
+        locationList.add(new LargeLocation(x1, y1, x2, y2, turn));
+    }
+
+    public void remove(int x1, int y1, int x2, int y2){
+        for(int i = 0; i < locationList.size(); i++){
+            if(locationList.get(i).getBX() == x1 && locationList.get(i).getBY() == y1 && locationList.get(i).getCX() == x2 && locationList.get(i).getCY() == y2){
+                locationList.get(i);
+                break;
+            }
+        }
+    }
+
+    public void removeLast(){
+        locationList.removeLast();
+    }
+
+    public LargeLocation get(int i){
+        return locationList.get(i);
+    }
+
+    public void clearLocationList(int x, int y){
+        //System.out.println("Clearing list for board " + x + ", " + y);
+        for(int i = 0; i < locationList.size(); i++){
+            if(get(i).getBX() == x && get(i).getBY() == y){
+                locationList.remove(i);
+                i--;
+            }
+        }
+    }
+
+    public int getLocSize(){
+        return locationList.size();
+    }
+
+    // public void setActiveList(ArrayList<Integer> list){
+    //     setActive(false);
+    //     for(int i = 0; i < list.size(); i++){
+    //         int board = (int) Math.floor(list.get(i) / 10);
+    //         int boardX = board % 3;
+    //         int boardY = (int) Math.floor(board / 3);
+    //         int cell = list.get(i) - (board * 10);
+    //         int cellX = cell % 3;
+    //         int cellY = (int) Math.floor(cell / 3);
+    //         getBoardArray(boardX, boardY).setActive(true);
+    //     }
+    // }
 }

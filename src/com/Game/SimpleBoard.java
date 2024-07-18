@@ -100,5 +100,41 @@ public class SimpleBoard {
         
         return result;
     }
+
+    public int checkFakeBoard(int x, int y, boolean movePlayer){
+        int result = 0;
+        int player = 0; 
+
+        if(!movePlayer){
+            boardArray[x][y].setState(State.Player1);
+        }else{
+            boardArray[x][y].setState(State.Player2);
+        }
+
+        if(boardArray[x][y].getState() == State.Player1){
+            player = 1;
+        }else if(boardArray[x][y].getState() == State.Player2){
+            player = 2;
+        }
+
+        if(boardArray[x][0].getState().equals(boardArray[x][1].getState()) && boardArray[x][0].getState().equals(boardArray[x][2].getState())){
+            result = player;
+        }else if(boardArray[0][y].getState().equals(boardArray[1][y].getState()) && boardArray[0][y].getState().equals(boardArray[2][y].getState())){
+            result = player;
+        }else if(((boardArray[0][0].getState().equals(boardArray[1][1].getState()) && boardArray[0][0].getState().equals(boardArray[2][2].getState()))
+             || (boardArray[2][0].getState().equals(boardArray[1][1].getState()) && boardArray[2][0].getState().equals(boardArray[0][2].getState()))) && boardArray[1][1].getState() != State.Blank){
+            result = player;
+            
+        }
+
+        boardArray[x][y].setState(State.Blank);
+
+        
+        return result;
+    }
+
+    public int toNum(){
+        return state.toNum();
+    }
     
 }

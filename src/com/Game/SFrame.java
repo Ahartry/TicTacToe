@@ -104,6 +104,7 @@ public class SFrame extends JFrame{
         setLocationRelativeTo(null);
         setTitle("Set Game Name");
         setVisible(true);
+        setResizable(false);
 
         okButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -116,7 +117,7 @@ public class SFrame extends JFrame{
                     dispose();
                     new File(output).mkdirs();
                     move0.createNewFile();
-                    GFrame frame = new GFrame(3);
+                    GFrame frame = new GFrame(3, false);
                     frame.getGPanel().setOutputDir(outputFile);
                 } catch (FontFormatException | IOException e1) {
                     e1.printStackTrace();
