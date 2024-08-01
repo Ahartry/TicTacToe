@@ -133,4 +133,8 @@ public class GFrame extends JFrame{
         return bottomPanel;
     }
 
+    public void setDepth(int x){
+        bottomPanel.setDepth(x);
+    }
+
 }

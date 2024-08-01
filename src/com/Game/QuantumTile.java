@@ -38,6 +38,14 @@ public class QuantumTile{
     public int getTurn(){
         return turn;
     }
+
+    public void copy(QuantumTile tile){
+        state = tile.getState();
+        turn = tile.getTurn();
+        for(int i = 0; i < tile.getMovesList().size(); i++){
+            movesList.add(tile.getMovesList().get(i));
+        }
+    }
     
 }
 

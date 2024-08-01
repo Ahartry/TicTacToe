@@ -11,10 +11,14 @@ public class AI {
     LargeBoard board;
     //LargeBoard backupBoard;
 
-    int depthToSearch = 6;
+    int depthToSearch = 8;
 
     public AI(int gameType){
         this.gameType = gameType;
+    }
+
+    public void setDepth(int depth){
+        depthToSearch = depth;
     }
 
     public int checkLargeBoard(LargeBoard board, int start){
@@ -139,7 +143,6 @@ public class AI {
         if(board.getState() == State.Player1){
             score += - 100000;
         }else if(board.getState() == State.Player2){
-            //System.out.println("This should get run");
             score += 100000;
         }
 

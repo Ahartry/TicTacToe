@@ -1,6 +1,7 @@
 package com.Game;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -144,11 +145,7 @@ public class App {
         quanButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 //starts quantum game
-                try {
-                    new GFrame(4, false);
-                } catch (FontFormatException | IOException e1) {
-                    e1.printStackTrace();
-                }
+                askIfUserWantsBot(4, startPanel, font);
             } 
         });
 
@@ -201,8 +198,14 @@ public class App {
             public void actionPerformed(ActionEvent e) { 
 
                 try {
-                    new GFrame(gameType, true);
-                    setupPanel(panel);
+                    //new GFrame(gameType, true);
+                    if(gameType == 2){
+                        askDifficulty(gameType, panel, font);
+                    }else{
+                        new GFrame(gameType, true);
+                        setupPanel(panel);
+                    }
+                    
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -225,4 +228,187 @@ public class App {
         });
     }
 
+    public static void askDifficulty(int gameType, JPanel panel, Font font){
+        panel.removeAll();
+        panel.repaint();
+
+        JLabel titleLabel = new JLabel("Select your difficulty level");
+
+        GButton oneButton = new GButton("1");
+        GButton twoButton = new GButton("2");
+        GButton threeButton = new GButton("3");
+        GButton fourButton = new GButton("4");
+        GButton fiveButton = new GButton("5");
+        GButton sixButton = new GButton("6");
+        GButton sevenButton = new GButton("7");
+        GButton eightButton = new GButton("8");
+
+        titleLabel.setFont(font);
+        
+        oneButton.setFont(font);
+        twoButton.setFont(font);
+        threeButton.setFont(font);
+        fourButton.setFont(font);
+        fiveButton.setFont(font);
+        sixButton.setFont(font);
+        sevenButton.setFont(font);
+        eightButton.setFont(font);
+        
+        oneButton.setPreferredSize(new Dimension(100, 40));
+        twoButton.setPreferredSize(new Dimension(100, 40));
+        threeButton.setPreferredSize(new Dimension(100, 40));
+        fourButton.setPreferredSize(new Dimension(100, 40));
+        fiveButton.setPreferredSize(new Dimension(100, 40));
+        sixButton.setPreferredSize(new Dimension(100, 40));
+        sevenButton.setPreferredSize(new Dimension(100, 40));
+        eightButton.setPreferredSize(new Dimension(100, 40));
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridBagLayout());
+        panel.setLayout(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        buttonPanel.add(oneButton, gbc);
+
+        gbc.gridx = 1;
+        buttonPanel.add(twoButton, gbc);
+        
+        gbc.gridx = 2;
+        buttonPanel.add(threeButton, gbc);
+        
+        gbc.gridx = 3;
+        buttonPanel.add(fourButton, gbc);
+        
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+        buttonPanel.add(fiveButton, gbc);
+        
+        gbc.gridx = 1;
+        buttonPanel.add(sixButton, gbc);
+        
+        gbc.gridx = 2;
+        buttonPanel.add(sevenButton, gbc);
+        
+        gbc.gridx = 3;
+        buttonPanel.add(eightButton, gbc);
+
+        GridBagConstraints gbc2 = new GridBagConstraints();
+        gbc2.anchor = GridBagConstraints.CENTER;
+        gbc2.weightx = 1;
+        gbc2.weighty = 1;
+
+        gbc2.gridx = 0;
+        gbc2.gridy = 0;
+        panel.add(titleLabel, gbc2);
+
+        gbc2.gridy = 1;
+        panel.add(buttonPanel, gbc2);
+
+        panel.repaint();
+        panel.revalidate();
+        panel.setVisible(true);
+
+        oneButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+                try {
+                    GFrame frame = new GFrame(gameType, true);
+                    frame.setDepth(1);
+                    setupPanel(panel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        
+        twoButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+                try {
+                    GFrame frame = new GFrame(gameType, true);
+                    frame.setDepth(2);
+                    setupPanel(panel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        
+        threeButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+                try {
+                    GFrame frame = new GFrame(gameType, true);
+                    frame.setDepth(3);
+                    setupPanel(panel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        
+        fourButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+                try {
+                    GFrame frame = new GFrame(gameType, true);
+                    frame.setDepth(4);
+                    setupPanel(panel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        
+        fiveButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+                try {
+                    GFrame frame = new GFrame(gameType, true);
+                    frame.setDepth(5);
+                    setupPanel(panel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        
+        sixButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+                try {
+                    GFrame frame = new GFrame(gameType, true);
+                    frame.setDepth(6);
+                    setupPanel(panel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        
+        sevenButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+                try {
+                    GFrame frame = new GFrame(gameType, true);
+                    frame.setDepth(7);
+                    setupPanel(panel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        
+        eightButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+                try {
+                    GFrame frame = new GFrame(gameType, true);
+                    frame.setDepth(8);
+                    setupPanel(panel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+    }
 }
