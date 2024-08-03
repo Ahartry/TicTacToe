@@ -505,6 +505,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                     if(quantumBoard.getState() == State.Blank){
                                                         qAI.checkQuantumBoard(quantumBoard);
                                                     }
+                                                    result = quantumBoard.checkLoops(turnCount);
                                                     turnCount++;
                                                     turn = !turn;
                                                     if(quantumBoard.getState() == State.Blank){
@@ -728,7 +729,12 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 closeWindow();
                 try {
                     if(gameType != 3){
-                        new GFrame(gameType, bot);
+                        GFrame frame = new GFrame(gameType, bot);
+
+                        //handles difficulty
+                        if(gameType != 1){
+                            frame.setDepth(depth);
+                        }
                     }else{
                         new SFrame();
                     }
@@ -1473,6 +1479,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
     }
 
     public void setDepth(int x){
-        AI.setDepth(x);
+        depth = x;
+        if(game == 2){
+            AI.setDepth(x);
+        }else if(game == 4){
+            qAI.setDifficulty(x);
+        }
     }
 }

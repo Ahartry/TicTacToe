@@ -12,11 +12,16 @@ public class qAI {
     int bestScore = Integer.MIN_VALUE;
     int movetotal;
     int total;
+    int time = 250000000;
 
     ArrayList<QuantumMove> startList;
 
     public qAI(){
 
+    }
+
+    public void setDifficulty(int x){
+        time *= x;
     }
 
     public int checkCollapse(QuantumBoard board, int option1, int option2){
@@ -27,14 +32,18 @@ public class qAI {
         this.backup.copy(board);
         long start = System.nanoTime();
 
+        //System.out.println("Starting at " + start);
+
         //time I give it
-        start += 1000000000;
+        start += time;
+
+        //System.out.println("Will end at " + start);
 
         board.collapseTile(option1, board.getMoveCount() - 1);
         startList = listAvailableMoves();
         board.copy(backup);
 
-        System.out.println(option1 + " " + option2);
+        //System.out.println(option1 + " " + option2);
 
         QuantumMove one = new QuantumMove(option1);
         QuantumMove two = new QuantumMove(option2);
@@ -51,6 +60,8 @@ public class qAI {
             total++;
 
         }
+
+        //System.out.println("Ended at " + System.nanoTime());
 
         if(one.getWins() > two.getWins()){
             bestScore = one.getWins();
@@ -82,7 +93,7 @@ public class qAI {
         long start = System.nanoTime();
 
         //time I give it
-        start += 500000000;
+        start += time;
 
         //System.out.println("Checking " + startList.size() + " available moves");
 

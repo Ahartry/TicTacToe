@@ -199,7 +199,7 @@ public class App {
 
                 try {
                     //new GFrame(gameType, true);
-                    if(gameType == 2){
+                    if(gameType == 2 || gameType == 4){
                         askDifficulty(gameType, panel, font);
                     }else{
                         new GFrame(gameType, true);

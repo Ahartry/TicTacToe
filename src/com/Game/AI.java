@@ -58,7 +58,7 @@ public class AI {
             board.move(move, turn);
 
             if(depth == depthToSearch){
-                score = evalBoard(board);
+                score = evalBoard(board, depth);
             }else{
                 board.calculateActive(move);
                 score = iterativeSearch(depth + 1, !turn, alpha, beta);
@@ -94,7 +94,7 @@ public class AI {
         return bestScore;
     }
 
-    public int evalBoard(LargeBoard board){
+    public int evalBoard(LargeBoard board, int depth){
         //player two is positive
         int score = 0;
 
@@ -103,6 +103,15 @@ public class AI {
 
         //checks the two in a rows
         score += checkTwos(board);
+
+        //makes it not care about moves if victory, prioritize sooner victories
+        if(score > 50000){
+            score = 1000000;
+            score *= (1 / depth);
+        }else if(score < -50000){
+            score = -1000000;
+            score *= (1 / depth);
+        }
 
         return score;
     }
