@@ -21,6 +21,19 @@ public class QuantumBoard {
 
         state = State.Blank;
     }
+
+    public QuantumBoard(QuantumBoard3D board, int slice){
+        boardArray = new QuantumTile[3][3];
+        skippedList = new ArrayList<>();
+        
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                boardArray[i][j] = new QuantumTile();
+                boardArray[i][j].setState(board.getBoardTile(i, j, slice).getState());
+                boardArray[i][j].setMovesList(board.getBoardTile(i, j, slice).getMovesList());
+            }
+        }
+    }
     
     public int checkLoops(int turn){
 

@@ -110,6 +110,9 @@ public class MassiveBoard {
             for(int j = 0; j < 3; j++){
                 if(boardArray[i][j].getState() == State.Blank){
                     blankTally++;
+                    if(boardArray[i][j].getMoveTally() == 9){
+                        blankTally--;
+                    }
                 }
             }
         }

@@ -12,7 +12,7 @@ public class qAI {
     int bestScore = Integer.MIN_VALUE;
     int movetotal;
     int total;
-    int time = 250000000;
+    int time = 50000000;
 
     ArrayList<QuantumMove> startList;
 
@@ -133,10 +133,26 @@ public class qAI {
     public void exploreRandom(QuantumBoard board, QuantumMove start){
         while(true){
             ArrayList<Integer> options = board.listActiveTiles();
-            if(options.size() <= 1){
+            if(options.size() == 1){
                 start.addTotal(1);
                 //System.out.println("Added stalemate");
                 break;
+            }else if(options.size() == 0){
+                int result = board.checkEntireBoard();
+                if(result == 1){
+                    start.addWin(-1);
+                    start.addTotal(1);
+                    //System.out.println("Added p1 victory");
+                    break;
+                }else if(result == 2){
+                    start.addWin(1);
+                    start.addTotal(1);
+                    //System.out.println("Added p2 victory");
+                    break;
+                }else{
+                    start.addTotal(1);
+                    break;
+                }
             }
             Random r = new Random();
             int move1 = r.nextInt(0, options.size());

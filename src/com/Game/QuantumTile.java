@@ -23,6 +23,12 @@ public class QuantumTile{
         return movesList;
     }
 
+
+    public void setMovesList(ArrayList<Integer> list){
+        movesList.clear();
+        movesList = list;
+    }
+
     public void addMove(int x){
         movesList.add(x);
     }

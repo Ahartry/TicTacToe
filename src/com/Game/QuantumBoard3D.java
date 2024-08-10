@@ -6,6 +6,7 @@ public class QuantumBoard3D {
 
     private QuantumTile[][][] boardArray;
     private int result = 0;
+    private int moveCount = 1;
     private ArrayList<Integer> skippedList;
 
     public QuantumBoard3D(){
@@ -180,18 +181,25 @@ public class QuantumBoard3D {
             player = 2;
         }
 
-        //come back to
-        if(boardArray[x][0].getState().equals(boardArray[x][1].getState()) && boardArray[x][0].getState().equals(boardArray[x][2].getState())){
+        //verticals
+        if(boardArray[x][y][0].getState().equals(boardArray[x][y][1].getState()) && boardArray[x][y][0].getState().equals(boardArray[x][y][2].getState())){
             result = player;
-        }else if(boardArray[0][y].getState().equals(boardArray[1][y].getState()) && boardArray[0][y].getState().equals(boardArray[2][y].getState())){
-            result = player;
-        }else if(((boardArray[0][0].getState().equals(boardArray[1][1].getState()) && boardArray[0][0].getState().equals(boardArray[2][2].getState()))
-             || (boardArray[2][0].getState().equals(boardArray[1][1].getState()) && boardArray[2][0].getState().equals(boardArray[0][2].getState()))) && boardArray[1][1].getState() != State.Blank){
-            result = player;
-            
         }
 
-        
+        //horizontal
+        if(boardArray[x][0][z].getState().equals(boardArray[x][1][z].getState()) && boardArray[x][0][z].getState().equals(boardArray[x][2][z].getState())){
+            result = player;
+        }
+
+        //the other
+        if(boardArray[0][y][z].getState().equals(boardArray[1][y][z].getState()) && boardArray[0][y][z].getState().equals(boardArray[2][y][z].getState())){
+            result = player;
+        }
+
+        //I HAVE NOT DONE DIAGONAlS
+        //AND I DO NOT WANT TO DO THEM
+        //FREE ME FROM THIS
+
         return result;
     }
 
@@ -202,73 +210,228 @@ public class QuantumBoard3D {
         int highestp1 = 0;
         int highestp2 = 0;
 
-        //verticals
+        //horizontals z
         for(int i = 0; i < 3; i++){
-            if(boardArray[i][0][0].getState().equals(boardArray[i][1][0].getState()) && (boardArray[i][0][0].getState().equals(boardArray[i][2][0].getState()))){
-                if(boardArray[i][0][0].getState().equals(State.Player1)){
-                    player1++;
-                    if(getHighestMove(i, i + 3, i + 6) > highestp1){
-                        highestp1 = getHighestMove(i, i + 3, i + 6);
-                    }
-
-                }else if(boardArray[i][0][0].getState().equals(State.Player2)){
-                    player2++;
-                    if(getHighestMove(i, i + 3, i + 6) > highestp2){
-                        highestp2 = getHighestMove(i, i + 3, i + 6);
+            for(int j = 0; j < 3; j++){
+                if(boardArray[i][j][0].getState().equals(boardArray[i][j][1].getState()) && (boardArray[i][j][0].getState().equals(boardArray[i][j][2].getState()))){
+                    if(boardArray[i][j][0].getState().equals(State.Player1)){
+                        player1++;
+                        int highest = getHighestMove(boardArray[i][j][0], boardArray[i][j][1], boardArray[i][j][0]);
+                        if(highest > highestp1){
+                            highestp1 = highest;
+                        }
+    
+                    }else if(boardArray[i][j][0].getState().equals(State.Player2)){
+                        player2++;
+                        int highest = getHighestMove(boardArray[i][j][0], boardArray[i][j][1], boardArray[i][j][0]);
+                        if(highest > highestp2){
+                            highestp2 = highest;
+                        }
                     }
                 }
             }
         }
 
-        //horizontals
+        //horizontals x
         for(int i = 0; i < 3; i++){
-            if(boardArray[0][i][0].getState().equals(boardArray[1][i][0].getState()) && (boardArray[0][i][0].getState().equals(boardArray[2][i][0].getState()))){
-                if(boardArray[0][i][0].getState().equals(State.Player1)){
-                    player1++;
-                    if(getHighestMove((i * 3), (i * 3) + 1, (i * 3) + 2) > highestp1){
-                        highestp1 = getHighestMove((i * 3), (i * 3) + 1, (i * 3) + 2);
+            for(int j = 0; j < 3; j++){
+                if(boardArray[0][j][i].getState().equals(boardArray[1][j][i].getState()) && (boardArray[0][j][i].getState().equals(boardArray[2][j][i].getState()))){
+                    if(boardArray[0][j][i].getState().equals(State.Player1)){
+                        player1++;
+                        int highest = getHighestMove(boardArray[0][j][i], boardArray[1][j][i], boardArray[2][j][i]);
+                        if(highest > highestp1){
+                            highestp1 = highest;
+                        }
+    
+                    }else if(boardArray[0][j][i].getState().equals(State.Player2)){
+                        player2++;
+                        int highest = getHighestMove(boardArray[0][j][i], boardArray[1][j][i], boardArray[2][j][i]);
+                        if(highest > highestp2){
+                            highestp2 = highest;
+                        }
                     }
-
-                }else if(boardArray[0][i].getState().equals(State.Player2)){
-                    player2++;
-                    if(getHighestMove((i * 3), (i * 3) + 1, (i * 3) + 2) > highestp2){
-                        highestp2 = getHighestMove(i * 3, (i * 3) + 1, (i * 3) + 2);
-                    }
-
                 }
             }
         }
 
-        //the other verticals
+        //horizontals y
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                if(boardArray[j][0][i].getState().equals(boardArray[j][1][i].getState()) && (boardArray[j][0][i].getState().equals(boardArray[j][2][i].getState()))){
+                    if(boardArray[j][0][i].getState().equals(State.Player1)){
+                        player1++;
+                        int highest = getHighestMove(boardArray[j][0][i], boardArray[j][1][i], boardArray[j][2][i]);
+                        if(highest > highestp1){
+                            highestp1 = highest;
+                        }
+    
+                    }else if(boardArray[j][0][i].getState().equals(State.Player2)){
+                        player2++;
+                        int highest = getHighestMove(boardArray[j][0][i], boardArray[j][1][i], boardArray[j][2][i]);
+                        if(highest > highestp2){
+                            highestp2 = highest;
+                        }
+                    }
+                }
+            }
+        }
 
         //diagonals
-        if(boardArray[0][0].getState().equals(boardArray[1][1].getState()) && boardArray[0][0].getState().equals(boardArray[2][2].getState())){
-            if(boardArray[1][1].getState().equals(State.Player1)){
-                player1++;
-                if(getHighestMove(0, 4, 8) > highestp1){
-                    highestp1 = getHighestMove(0, 4, 8);
-                }  
-            }else if(boardArray[1][1].getState().equals(State.Player2)){
-                player2++;
-                if(getHighestMove(0, 4, 8) > highestp2){
-                    highestp2 = getHighestMove(0, 4, 8);
-                }  
+        for(int i = 0; i < 3; i++){
+            if(boardArray[i][0][0].getState().equals(boardArray[i][1][1].getState()) && boardArray[i][0][0].getState().equals(boardArray[i][2][2].getState())){
+                if(boardArray[i][1][1].getState().equals(State.Player1)){
+                    player1++;
+                    int highest = getHighestMove(boardArray[i][0][0], boardArray[i][1][1], boardArray[i][2][2]);
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }  
+                }else if(boardArray[i][1][1].getState().equals(State.Player2)){
+                    player2++;
+                    int highest = getHighestMove(boardArray[i][0][0], boardArray[i][1][1], boardArray[i][2][2]);
+                    if(highest > highestp2){
+                        highestp2 = highest;
+                    }  
+                }
             }
-        }
-        if(boardArray[2][0].getState().equals(boardArray[1][1].getState()) && boardArray[2][0].getState().equals(boardArray[0][2].getState())){
-            if(boardArray[1][1].getState().equals(State.Player1)){
-                player1++;
-                if(getHighestMove(2, 4, 6) > highestp1){
-                    highestp1 = getHighestMove(2, 4, 6);
-                }  
-            }else if(boardArray[1][1].getState().equals(State.Player2)){
-                player2++;
-                if(getHighestMove(2, 4, 6) > highestp2){
-                    highestp2 = getHighestMove(2, 4, 6);
-                }  
+            if(boardArray[i][2][0].getState().equals(boardArray[i][1][1].getState()) && boardArray[i][2][0].getState().equals(boardArray[i][0][2].getState())){
+                if(boardArray[i][1][1].getState().equals(State.Player1)){
+                    player1++;
+                    int highest = getHighestMove(boardArray[i][2][0], boardArray[i][1][1], boardArray[i][0][2]);
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }  
+                }else if(boardArray[i][1][1].getState().equals(State.Player2)){
+                    player2++;
+                    int highest = getHighestMove(boardArray[i][2][0], boardArray[i][1][1], boardArray[i][0][2]);
+                    if(highest > highestp2){
+                        highestp2 = highest;
+                    }  
+                }
+            }
+            if(boardArray[0][i][0].getState().equals(boardArray[1][i][1].getState()) && boardArray[0][i][0].getState().equals(boardArray[2][i][2].getState())){
+                if(boardArray[1][i][1].getState().equals(State.Player1)){
+                    player1++;
+                    int highest = getHighestMove(boardArray[0][i][0], boardArray[1][i][1], boardArray[2][i][2]);
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }  
+                }else if(boardArray[1][i][1].getState().equals(State.Player2)){
+                    player2++;
+                    int highest = getHighestMove(boardArray[0][i][0], boardArray[1][i][1], boardArray[2][i][2]);
+                    if(highest > highestp2){
+                        highestp2 = highest;
+                    }  
+                }
+            }
+            if(boardArray[2][i][0].getState().equals(boardArray[1][i][1].getState()) && boardArray[2][i][0].getState().equals(boardArray[0][i][2].getState())){
+                if(boardArray[1][i][1].getState().equals(State.Player1)){
+                    player1++;
+                    int highest = getHighestMove(boardArray[2][i][0], boardArray[1][i][1], boardArray[0][i][2]);
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }  
+                }else if(boardArray[1][i][1].getState().equals(State.Player2)){
+                    player2++;
+                    int highest = getHighestMove(boardArray[2][i][0], boardArray[1][i][1], boardArray[0][i][2]);
+                    if(highest > highestp2){
+                        highestp2 = highest;
+                    }  
+                }
+            }
+            if(boardArray[0][0][i].getState().equals(boardArray[1][1][i].getState()) && boardArray[0][0][i].getState().equals(boardArray[2][2][i].getState())){
+                if(boardArray[1][1][i].getState().equals(State.Player1)){
+                    player1++;
+                    int highest = getHighestMove(boardArray[0][0][i], boardArray[1][1][i], boardArray[2][2][i]);
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }  
+                }else if(boardArray[1][1][i].getState().equals(State.Player2)){
+                    player2++;
+                    int highest = getHighestMove(boardArray[0][0][i], boardArray[1][1][i], boardArray[2][2][i]);
+                    if(highest > highestp2){
+                        highestp2 = highest;
+                    }  
+                }
+            }
+            if(boardArray[2][0][i].getState().equals(boardArray[1][1][i].getState()) && boardArray[2][0][i].getState().equals(boardArray[0][2][i].getState())){
+                if(boardArray[1][1][i].getState().equals(State.Player1)){
+                    player1++;
+                    int highest = getHighestMove(boardArray[2][0][i], boardArray[1][1][i], boardArray[0][2][i]);
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }  
+                }else if(boardArray[1][1][i].getState().equals(State.Player2)){
+                    player2++;
+                    int highest = getHighestMove(boardArray[2][0][i], boardArray[1][1][i], boardArray[0][2][i]);
+                    if(highest > highestp2){
+                        highestp2 = highest;
+                    }  
+                }
             }
         }
         
+        //true diagonals
+        if(boardArray[0][0][0].getState().equals(boardArray[1][1][1].getState()) && boardArray[0][0][0].getState().equals(boardArray[2][2][2].getState())){
+            if(boardArray[1][1][1].getState().equals(State.Player1)){
+                player1++;
+                int highest = getHighestMove(boardArray[0][0][0], boardArray[1][1][1], boardArray[2][2][2]);
+                if(highest > highestp1){
+                    highestp1 = highest;
+                }  
+            }else if(boardArray[1][1][1].getState().equals(State.Player2)){
+                player2++;
+                int highest = getHighestMove(boardArray[0][0][0], boardArray[1][1][1], boardArray[2][2][2]);
+                if(highest > highestp2){
+                    highestp2 = highest;
+                }  
+            }
+        }
+        if(boardArray[0][0][2].getState().equals(boardArray[1][1][1].getState()) && boardArray[0][0][0].getState().equals(boardArray[2][2][0].getState())){
+            if(boardArray[1][1][1].getState().equals(State.Player1)){
+                player1++;
+                int highest = getHighestMove(boardArray[0][0][2], boardArray[1][1][1], boardArray[2][2][0]);
+                if(highest > highestp1){
+                    highestp1 = highest;
+                }  
+            }else if(boardArray[1][1][1].getState().equals(State.Player2)){
+                player2++;
+                int highest = getHighestMove(boardArray[0][0][2], boardArray[1][1][1], boardArray[2][2][0]);
+                if(highest > highestp2){
+                    highestp2 = highest;
+                }  
+            }
+        }
+        if(boardArray[0][2][0].getState().equals(boardArray[1][1][1].getState()) && boardArray[0][2][0].getState().equals(boardArray[2][0][2].getState())){
+            if(boardArray[1][1][1].getState().equals(State.Player1)){
+                player1++;
+                int highest = getHighestMove(boardArray[0][2][0], boardArray[1][1][1], boardArray[2][0][2]);
+                if(highest > highestp1){
+                    highestp1 = highest;
+                }  
+            }else if(boardArray[1][1][1].getState().equals(State.Player2)){
+                player2++;
+                int highest = getHighestMove(boardArray[0][2][0], boardArray[1][1][1], boardArray[2][0][2]);
+                if(highest > highestp2){
+                    highestp2 = highest;
+                }  
+            }
+        }
+        if(boardArray[2][0][0].getState().equals(boardArray[1][1][1].getState()) && boardArray[2][0][0].getState().equals(boardArray[0][2][2].getState())){
+            if(boardArray[1][1][1].getState().equals(State.Player1)){
+                player1++;
+                int highest = getHighestMove(boardArray[2][0][0], boardArray[1][1][1], boardArray[0][2][2]);
+                if(highest > highestp1){
+                    highestp1 = highest;
+                }  
+            }else if(boardArray[1][1][1].getState().equals(State.Player2)){
+                player2++;
+                int highest = getHighestMove(boardArray[2][0][0], boardArray[1][1][1], boardArray[0][2][2]);
+                if(highest > highestp2){
+                    highestp2 = highest;
+                }  
+            }
+        }
+
         //silly stuff with turn count and checking stuff
         if(player1 == player2 && player1 != 0){
             if(highestp1 < highestp2){
@@ -285,9 +448,17 @@ public class QuantumBoard3D {
     }
 
     public int getHighestMove(int first, int second, int third){
-        int move1 = boardArray[first % 3][(int) Math.floor((first - (Math.floor(first / 9) * 9)) / 3)][(int) Math.floor(first / 9)].getTurn();
-        int move2 = boardArray[second % 3][(int) Math.floor((second - (Math.floor(second / 9) * 9)) / 3)][(int) Math.floor(second/ 9)].getTurn();
-        int move3 = boardArray[third % 3][(int) Math.floor((third - (Math.floor(third / 9) * 9)) / 3)][(int) Math.floor(third / 9)].getTurn();
+        int move1 = boardArray[first % 3][(first - ((first / 9) * 9)) / 3][first / 9].getTurn();
+        int move2 = boardArray[second % 3][(second - ((second / 9) * 9)) / 3][second / 9].getTurn();
+        int move3 = boardArray[third % 3][(third - ((third / 9) * 9)) / 3][third / 9].getTurn();
+
+        return Math.max(move1, Math.max(move2, move3));
+    }
+
+    public int getHighestMove(QuantumTile first, QuantumTile second, QuantumTile third){
+        int move1 = first.getTurn();
+        int move2 = second.getTurn();
+        int move3 = third.getTurn();
 
         return Math.max(move1, Math.max(move2, move3));
     }
@@ -382,6 +553,26 @@ public class QuantumBoard3D {
         }
     }
     
+    public QuantumBoard getQuantumBoard(int slice){
+        QuantumBoard board = new QuantumBoard(this, slice);
+        return board;
+    }
+
+    public void clear(){
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 3; j++){
+                if(boardArray[i % 3][i / 3][j].getState() != State.Blank){
+                    boardArray[i % 3][i / 3][j].getMovesList().clear();
+                }
+            }
+
+        }
+    }
+
+    public void incrementMoveCount(){
+        moveCount++;
+    }
+
 }
 
 

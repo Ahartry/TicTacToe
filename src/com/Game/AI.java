@@ -64,6 +64,12 @@ public class AI {
                 score = iterativeSearch(depth + 1, !turn, alpha, beta);
             }
 
+            //stuff for checking earlier board victory
+            if(board.getState() == State.Player2){
+                score = 100000;
+                score *= (1 / depth);
+            }
+
             //System.out.println("Move " + move + " has score of " + score);
 
             board.unmove(move);
@@ -91,6 +97,17 @@ public class AI {
             }
         }
 
+        if(activeList.size() == 0){
+            //stuff for checking earlier board victory
+            if(board.getState() == State.Player1){
+                bestScore = -100000;
+                bestScore *= (1 / depth);
+            }else if(board.getState() == State.Player2){
+                bestScore = 100000;
+                bestScore *= (1 / depth);
+            }
+        }
+
         return bestScore;
     }
 
@@ -106,10 +123,10 @@ public class AI {
 
         //makes it not care about moves if victory, prioritize sooner victories
         if(score > 50000){
-            score = 1000000;
+            score = 100000;
             score *= (1 / depth);
         }else if(score < -50000){
-            score = -1000000;
+            score = -100000;
             score *= (1 / depth);
         }
 

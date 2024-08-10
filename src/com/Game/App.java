@@ -4,7 +4,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -20,7 +19,7 @@ public class App {
         
         JFrame startFrame = new JFrame();
         startFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        startFrame.setSize(400, 300);
+        startFrame.setSize(400, 250);
         startFrame.setLocationRelativeTo(null);
         startFrame.setTitle("Tic Tac Toe Game");
         startFrame.setResizable(false);
@@ -54,41 +53,45 @@ public class App {
         GButton ultButton = new GButton("Massive");
         GButton tranButton = new GButton("Ultimate");
         GButton quanButton = new GButton("Quantum");
+        GButton quan3DButton = new GButton("Quantum 3D");
         GButton loadButton = new GButton("Load");
         
         regButton.setFont(font);
         ultButton.setFont(font);
         tranButton.setFont(font);
         quanButton.setFont(font);
+        quan3DButton.setFont(font);
         loadButton.setFont(font);
 
         regButton.setFocusable(false);
         ultButton.setFocusable(false);
         tranButton.setFocusable(false);
         quanButton.setFocusable(false);
+        quan3DButton.setFocusable(false);
         loadButton.setFocusable(false);
 
-        regButton.setPreferredSize(new Dimension(150, 40));
-        ultButton.setPreferredSize(new Dimension(150, 40));
-        tranButton.setPreferredSize(new Dimension(150, 40));
-        quanButton.setPreferredSize(new Dimension(150, 40));
+        regButton.setPreferredSize(new Dimension(180, 40));
+        ultButton.setPreferredSize(new Dimension(180, 40));
+        tranButton.setPreferredSize(new Dimension(180, 40));
+        quanButton.setPreferredSize(new Dimension(180, 40));
+        quan3DButton.setPreferredSize(new Dimension(180, 40));
 
         //adds the items to the panel
         // gbc.gridx = 1;
         // gbc.gridy = 5;
 
-        Insets i = new Insets(30, 0, 0, 0);
+        // Insets i = new Insets(50, 0, 0, 0);
 
-        gbc.insets = i;
+        // gbc.insets = i;
 
-        gbc.gridx = 1;
-        gbc.gridy = 6;
+        // gbc.gridx = 1;
+        // gbc.gridy = 6;
 
-        startPanel.add(loadButton, gbc);
+        // startPanel.add(loadButton, gbc);
 
         //this is a silly solution, but it definitely works
-        i = new Insets(0, 0, 0, 0);
-        gbc.insets = i;
+        // i = new Insets(0, 0, 0, 0);
+        // gbc.insets = i;
 
         // gbc.gridx = 0;
         // gbc.gridy = 0;
@@ -116,6 +119,10 @@ public class App {
         gbc.gridy = 4;
 
         startPanel.add(quanButton, gbc);
+
+        gbc.gridy = 5;
+
+        startPanel.add(quan3DButton, gbc);
 
         regButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
@@ -146,6 +153,13 @@ public class App {
             public void actionPerformed(ActionEvent e) { 
                 //starts quantum game
                 askIfUserWantsBot(4, startPanel, font);
+            } 
+        });
+
+        quan3DButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+                //starts quantum game
+                askIfUserWantsBot(5, startPanel, font);
             } 
         });
 
