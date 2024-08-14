@@ -76,6 +76,8 @@ public class App {
         quanButton.setPreferredSize(new Dimension(180, 40));
         quan3DButton.setPreferredSize(new Dimension(180, 40));
 
+        regButton.setToolTipText("The classic 3x3 board");
+
         //adds the items to the panel
         // gbc.gridx = 1;
         // gbc.gridy = 5;

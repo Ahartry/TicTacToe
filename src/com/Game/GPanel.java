@@ -38,15 +38,17 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     Image xImage = new ImageIcon(getClass().getClassLoader().getResource("x.png")).getImage();
     Image oImage = new ImageIcon(getClass().getClassLoader().getResource("o.png")).getImage();
-    Image Image1 = new ImageIcon(getClass().getClassLoader().getResource("1.png")).getImage();
-    Image Image2 = new ImageIcon(getClass().getClassLoader().getResource("2.png")).getImage();
-    Image Image3 = new ImageIcon(getClass().getClassLoader().getResource("3.png")).getImage();
-    Image Image4 = new ImageIcon(getClass().getClassLoader().getResource("4.png")).getImage();
-    Image Image5 = new ImageIcon(getClass().getClassLoader().getResource("5.png")).getImage();
-    Image Image6 = new ImageIcon(getClass().getClassLoader().getResource("6.png")).getImage();
-    Image Image7 = new ImageIcon(getClass().getClassLoader().getResource("7.png")).getImage();
-    Image Image8 = new ImageIcon(getClass().getClassLoader().getResource("8.png")).getImage();
-    Image Image9 = new ImageIcon(getClass().getClassLoader().getResource("9.png")).getImage();
+
+    //deprecated
+    // Image Image1 = new ImageIcon(getClass().getClassLoader().getResource("1.png")).getImage();
+    // Image Image2 = new ImageIcon(getClass().getClassLoader().getResource("2.png")).getImage();
+    // Image Image3 = new ImageIcon(getClass().getClassLoader().getResource("3.png")).getImage();
+    // Image Image4 = new ImageIcon(getClass().getClassLoader().getResource("4.png")).getImage();
+    // Image Image5 = new ImageIcon(getClass().getClassLoader().getResource("5.png")).getImage();
+    // Image Image6 = new ImageIcon(getClass().getClassLoader().getResource("6.png")).getImage();
+    // Image Image7 = new ImageIcon(getClass().getClassLoader().getResource("7.png")).getImage();
+    // Image Image8 = new ImageIcon(getClass().getClassLoader().getResource("8.png")).getImage();
+    // Image Image9 = new ImageIcon(getClass().getClassLoader().getResource("9.png")).getImage();
 
     int game;
     int offsetx = 0;
@@ -701,14 +703,14 @@ public class GPanel extends JPanel implements MouseWheelListener{
                         if(e.getY() < height / 3){
                             boardZ = 2;
                             click1.setLocation(e.getX() - width / 2, e.getY() - 95);
-                            System.out.println("Top board, " + click1.getX() + ", " + click1.getY());
+                            //System.out.println("Top board, " + click1.getX() + ", " + click1.getY());
                         }else if(e.getY() > height / 3 && e.getY() < (2 * (height / 3))){
                             boardZ = 1;
-                            click1.setLocation(e.getX() - width / 2, e.getY() - (imagey / 2) + imagey);
-                            System.out.println("Middle board, " + click1.getX() + ", " + click1.getY());
+                            click1.setLocation(e.getX() - width / 2, e.getY() - 95 - (height / 3));
+                            //System.out.println("Middle board, " + click1.getX() + ", " + click1.getY());
                         }else{
-                            click1.setLocation(e.getX() - width / 2, e.getY() - ((imagey / 2) + (2 * imagey)));
-                            System.out.println("Bottom board, " + click1.getX() + ", " + click1.getY());
+                            click1.setLocation(e.getX() - width / 2, e.getY() - 95 - (2 * height / 3));
+                            //System.out.println("Bottom board, " + click1.getX() + ", " + click1.getY());
                         }
 
                         Point2D.Double click2 = new Point2D.Double();
@@ -722,6 +724,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             int ycell = (int) Math.floor(3 * yboard / boundingSize);
 
                             theSquare = xcell + (ycell * 3);
+
+                            //System.out.println("Square " + xcell + ", " + ycell + " on board" + boardZ);
     
                             if(quantumBoard3D.getBoardTile(xcell, ycell, boardZ).getState() == State.Blank && e.getButton() == MouseEvent.BUTTON1){
 
@@ -1489,11 +1493,23 @@ public class GPanel extends JPanel implements MouseWheelListener{
         //loops through the board
         double iconScale = 0.8;
         double imageSize = iconScale * cellSize;
-        double numSizeX = (imageSize * 3) / 16;
-        double numSizeY = imageSize / 4;
+        // double numSizeX = (imageSize * 3) / 16;
+        // double numSizeY = imageSize / 4;
 
-        numSizeX *=1.5;
-        numSizeY *=1.5;
+        // numSizeX *=1.5;
+        // numSizeY *=1.5;
+
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        Font font = null;
+        float size = 50f;
+        size *= zoom;
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(size);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+
+        g.setFont(font);
 
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
@@ -1502,10 +1518,10 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                 if(board.getBoardTile(i, j).getState() == State.Player1){
                     g.drawImage(xImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
-                    g.drawImage(getTurnImage(board.getBoardTile(i, j).getTurn()), (int) (xNetOffset + imageSize - numSizeX + (imageSize / 9)), (int) (yNetOffset + imageSize - numSizeY+ (imageSize / 9)), (int) numSizeX, (int) numSizeY, null);
+                    g.drawString(Integer.toString(board.getBoardTile(i, j).getTurn()), xNetOffset + (int) (cellSize / 1.4), yNetOffset + (int) (cellSize * 0.85));
                 }else if(board.getBoardTile(i, j).getState() == State.Player2){
                     g.drawImage(oImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
-                    g.drawImage(getTurnImage(board.getBoardTile(i, j).getTurn()), (int) (xNetOffset + imageSize - numSizeX+ (imageSize / 9)), (int) (yNetOffset + imageSize - numSizeY + (imageSize / 9)), (int) numSizeX, (int) numSizeY, null);
+                    g.drawString(Integer.toString(board.getBoardTile(i, j).getTurn()), xNetOffset + (int) (cellSize / 1.4), yNetOffset + (int) (cellSize * 0.85));
                 }
             }
         }
@@ -1514,11 +1530,23 @@ public class GPanel extends JPanel implements MouseWheelListener{
         double quantumImageSize = quantumCellSize * iconScale;
         double quantumPadding = ((quantumCellSize - quantumImageSize) / 2);
 
-        numSizeX = (quantumImageSize * 3) / 16;
-        numSizeY = quantumImageSize / 4;
+        // numSizeX = (quantumImageSize * 3) / 16;
+        // numSizeY = quantumImageSize / 4;
 
-        numSizeX *=2;
-        numSizeY *=2;
+        // numSizeX *=2;
+        // numSizeY *=2;
+
+        stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        font = null;
+        size = 25f;
+        size *= zoom;
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(size);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+
+        g.setFont(font);
 
         //draws the quantum moves
         for(int i = 0; i < 3; i++){
@@ -1533,14 +1561,21 @@ public class GPanel extends JPanel implements MouseWheelListener{
                     int move = quantumBoard.getBoardTile(i, j).getMovesList().get(k);
 
                     //adjusts how close the numbers are to the mark, larger is closer
-                    int imageDivisor = 4;
+                    // int imageDivisor = 4;
+                    int offsetx = 5;
+                    int offsety = 15;
+
+                    offsetx *= zoom;
+                    offsety *= zoom;
 
                     if(move % 2 != 0){
                         g.drawImage(xImage, xNetOffset, yNetOffset, (int) quantumImageSize, (int) quantumImageSize, null);
-                        g.drawImage(getTurnImage(move), (int) (xNetOffset + quantumImageSize - numSizeX + (quantumImageSize / imageDivisor)), (int) (yNetOffset + quantumImageSize - numSizeY + (quantumImageSize / imageDivisor)), (int) numSizeX, (int) numSizeY, null);
+                        g.drawString(Integer.toString(move), xNetOffset + (int) (quantumCellSize / 1.25) - offsetx, yNetOffset + (int) (quantumCellSize * 1.25) - offsety);
+                        //g.drawImage(getTurnImage(move), (int) (xNetOffset + quantumImageSize - numSizeX + (quantumImageSize / imageDivisor)), (int) (yNetOffset + quantumImageSize - numSizeY + (quantumImageSize / imageDivisor)), (int) numSizeX, (int) numSizeY, null);
                     }else{
                         g.drawImage(oImage, xNetOffset, yNetOffset, (int) quantumImageSize, (int) quantumImageSize, null);
-                        g.drawImage(getTurnImage(move), (int) (xNetOffset + quantumImageSize - numSizeX + (quantumImageSize / imageDivisor)), (int) (yNetOffset + quantumImageSize - numSizeY + (quantumImageSize / imageDivisor)), (int) numSizeX, (int) numSizeY, null);
+                        g.drawString(Integer.toString(move), xNetOffset + (int) (quantumCellSize / 1.25) - offsetx, yNetOffset + (int) (quantumCellSize * 1.25) - offsety);
+                        //g.drawImage(getTurnImage(move), (int) (xNetOffset + quantumImageSize - numSizeX + (quantumImageSize / imageDivisor)), (int) (yNetOffset + quantumImageSize - numSizeY + (quantumImageSize / imageDivisor)), (int) numSizeX, (int) numSizeY, null);
                     }
                 }
             }
@@ -1640,11 +1675,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
         //loops through the board
         double iconScale = 0.8;
         double imageSize = iconScale * cellSize;
-        double numSizeX = (imageSize * 3) / 16;
-        double numSizeY = imageSize / 4;
+        // double numSizeX = (imageSize * 3) / 16;
+        // double numSizeY = imageSize / 4;
 
-        numSizeX *=1.5;
-        numSizeY *=1.5;
+        // numSizeX *=1.5;
+        // numSizeY *=1.5;
 
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
@@ -1653,79 +1688,59 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                 if(board.getBoardTile(i, j, slice).getState() == State.Player1){
                     g.drawImage(xImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
-                    g.drawImage(getTurnImage(board.getBoardTile(i, j, slice).getTurn()), (int) (xNetOffset + imageSize - numSizeX + (imageSize / 9)), (int) (yNetOffset + imageSize - numSizeY+ (imageSize / 9)), (int) numSizeX, (int) numSizeY, null);
+                    g.drawString(Integer.toString(board.getBoardTile(i, j, slice).getTurn()), xNetOffset + (int) (imageSize / 1.25), yNetOffset + (int) (imageSize * 1.25));
                 }else if(board.getBoardTile(i, j, slice).getState() == State.Player2){
                     g.drawImage(oImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
-                    g.drawImage(getTurnImage(board.getBoardTile(i, j, slice).getTurn()), (int) (xNetOffset + imageSize - numSizeX+ (imageSize / 9)), (int) (yNetOffset + imageSize - numSizeY + (imageSize / 9)), (int) numSizeX, (int) numSizeY, null);
+                    g.drawString(Integer.toString(board.getBoardTile(i, j, slice).getTurn()), xNetOffset + (int) (imageSize / 1.25), yNetOffset + (int) (imageSize * 1.25));
                 }
             }
         }
 
-        double quantumCellSize = cellSize / 3;
-        double quantumImageSize = quantumCellSize * iconScale;
-        double quantumPadding = ((quantumCellSize - quantumImageSize) / 2);
+        int quantumCellSize = cellSize / 3;
+        int quantumImageSize = (int) (quantumCellSize * iconScale);
+        int quantumPadding = ((quantumCellSize - quantumImageSize) / 2);
 
-        numSizeX = (quantumImageSize * 3) / 16;
-        numSizeY = quantumImageSize / 4;
+        // numSizeX = (quantumImageSize * 3) / 16;
+        // numSizeY = quantumImageSize / 4;
 
-        numSizeX *=2;
-        numSizeY *=2;
+        // numSizeX *=2;
+        // numSizeY *=2;
+
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        Font font = null;
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+
+        g.setFont(font);
 
         //draws the quantum moves
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
                 for(int k = 0; k < board.getBoardTile(i, j, slice).getMovesList().size(); k++){
                     int xoffset = k % 3;
-                    int yoffset = (int) Math.floor(k / 3);
+                    int yoffset = k / 3;
 
-                    int xNetOffset = (int) (xbound + (xoffset * quantumCellSize) + quantumPadding + (i * cellSize));
-                    int yNetOffset = (int) (ybound + (yoffset * quantumCellSize) + quantumPadding + (j * cellSize));
+                    int xNetOffset = (xbound + (xoffset * quantumCellSize) + quantumPadding + (i * cellSize));
+                    int yNetOffset = (ybound + (yoffset * quantumCellSize) + quantumPadding + (j * cellSize));
 
                     int move = board.getBoardTile(i, j, slice).getMovesList().get(k);
 
                     //adjusts how close the numbers are to the mark, larger is closer
-                    int imageDivisor = 4;
+                    //int imageDivisor = 4;
 
                     if(move % 2 != 0){
-                        g.drawImage(xImage, xNetOffset, yNetOffset, (int) quantumImageSize, (int) quantumImageSize, null);
-                        g.drawImage(getTurnImage(move), (int) (xNetOffset + quantumImageSize - numSizeX + (quantumImageSize / imageDivisor)), (int) (yNetOffset + quantumImageSize - numSizeY + (quantumImageSize / imageDivisor)), (int) numSizeX, (int) numSizeY, null);
+                        g.drawImage(xImage, xNetOffset, yNetOffset, quantumImageSize, quantumImageSize, null);
+                        g.drawString(Integer.toString(move), xNetOffset + (int) (quantumImageSize / 1.25), yNetOffset + (int) (quantumImageSize * 1.25));
+                        //g.drawImage(getTurnImage(move), (int) (xNetOffset + quantumImageSize - numSizeX + (quantumImageSize / imageDivisor)), (int) (yNetOffset + quantumImageSize - numSizeY + (quantumImageSize / imageDivisor)), (int) numSizeX, (int) numSizeY, null);
                     }else{
-                        g.drawImage(oImage, xNetOffset, yNetOffset, (int) quantumImageSize, (int) quantumImageSize, null);
-                        g.drawImage(getTurnImage(move), (int) (xNetOffset + quantumImageSize - numSizeX + (quantumImageSize / imageDivisor)), (int) (yNetOffset + quantumImageSize - numSizeY + (quantumImageSize / imageDivisor)), (int) numSizeX, (int) numSizeY, null);
+                        g.drawImage(oImage, xNetOffset, yNetOffset, quantumImageSize, quantumImageSize, null);
+                        g.drawString(Integer.toString(move), xNetOffset + (int) (quantumImageSize / 1.25), yNetOffset + (int) (quantumImageSize * 1.25));
+                        //g.drawImage(getTurnImage(move), (int) (xNetOffset + quantumImageSize - numSizeX + (quantumImageSize / imageDivisor)), (int) (yNetOffset + quantumImageSize - numSizeY + (quantumImageSize / imageDivisor)), (int) numSizeX, (int) numSizeY, null);
                     }
                 }
-            }
-        }
-
-        //draws links
-        if(quantumLineMode){
-            for(int i = 1; i < turnCount; i++){
-                if(i % 2 != 0){
-                    g.setColor(red);
-                }else{
-                    g.setColor(blue);
-                }
-    
-                //gets first one
-                int first = board.getBoardWithMove(i);
-                int second = board.getOtherBoardWithMove(i);
-    
-                int qoffset1 = board.getMoveLocationInArray(first, i);
-                int qoffset2 = board.getMoveLocationInArray(second, i);
-    
-                //System.out.println(first + " " + second);
-    
-                int x1 = first % 3;
-                int y1 = first / 3;
-                int x2 = second % 3;
-                int y2 = second / 3;
-    
-                int qx1 = (qoffset1 % 3) - 1;
-                int qy1 = (qoffset1 / 3) - 1;
-                int qx2 = (qoffset2 % 3) - 1;
-                int qy2 = (qoffset2 / 3) - 1;
-    
-                g.drawLine(xbound + (x1 * cellSize) + (cellSize / 2) + (int) (qx1 * quantumCellSize) -1, ybound + (y1 * cellSize) + (cellSize / 2) + (int) (qy1 * quantumCellSize) -1, xbound + (x2 * cellSize) + (cellSize / 2) + (int) (qx2 * quantumCellSize) -1, ybound + (y2 * cellSize) + (cellSize / 2) + (int) (qy2 * quantumCellSize) -1);
             }
         }
 
@@ -1744,20 +1759,72 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         int boardoffset = height / 3;
 
+        BufferedImage image0 = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
         BufferedImage image1 = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
         BufferedImage image2 = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
-        BufferedImage image3 = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
 
+        drawQuantumBoard3DSlice(image0, board, 0);
         drawQuantumBoard3DSlice(image1, board, 1);
-        drawQuantumBoard3DSlice(image2, board, 1);
-        drawQuantumBoard3DSlice(image3, board, 1);
+        drawQuantumBoard3DSlice(image2, board, 2);
 
         imagex = image1.getWidth();
         imagey = image1.getHeight();
 
-        g.drawImage(image1, 0, 0, null);
-        g.drawImage(image2, 0, boardoffset, null);
-        g.drawImage(image3, 0, boardoffset * 2, null);
+        g.drawImage(image2, 0, 0, null);
+        g.drawImage(image1, 0, boardoffset, null);
+        g.drawImage(image0, 0, boardoffset * 2, null);
+
+        int quantumCellSize = cellSize / 3;
+
+        AffineTransform transform = new AffineTransform(Math.cos(theta), (-1 * Math.sin(theta)) / 2, Math.sin(theta), Math.cos(theta) / 2, offsetx, offsety);
+
+        //draws links
+        if(quantumLineMode){
+            for(int i = 1; i < turnCount; i++){
+                if(i % 2 != 0){
+                    g.setColor(red);
+                }else{
+                    g.setColor(blue);
+                }
+    
+                //gets first one
+                int first = board.getBoardWithMove(i);
+                int second = board.getOtherBoardWithMove(i);
+    
+                int qoffset1 = board.getMoveLocationInArray(first, i);
+                int qoffset2 = board.getMoveLocationInArray(second, i);
+    
+                //System.out.println(first + " " + second);
+
+                int z1 = first / 9;
+                int x1 = first % 3;
+                int y1 = ((first - (z1 * 9)) / 3);
+
+                int z2 = second / 9;
+                int x2 = second % 3;
+                int y2 = ((second - (z2 * 9)) / 3);
+    
+                int qx1 = (qoffset1 % 3) - 1;
+                int qy1 = (qoffset1 / 3) - 1;
+                int qx2 = (qoffset2 % 3) - 1;
+                int qy2 = (qoffset2 / 3) - 1;
+
+                int xdraw1 = xbound + (x1 * cellSize) + (cellSize / 2) + (qx1 * quantumCellSize) -1;
+                int ydraw1 = ybound + (y1 * cellSize) + (cellSize / 2) + (qy1 * quantumCellSize) -1;
+                int xdraw2 = xbound + (x2 * cellSize) + (cellSize / 2) + (qx2 * quantumCellSize) -1;
+                int ydraw2 = ybound + (y2 * cellSize) + (cellSize / 2) + (qy2 * quantumCellSize) -1;
+
+                Point2D.Double one = new Point2D.Double(xdraw1, ydraw1);
+                Point2D.Double two = new Point2D.Double(xdraw2, ydraw2);
+                Point2D.Double oneT = new Point2D.Double();
+                Point2D.Double twoT = new Point2D.Double();
+
+                transform.transform(one, oneT);
+                transform.transform(two, twoT);
+    
+                g.drawLine((int) oneT.getX(), (int) oneT.getY() + ((2 - z1) * boardoffset), (int) twoT.getX(), (int) twoT.getY() + ((2 - z2) * boardoffset));
+            }
+        }
     }
 
     public void drawMouseLine(Graphics2D g, QuantumBoard board){
@@ -1986,20 +2053,20 @@ public class GPanel extends JPanel implements MouseWheelListener{
         outputPath = outputDir.toString();
     }
 
-    public Image getTurnImage(int turn){
-        switch (turn){
-            case 1: return Image1;
-            case 2: return Image2;
-            case 3: return Image3;
-            case 4: return Image4;
-            case 5: return Image5;
-            case 6: return Image6;
-            case 7: return Image7;
-            case 8: return Image8;
-            case 9: return Image9;
-            default: return null;
-        }
-    }
+    // public Image getTurnImage(int turn){
+    //     switch (turn){
+    //         case 1: return Image1;
+    //         case 2: return Image2;
+    //         case 3: return Image3;
+    //         case 4: return Image4;
+    //         case 5: return Image5;
+    //         case 6: return Image6;
+    //         case 7: return Image7;
+    //         case 8: return Image8;
+    //         case 9: return Image9;
+    //         default: return null;
+    //     }
+    // }
 
     public void setDepth(int x){
         depth = x;

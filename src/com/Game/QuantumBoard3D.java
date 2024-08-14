@@ -43,10 +43,10 @@ public class QuantumBoard3D {
 
     public void iterativeSearch(int start, int loc){
 
-        int z = (int) Math.floor(loc / 9);
+        int z = loc / 9;
 
         int x = loc % 3;
-        int y = (int) Math.floor((loc - (z * 9)) / 3);
+        int y = ((loc - (z * 9)) / 3);
 
         if(loc == start){
             result = 1;
@@ -61,7 +61,7 @@ public class QuantumBoard3D {
         for(int i = 0; i < boardArray[x][y][z].getMovesList().size(); i++){
 
             int move = boardArray[x][y][z].getMovesList().get(i);
-            int link = getLink(move, (x + (y * 3)));
+            int link = getLink(move, (x + (y * 3) + (z * 9)));
 
             //checks for skip list
             for(int j = 0; j < skippedList.size(); j++){
@@ -84,9 +84,9 @@ public class QuantumBoard3D {
         mainLoop:
         for(int i = 0; i < 27; i++){
 
-            int z = (int) Math.floor(i / 9);
+            int z = i / 9;
             int x = i % 3;
-            int y = (int) Math.floor((i - (z * 9)) / 3);
+            int y = ((i - (z * 9)) / 3);
 
             if(i != start){
                 for(int j = 0; j < boardArray[x][y][z].getMovesList().size(); j++){
@@ -108,9 +108,9 @@ public class QuantumBoard3D {
         mainLoop:
         for(int i = 0; i < 27; i++){
 
-            int z = (int) Math.floor(i / 9);
+            int z = i / 9;
             int x = i % 3;
-            int y = (int) Math.floor((i - (z * 9)) / 3);
+            int y = ((i - (z * 9)) / 3);
 
             for(int j = 0; j < boardArray[x][y][z].getMovesList().size(); j++){
                 if(boardArray[x][y][z].getMovesList().get(j) == turn){
@@ -504,9 +504,9 @@ public class QuantumBoard3D {
 
     public void collapseTile(int loc, int turn){
 
-        int z = (int) Math.floor(loc / 9);
+        int z = loc / 9;
         int x = loc % 3;
-        int y = (int) Math.floor((loc - (z * 9)) / 3);
+        int y = (loc - (z * 9)) / 3;
 
         if(turn % 2 != 0){
             boardArray[x][y][z].setState(State.Player1);
@@ -532,7 +532,7 @@ public class QuantumBoard3D {
                     //iterates through moves on each square
                     for(int k = 0; k < boardArray[i][j][l].getMovesList().size(); k++){
 
-                        int loc = (i + (3 * j));
+                        int loc = (i + (3 * j) + (9 * l));
 
                         int move = boardArray[i][j][l].getMovesList().get(k);
 
