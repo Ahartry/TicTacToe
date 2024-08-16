@@ -51,7 +51,7 @@ public class GFrame extends JFrame{
         //stupid
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 0;
-        if(gameType ==4){
+        if(gameType == 4 || gameType == 5){
             topPanel.add(Box.createRigidArea(new Dimension(250, 0)));
         }else{
             topPanel.add(Box.createRigidArea(new Dimension(90, 0)));
@@ -86,7 +86,7 @@ public class GFrame extends JFrame{
             // Dimension d = functionButton.getPreferredSize();
             // d.width = 90;
             // functionButton.setPreferredSize(d); 
-        }else if(gameType == 4){
+        }else if(gameType == 4 || gameType == 5){
             topPanel.add(functionButton, gbc);
             functionButton.setText("Hide Lines");
             Dimension d = functionButton.getPreferredSize();

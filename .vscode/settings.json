@@ -4,5 +4,9 @@
     ],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [],
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+    "workbench.colorTheme": "Abyss",
+    "workbench.editor.decorations.colors": true,
+    "workbench.preferredDarkColorTheme": "Abyss",
+    "workbench.settings.editor": "json"
 }

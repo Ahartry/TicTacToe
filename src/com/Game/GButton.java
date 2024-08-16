@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,45 +16,42 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 public class GButton extends JButton{
 	private static final long serialVersionUID = 1L;
 	
 	private JLabel text = new JLabel();
+	private GToolTip toolTip;
+	private String subtext = null;
+	private boolean usingTooltip = false;
+	private volatile boolean toolTipActive = false;
 	
-	private enum Image{MAIN, PRESSED, HOVER}
-	private Image image = Image.MAIN;
+	private enum Status{MAIN, PRESSED, HOVER}
+	private Status status = Status.MAIN;
 	
 	private int paddingX = 0;
 	private int paddingY = 0;
 	
 	private Color mainColor = new Color(0,150,50,255);
-//	private Color mainColor2 = new Color(0,100,200,127);
 	private Color clickedColor = new Color(0,120,20,255);
-//	private Color clickedColor2 = new Color(0,70,170,127);
 	private Color hoverColor = new Color(0,200,100,255);
-//	private Color hoverColor2 = new Color(0,150,250,127);
 	private Color disabledColor = new Color(180, 180, 180, 255);
 	
-	private static boolean e = false;
-	
-	private JComponent parent = null;
+	private volatile boolean hovering = false;
+	private volatile boolean clicked = false;
 
 	public void setText(String t) {
 		text.setText(t);
 	}
-	
-	public void setParent(JComponent j) {
-		parent = j;
+
+	public void setSubtext(String input){
+		subtext = input;
+		usingTooltip = true;
 	}
 
 
 	public GButton(String t) {
-//		InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("buttonPressed.wav");
-//		pressedSound = new Sound(in);
-//		releasedSound = new Sound(in);
 		addActionListener(new mainActionListener());
 		setLayout(new BorderLayout());
 		text.setText(t);
@@ -62,7 +60,6 @@ public class GButton extends JButton{
 		text.setVerticalAlignment(JLabel.CENTER);
         this.size(22);
 		this.add(text, BorderLayout.CENTER);
-		setCursor(new Cursor(Cursor.HAND_CURSOR));
 		
 		setContentAreaFilled(false);
 		setFocusable(false);
@@ -71,68 +68,89 @@ public class GButton extends JButton{
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
 		
 		addMouseListener(new java.awt.event.MouseAdapter() {
-			boolean p = false;
-//			boolean i = false;
 		    public void mouseEntered(java.awt.event.MouseEvent evt) {
 		    	if(isEnabled()) {
-		    	if(p == false) {
-		    	image = Image.HOVER;
-		    	}else {
-		    		image = Image.PRESSED;
+					status = Status.HOVER;
+					hovering = true;
+
+					if(usingTooltip){
+						Thread thread = new Thread(){
+							long start = System.currentTimeMillis();
+							long end = start + 500;
+							public void run(){
+								while(true){
+									if(!hovering){
+										break;
+									}
+
+									if(clicked){
+										clicked = false;
+										break;
+									}
+	
+									if(System.currentTimeMillis() >= end){
+										toolTipActive = true;
+										toolTip = new GToolTip(subtext, MouseInfo.getPointerInfo().getLocation());
+										
+										//System.out.println("Showing");
+										break;
+									}
+
+									try {
+										Thread.sleep(10);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
+								}
+							}
+						};
+						
+						thread.start();
+					}
+
 		    	}
 		    	setCursor(new Cursor(Cursor.HAND_CURSOR));
-		    	e = true;
-//		    	i = true;
-		    	repaint();
-//		    	setCursor(new Cursor(Cursor.HAND_CURSOR));
-	    		if(parent != null) {
-	    			parent.setCursor(new Cursor(Cursor.HAND_CURSOR));
-	    		}
-		    	}
-		    	setCursor(new Cursor(Cursor.HAND_CURSOR));
+				repaint();
 		    }
 		    
 		    public void mouseReleased(java.awt.event.MouseEvent evt) {
-//		    	if(allEnabled) {
-	//		    	if(i == true) {
-	//		    	image = Image.HOVER;
-	//		    	}else {
-			    		image = Image.MAIN;
-	//		    	}
-			    	p = false;
-			    	if(parent != null && !e) {
-			    		parent.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			    	}
-			    	if(!e) {
-			    		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			    	}
-			    	repaint();
-//		    	}
+				status = Status.MAIN;
+				if(!hovering){
+					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				}
+				if(toolTipActive){
+					toolTip.kill();
+				}
+				clicked = true;
+				repaint();
 		    }
 
 		    public void mouseExited(java.awt.event.MouseEvent evt) {
 		    	if(isEnabled()) {
-//		    	i = false;
-		    	e = false;
-		    	image = Image.MAIN;
-		    	repaint();
-//		    	setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		    	repaint();
-		    	if(parent != null) {
-		    		parent.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					hovering = false;
+					status = Status.MAIN;
 		    	}
-		    	
-		    	}
+
+				//System.out.println("Exited, " + toolTipActive);
+				if(toolTipActive){
+					//System.out.println("Attempting to kill");
+					toolTipActive = false;
+					toolTip.kill();
+					toolTip = null;
+				}
 		    	setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				repaint();
 		    }
 		    
 		    public void mousePressed(java.awt.event.MouseEvent evt) {
 		    	if(evt.getButton() == MouseEvent.BUTTON1) {
-		    	image = Image.PRESSED;
-		    	p = true;
-		    	repaint();
+					status = Status.PRESSED;
 		    	}
+				repaint();
 		    }
+
+			public void mouseMoved(MouseEvent evt){
+			}
 		});
 	}
 	
@@ -157,47 +175,24 @@ public class GButton extends JButton{
 		Graphics2D g2d = (Graphics2D) g;
 		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHints(rh);
-			//note, Colors go in the order - red, green, blue, alpha
-		switch(image) {
-		case MAIN:
-//			g2d.setColor(mainColor2);
-//			g2d.fillRoundRect(paddingX,paddingY,getWidth()-paddingX*2,getHeight()-paddingY*2,30,30);
-			if(isEnabled()){
-				g2d.setColor(mainColor);//main
-				g2d.fillRoundRect(1+paddingX,1+paddingY,getWidth()-paddingX*2-2,getHeight()-paddingY*2-2,30,30);
-			}
+
+		switch(status) {
+		case HOVER:
+			g2d.setColor(hoverColor);
 			break;
 		case PRESSED:
-//			g2d.setColor(clickedColor2);
-//			g2d.fillRoundRect(paddingX,paddingY,getWidth()-paddingX*2,getHeight()-paddingY*2,30,30);
-			if(isEnabled()){
-				g2d.setColor(clickedColor);//clicked
-				g2d.fillRoundRect(1+paddingX,1+paddingY,getWidth()-paddingX*2-2,getHeight()-paddingY*2-2,30,30);
-			}
-
+			g2d.setColor(clickedColor);
 			break;
 		default:
-//			g2d.setColor(hoverColor2);
-//			g2d.fillRoundRect(paddingX,paddingY,getWidth()-paddingX*2,getHeight()-paddingY*2,30,30);
-			if(isEnabled()){
-				g2d.setColor(hoverColor);//hover
-				g2d.fillRoundRect(1+paddingX,1+paddingY,getWidth()-paddingX*2-2,getHeight()-paddingY*2-2,30,30);
-			}
-
+			g2d.setColor(mainColor);
 			break;
 		}
 		
 		if(isEnabled() == false) {
-//			g2d.setColor(Color.BLUE);
-//			g2d.setColor(mainColor2);
-//			g2d.fillRoundRect(paddingX,paddingY,getWidth()-paddingX*2,getHeight()-paddingY*2,30,30);
 			g2d.setColor(disabledColor);
-			g2d.fillRoundRect(1+paddingX,1+paddingY,getWidth()-paddingX*2-2,getHeight()-paddingY*2-2,30,30);
 		}
-		
-		
 
-//        g.fillRect(paddingX, paddingY, getWidth()-paddingX*2, getHeight()-paddingY*2); 
+		g2d.fillRoundRect(1+paddingX,1+paddingY,getWidth()-paddingX*2-2,getHeight()-paddingY*2-2,30,30);
 
 	}
 	

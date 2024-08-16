@@ -723,7 +723,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             int xcell = (int) Math.floor(3 * xboard / boundingSize);
                             int ycell = (int) Math.floor(3 * yboard / boundingSize);
 
-                            theSquare = xcell + (ycell * 3);
+                            theSquare = xcell + (ycell * 3) + (boardZ * 9);
 
                             //System.out.println("Square " + xcell + ", " + ycell + " on board" + boardZ);
     
@@ -907,8 +907,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             int selection = -1;
                             int adjustedSquare1X = xbound + ((recentSquare1 % 3) * cellSize);
                             int adjustedSquare1Y = ybound + ((recentSquare1 % 3) * cellSize);
-                            int adjustedSquare2X = xbound + ((recentSquare1 % 3) * cellSize);
-                            int adjustedSquare2Y = ybound + ((recentSquare1 % 3) * cellSize);
+                            int adjustedSquare2X = xbound + ((recentSquare2 % 3) * cellSize);
+                            int adjustedSquare2Y = ybound + ((recentSquare2 % 3) * cellSize);
 
                             if(click2.getX() > adjustedSquare1X && click2.getX() < adjustedSquare1X + cellSize && click2.getY() > adjustedSquare1Y && click2.getY() < adjustedSquare1Y + cellSize){
                                 selection = recentSquare1;
@@ -1009,17 +1009,59 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 repaint();
             }
             public void mouseMoved(MouseEvent e){
+                AffineTransform transform = new AffineTransform(Math.cos(theta), (-1 * Math.sin(theta)) / 2, Math.sin(theta), Math.cos(theta) / 2, offsetx, offsety);
+                try {
+                    transform.invert();
+                } catch (NoninvertibleTransformException e1) {
+                    System.out.println("Non invertible transform");
+                }
+
+                int boardZ = 0;
+
+                Point2D.Double click1 = new Point2D.Double(e.getX(), e.getY());
+                if(e.getY() < height / 3){
+                    boardZ = 2;
+                    click1.setLocation(e.getX() - width / 2, e.getY() - 95);
+                    //System.out.println("Top board, " + click1.getX() + ", " + click1.getY());
+                }else if(e.getY() > height / 3 && e.getY() < (2 * (height / 3))){
+                    boardZ = 1;
+                    click1.setLocation(e.getX() - width / 2, e.getY() - 95 - (height / 3));
+                    //System.out.println("Middle board, " + click1.getX() + ", " + click1.getY());
+                }else{
+                    click1.setLocation(e.getX() - width / 2, e.getY() - 95 - (2 * height / 3));
+                    //System.out.println("Bottom board, " + click1.getX() + ", " + click1.getY());
+                }
+
+                Point2D.Double click2 = new Point2D.Double();
+                transform.deltaTransform(click1, click2);
+
+                int xboard = (int) click2.getX() - xbound;
+                int yboard = (int) click2.getY() - ybound;
+
+                int xcell = (3 * xboard / boundingSize);
+                int ycell = (3 * yboard / boundingSize);
+
                 if(result == 1){
-                    if(((e.getX() > (xbound + ((recentSquare1 % 3) * cellSize))) && (e.getX() < (xbound + ((recentSquare1 % 3) * cellSize) + cellSize)) && (e.getY() > (ybound + ((int) (Math.floor(recentSquare1 / 3)) * cellSize))) && (e.getY() < (ybound + ((int) (Math.floor(recentSquare1 / 3)) * cellSize) + cellSize)))){
+                    if(xcell == recentSquare1 % 3 && ycell == ((recentSquare1 / 9) * 9) / 3 && boardZ == recentSquare1 / 9){
                         moveDrawLoc = recentSquare1;
-                    }else if(((e.getX() > (xbound + ((recentSquare2 % 3) * cellSize))) && (e.getX() < (xbound + ((recentSquare2 % 3) * cellSize) + cellSize)) && (e.getY() > (ybound + ((int) (Math.floor(recentSquare2 / 3)) * cellSize))) && (e.getY() < (ybound + ((int) (Math.floor(recentSquare2 / 3)) * cellSize) + cellSize)))){
+                    }else if(xcell == recentSquare2 % 3 && ycell == ((recentSquare2 / 9) * 9) / 3 && boardZ == recentSquare2 / 9){
                         moveDrawLoc = recentSquare2;
                     }else{
                         moveDrawLoc = -1;
                     }
-                }else{
-                    moveDrawLoc = -1;
                 }
+
+                // if(result == 1){
+                //     if(((click2.getX() > (xbound + ((recentSquare1 % 3) * cellSize))) && (click2.getX() < (xbound + ((recentSquare1 % 3) * cellSize) + cellSize)) && (click2.getY() > (ybound + ((int) (Math.floor(recentSquare1 / 3)) * cellSize))) && (click2.getY() < (ybound + (Math.floor(recentSquare1 / 3) * cellSize) + cellSize)))){
+                //         moveDrawLoc = recentSquare1;
+                //     }else if(((click2.getX() > (xbound + ((recentSquare2 % 3) * cellSize))) && (click2.getX() < (xbound + ((recentSquare2 % 3) * cellSize) + cellSize)) && (click2.getY() > (ybound + ((int) (Math.floor(recentSquare2 / 3)) * cellSize))) && (click2.getY() < (ybound + ((recentSquare2 / 3) * cellSize) + cellSize)))){
+                //         moveDrawLoc = recentSquare2;
+                //     }else{
+                //         moveDrawLoc = -1;
+                //     }
+                // }else{
+                //     moveDrawLoc = -1;
+                // }
                 repaint();
             }
         }); 
@@ -1178,6 +1220,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
             }
         }else if(game == 5){
             drawQuantumBoard3D(g, quantumBoard3D);
+            if(quantumMove){
+                drawMouseLine3D(g, quantumBoard3D);
+            }
         }
 
 
@@ -1672,14 +1717,19 @@ public class GPanel extends JPanel implements MouseWheelListener{
         g.fillRect(xbound, ybound + cellSize - (thickness / 2), boundingSize, thickness);
         g.fillRect(xbound, ybound + (2 * cellSize) - (thickness / 2), boundingSize, thickness);
 
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        Font font = null;
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(35f);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+
+        g.setFont(font);
+
         //loops through the board
         double iconScale = 0.8;
         double imageSize = iconScale * cellSize;
-        // double numSizeX = (imageSize * 3) / 16;
-        // double numSizeY = imageSize / 4;
-
-        // numSizeX *=1.5;
-        // numSizeY *=1.5;
 
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
@@ -1688,11 +1738,21 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                 if(board.getBoardTile(i, j, slice).getState() == State.Player1){
                     g.drawImage(xImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
-                    g.drawString(Integer.toString(board.getBoardTile(i, j, slice).getTurn()), xNetOffset + (int) (imageSize / 1.25), yNetOffset + (int) (imageSize * 1.25));
+                    g.drawString(Integer.toString(board.getBoardTile(i, j, slice).getTurn()), xNetOffset + (int) (imageSize / 1.3), yNetOffset + (int) (imageSize * 1.1));
                 }else if(board.getBoardTile(i, j, slice).getState() == State.Player2){
                     g.drawImage(oImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
-                    g.drawString(Integer.toString(board.getBoardTile(i, j, slice).getTurn()), xNetOffset + (int) (imageSize / 1.25), yNetOffset + (int) (imageSize * 1.25));
+                    g.drawString(Integer.toString(board.getBoardTile(i, j, slice).getTurn()), xNetOffset + (int) (imageSize / 1.3), yNetOffset + (int) (imageSize * 1.1));
                 }
+            }
+        }
+
+        if(moveDrawLoc / 9 == slice && moveDrawLoc > -1){
+            int xNetOffset = (int) (xbound + ((moveDrawLoc % 3) * cellSize) + ((cellSize - imageSize) / 2));
+            int yNetOffset = (int) (ybound + ((((moveDrawLoc / 9) * 9) / 3) * cellSize) + ((cellSize - imageSize) / 2));
+            if(!turn){
+                g.drawImage(oImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
+            }else{
+                g.drawImage(xImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
             }
         }
 
@@ -1706,8 +1766,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
         // numSizeX *=2;
         // numSizeY *=2;
 
-        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
-        Font font = null;
+        stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        font = null;
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
         } catch (FontFormatException | IOException e) {
@@ -1744,6 +1804,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             }
         }
 
+        //needs to be replaced for quantum 3d
         if(result == 1){
             if(moveDrawLoc != -1){
                 drawMove(g, moveDrawLoc, turnCount - 1);
@@ -1822,6 +1883,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 transform.transform(one, oneT);
                 transform.transform(two, twoT);
     
+                //the 2 is there because I flipped board order (I think)
                 g.drawLine((int) oneT.getX(), (int) oneT.getY() + ((2 - z1) * boardoffset), (int) twoT.getX(), (int) twoT.getY() + ((2 - z2) * boardoffset));
             }
         }
@@ -1879,6 +1941,43 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         g.drawLine(xNetOffset, yNetOffset, x2, y2);
 
+    }
+
+    public void drawMouseLine3D(Graphics2D g, QuantumBoard3D board){
+        AffineTransform transform = new AffineTransform(Math.cos(theta), (-1 * Math.sin(theta)) / 2, Math.sin(theta), Math.cos(theta) / 2, offsetx, offsety);
+        int boardoffset = height / 3;
+        int quantumCellSize = cellSize / 3;
+
+        if(!turn){
+            g.setColor(red);
+        }else{
+            g.setColor(blue);
+        }
+
+        int first = theSquare;
+
+        int z1 = first / 9;
+        int x1 = first % 3;
+        int y1 = ((first - (z1 * 9)) / 3);
+
+        int qoffset1 = board.getBoardTile(x1, y1, z1).getMovesList().size();
+
+        int qx1 = (qoffset1 % 3) - 1;
+        int qy1 = (qoffset1 / 3) - 1;
+
+        int xdraw1 = xbound + (x1 * cellSize) + (cellSize / 2) + (qx1 * quantumCellSize) -1;
+        int ydraw1 = ybound + (y1 * cellSize) + (cellSize / 2) + (qy1 * quantumCellSize) -1;
+
+        Point2D.Double one = new Point2D.Double(xdraw1, ydraw1);
+        Point2D.Double oneT = new Point2D.Double();
+
+        Point mouse = MouseInfo.getPointerInfo().getLocation();
+        mouse = getMousePosition();
+
+        transform.transform(one, oneT);
+
+        //the 2 is there because I flipped board order (I think)
+        g.drawLine((int) oneT.getX(), (int) oneT.getY() + ((2 - z1) * boardoffset), (int) mouse.getX(), (int) mouse.getY());
     }
 
     public void drawMove(Graphics2D g, int loc, int turn){

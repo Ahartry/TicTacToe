@@ -76,7 +76,12 @@ public class App {
         quanButton.setPreferredSize(new Dimension(180, 40));
         quan3DButton.setPreferredSize(new Dimension(180, 40));
 
-        regButton.setToolTipText("The classic 3x3 board");
+        //regButton.setToolTipText("The classic 3x3 board");
+        regButton.setSubtext(" The classic 3x3 board");
+        ultButton.setSubtext("A larger 9x9 board, made of smaller boards");
+        tranButton.setSubtext("A huge, 27x27 board, composed of massive boards");
+        quanButton.setSubtext(" There's no explaining this one");
+        quan3DButton.setSubtext(" A 3D variant of quantum tic tac toe");
 
         //adds the items to the panel
         // gbc.gridx = 1;
