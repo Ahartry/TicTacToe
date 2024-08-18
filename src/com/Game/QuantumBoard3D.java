@@ -171,6 +171,7 @@ public class QuantumBoard3D {
         return boardArray[x][y][z];
     }
 
+    //not used
     public int checkBoard(int x, int y, int z){
         int result = 0;
         int player = 0; 
@@ -516,42 +517,52 @@ public class QuantumBoard3D {
 
         boardArray[x][y][z].setTurn(turn);
 
+        ArrayList<Integer> list = new ArrayList<>(boardArray[x][y][z].getMovesList());
+
         boardArray[x][y][z].getMovesList().clear();
 
-        checkBrokenLinks();
+        //System.out.println(list.size());
 
-    }
-
-    public void checkBrokenLinks(){
-        int linksResolved = 0;
-
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                for(int l = 0; l < 3; l++){
-
-                    //iterates through moves on each square
-                    for(int k = 0; k < boardArray[i][j][l].getMovesList().size(); k++){
-
-                        int loc = (i + (3 * j) + (9 * l));
-
-                        int move = boardArray[i][j][l].getMovesList().get(k);
-
-                        int link = getLink(move, loc);
-                        
-                        if(link == -1){
-                            //System.out.println("No link for tile " + loc + ", move " + move);
-                            collapseTile(loc, move);
-                            linksResolved++;
-                        }
-                    }
-                }
-
+        for(int i = 0; i < list.size(); i++){
+            int link = getLink(list.get(i), loc);
+            if(link == -1){
+                continue;
             }
+            collapseTile(link, list.get(i));
         }
-        if(linksResolved > 0){
-            checkBrokenLinks();
-        }
+
     }
+
+    // public void checkBrokenLinks(){
+    //     int linksResolved = 0;
+
+    //     for(int i = 0; i < 3; i++){
+    //         for(int j = 0; j < 3; j++){
+    //             for(int l = 0; l < 3; l++){
+
+    //                 //iterates through moves on each square
+    //                 for(int k = 0; k < boardArray[i][j][l].getMovesList().size(); k++){
+
+    //                     int loc = (i + (3 * j) + (9 * l));
+
+    //                     int move = boardArray[i][j][l].getMovesList().get(k);
+
+    //                     int link = getLink(move, loc);
+                        
+    //                     if(link == -1){
+    //                         //System.out.println("No link for tile " + loc + ", move " + move);
+    //                         collapseTile(loc, move);
+    //                         linksResolved++;
+    //                     }
+    //                 }
+    //             }
+
+    //         }
+    //     }
+    //     if(linksResolved > 0){
+    //         checkBrokenLinks();
+    //     }
+    // }
     
     public QuantumBoard getQuantumBoard(int slice){
         QuantumBoard board = new QuantumBoard(this, slice);

@@ -18,7 +18,11 @@ public class LFrame extends JFrame{
     ArrayList<String> saveList;
     JPanel panel;
 
-    public LFrame(){
+    GFrame frame;
+
+    public LFrame(GFrame frame){
+
+        this.frame = frame;
         
         //gets all the saves
         String path = System.getProperty("user.dir") + File.separator + "Saves";
@@ -69,7 +73,7 @@ public class LFrame extends JFrame{
         System.out.println("Loading from " + file);
 
         if(file.getName().equals("move0")){
-            GFrame frame = new GFrame(3, false);
+            frame.setupGame(3, false);
             frame.getGPanel().setOutputDir(file.getParentFile());
             MassiveBoard board = new MassiveBoard();
             board.setActive(true);
@@ -183,7 +187,7 @@ public class LFrame extends JFrame{
             xc = recentCell % 3;
             yc = (int) Math.floor(recentCell / 3);
     
-            GFrame frame = new GFrame(gameType, false);
+            frame.setupGame(3, false);
             inputboard.calculateActive(xl, yl, xb, yb, xc, yc);
             frame.getGPanel().setMassiveBoard(inputboard, turn);
             frame.getGPanel().setOutputDir(file.getParentFile());

@@ -109,7 +109,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     File outputDir;
     String outputPath;
 
-    public GPanel(int gameType, JLabel displayLabel1, GButton button, boolean bot) throws FontFormatException, IOException{
+    public GPanel(int gameType, JLabel displayLabel1, GButton button, boolean bot, GFrame frame) throws FontFormatException, IOException{
 
         game = gameType;
 
@@ -1009,59 +1009,25 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 repaint();
             }
             public void mouseMoved(MouseEvent e){
-                AffineTransform transform = new AffineTransform(Math.cos(theta), (-1 * Math.sin(theta)) / 2, Math.sin(theta), Math.cos(theta) / 2, offsetx, offsety);
-                try {
-                    transform.invert();
-                } catch (NoninvertibleTransformException e1) {
-                    System.out.println("Non invertible transform");
-                }
-
-                int boardZ = 0;
-
-                Point2D.Double click1 = new Point2D.Double(e.getX(), e.getY());
-                if(e.getY() < height / 3){
-                    boardZ = 2;
-                    click1.setLocation(e.getX() - width / 2, e.getY() - 95);
-                    //System.out.println("Top board, " + click1.getX() + ", " + click1.getY());
-                }else if(e.getY() > height / 3 && e.getY() < (2 * (height / 3))){
-                    boardZ = 1;
-                    click1.setLocation(e.getX() - width / 2, e.getY() - 95 - (height / 3));
-                    //System.out.println("Middle board, " + click1.getX() + ", " + click1.getY());
-                }else{
-                    click1.setLocation(e.getX() - width / 2, e.getY() - 95 - (2 * height / 3));
-                    //System.out.println("Bottom board, " + click1.getX() + ", " + click1.getY());
-                }
-
-                Point2D.Double click2 = new Point2D.Double();
-                transform.deltaTransform(click1, click2);
-
-                int xboard = (int) click2.getX() - xbound;
-                int yboard = (int) click2.getY() - ybound;
-
-                int xcell = (3 * xboard / boundingSize);
-                int ycell = (3 * yboard / boundingSize);
-
                 if(result == 1){
-                    if(xcell == recentSquare1 % 3 && ycell == ((recentSquare1 / 9) * 9) / 3 && boardZ == recentSquare1 / 9){
+                    if(((e.getX() > (xbound + ((recentSquare1 % 3) * cellSize))) && (e.getX() < (xbound + ((recentSquare1 % 3) * cellSize) + cellSize)) && (e.getY() > (ybound + ((int) (Math.floor(recentSquare1 / 3)) * cellSize))) && (e.getY() < (ybound + (Math.floor(recentSquare1 / 3) * cellSize) + cellSize)))){
                         moveDrawLoc = recentSquare1;
-                    }else if(xcell == recentSquare2 % 3 && ycell == ((recentSquare2 / 9) * 9) / 3 && boardZ == recentSquare2 / 9){
+                    }else if(((e.getX() > (xbound + ((recentSquare2 % 3) * cellSize))) && (e.getX() < (xbound + ((recentSquare2 % 3) * cellSize) + cellSize)) && (e.getY() > (ybound + ((int) (Math.floor(recentSquare2 / 3)) * cellSize))) && (e.getY() < (ybound + ((recentSquare2 / 3) * cellSize) + cellSize)))){
                         moveDrawLoc = recentSquare2;
                     }else{
                         moveDrawLoc = -1;
                     }
+                }else{
+                    moveDrawLoc = -1;
                 }
 
-                // if(result == 1){
-                //     if(((click2.getX() > (xbound + ((recentSquare1 % 3) * cellSize))) && (click2.getX() < (xbound + ((recentSquare1 % 3) * cellSize) + cellSize)) && (click2.getY() > (ybound + ((int) (Math.floor(recentSquare1 / 3)) * cellSize))) && (click2.getY() < (ybound + (Math.floor(recentSquare1 / 3) * cellSize) + cellSize)))){
-                //         moveDrawLoc = recentSquare1;
-                //     }else if(((click2.getX() > (xbound + ((recentSquare2 % 3) * cellSize))) && (click2.getX() < (xbound + ((recentSquare2 % 3) * cellSize) + cellSize)) && (click2.getY() > (ybound + ((int) (Math.floor(recentSquare2 / 3)) * cellSize))) && (click2.getY() < (ybound + ((recentSquare2 / 3) * cellSize) + cellSize)))){
-                //         moveDrawLoc = recentSquare2;
-                //     }else{
-                //         moveDrawLoc = -1;
-                //     }
-                // }else{
-                //     moveDrawLoc = -1;
-                // }
+                //makes it skip this unless game 5
+                if(game != 5){
+                    repaint();
+                    return;
+                }
+
+                calculateHover3D(e.getX(), e.getY());
                 repaint();
             }
         }); 
@@ -1099,16 +1065,16 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 closeWindow();
                 try {
                     if(gameType != 3){
-                        GFrame frame = new GFrame(gameType, bot);
+                        frame.setupGame(gameType, bot);
 
                         //handles difficulty
                         if(gameType != 1){
                             frame.setDepth(depth);
                         }
                     }else{
-                        new SFrame();
+                        new SFrame(frame);
                     }
-                } catch (FontFormatException | IOException e1) {
+                } catch (Exception e1) {
                     e1.printStackTrace();
                 }
                 
@@ -1708,9 +1674,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         buffer = (int) ((width / 40) * zoom);
 
-        // xbound = xbound + offsetx;
-        // ybound = ybound + offsety;
-
+        //draws the lines
         g.fillRect(xbound + cellSize - (thickness / 2), ybound, thickness, boundingSize);
         g.fillRect(xbound + (2 * cellSize) - (thickness / 2), ybound, thickness, boundingSize);
 
@@ -1720,7 +1684,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
         Font font = null;
         try {
-            font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(35f);
+            font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(30f);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
@@ -1728,7 +1692,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         g.setFont(font);
 
         //loops through the board
-        double iconScale = 0.8;
+        double iconScale = 0.75;
         double imageSize = iconScale * cellSize;
 
         for(int i = 0; i < 3; i++){
@@ -1736,19 +1700,42 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 int xNetOffset = (int) (xbound + (i * cellSize) + ((cellSize - imageSize) / 2));
                 int yNetOffset = (int) (ybound + (j * cellSize) + ((cellSize - imageSize) / 2));
 
+                double xOffsetMulti = 0.55;
+                double yOffsetMulti = 1;
+
                 if(board.getBoardTile(i, j, slice).getState() == State.Player1){
-                    g.drawImage(xImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
-                    g.drawString(Integer.toString(board.getBoardTile(i, j, slice).getTurn()), xNetOffset + (int) (imageSize / 1.3), yNetOffset + (int) (imageSize * 1.1));
+                    g.drawImage(xImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);  
                 }else if(board.getBoardTile(i, j, slice).getState() == State.Player2){
                     g.drawImage(oImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
-                    g.drawString(Integer.toString(board.getBoardTile(i, j, slice).getTurn()), xNetOffset + (int) (imageSize / 1.3), yNetOffset + (int) (imageSize * 1.1));
+                }
+
+                //draws the number
+                if(board.getBoardTile(i, j, slice).getState() != State.Blank){
+                    String number = Integer.toString(board.getBoardTile(i, j, slice).getTurn());
+                    if(number.length() == 1){
+                        number = "  " + number;
+                    }
+
+                    g.setColor(Color.WHITE);
+                    for(int k = -1; k < 2; k++){
+                        for(int l = -1; l < 2; l++){
+                            g.drawString(number, xNetOffset + (int) (imageSize * xOffsetMulti) + k, yNetOffset + (int) (imageSize * yOffsetMulti) + l);
+                        }
+                    }
+
+                    //the actual text
+                    g.setColor(Color.BLACK);
+                    g.drawString(number, xNetOffset + (int) (imageSize * xOffsetMulti), yNetOffset + (int) (imageSize * yOffsetMulti));
                 }
             }
         }
 
         if(moveDrawLoc / 9 == slice && moveDrawLoc > -1){
-            int xNetOffset = (int) (xbound + ((moveDrawLoc % 3) * cellSize) + ((cellSize - imageSize) / 2));
-            int yNetOffset = (int) (ybound + ((((moveDrawLoc / 9) * 9) / 3) * cellSize) + ((cellSize - imageSize) / 2));
+            int xcell = moveDrawLoc % 3;
+            int ycell = ((moveDrawLoc - (slice * 9)) / 3);
+            int xNetOffset = (int) (xbound + (xcell * cellSize) + ((cellSize - imageSize) / 2));
+            int yNetOffset = (int) (ybound + (ycell * cellSize) + ((cellSize - imageSize) / 2));
+
             if(!turn){
                 g.drawImage(oImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
             }else{
@@ -1805,7 +1792,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
 
         //needs to be replaced for quantum 3d
-        if(result == 1){
+        if(result == 1 && game == 4){
             if(moveDrawLoc != -1){
                 drawMove(g, moveDrawLoc, turnCount - 1);
             }
@@ -1995,6 +1982,52 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
     }
 
+    public void calculateHover3D(double x, double y){
+        moveDrawLoc = -1;
+        
+        AffineTransform transform = new AffineTransform(Math.cos(theta), (-1 * Math.sin(theta)) / 2, Math.sin(theta), Math.cos(theta) / 2, offsetx, offsety);
+        try {
+            transform.invert();
+        } catch (NoninvertibleTransformException e1) {
+            System.out.println("Non invertible transform");
+        }
+
+        int boardZ = 0;
+
+        Point2D.Double click1 = new Point2D.Double(x, y);
+        if(y < height / 3){
+            boardZ = 2;
+            click1.setLocation(x - width / 2, x - 95);
+            //System.out.println("Top board, " + click1.getX() + ", " + click1.getY());
+        }else if(y > height / 3 && y < (2 * (height / 3))){
+            boardZ = 1;
+            click1.setLocation(x - width / 2, y - 95 - (height / 3));
+            //System.out.println("Middle board, " + click1.getX() + ", " + click1.getY());
+        }else{
+            click1.setLocation(x - width / 2, y - 95 - (2 * height / 3));
+            //System.out.println("Bottom board, " + click1.getX() + ", " + click1.getY());
+        }
+
+        Point2D.Double click2 = new Point2D.Double();
+        transform.deltaTransform(click1, click2);
+
+        if((click2.getX() > xbound && click2.getX() < (xbound + boundingSize) && click2.getY() > ybound && click2.getY() < (ybound + boundingSize)) && quantumBoard3D.getState() == State.Blank && result == 1){
+            int xboard = (int) click2.getX() - xbound;
+            int yboard = (int) click2.getY() - ybound;
+
+            int xcell = (int) Math.floor(3 * xboard / boundingSize);
+            int ycell = (int) Math.floor(3 * yboard / boundingSize);
+
+            if(xcell + (ycell * 3) + (boardZ * 9) == recentSquare1){
+                moveDrawLoc = recentSquare1;
+            }else if(xcell + (ycell * 3) + (boardZ * 9) == recentSquare2){
+                moveDrawLoc = recentSquare2;
+            }
+        }
+        
+        repaint();
+    }
+
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
 
@@ -2009,6 +2042,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 zoom = zoom / 0.75;
             }else{
                 theta += Math.PI / divisor;
+                calculateHover3D(getMousePosition().getX(), getMousePosition().getY());
+                repaint();
                 //zoom = zoom / 0.75;
             }  
 
@@ -2018,6 +2053,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 zoom = zoom * 0.75;
             }else{
                 theta -= Math.PI / divisor;
+                calculateHover3D(getMousePosition().getX(), getMousePosition().getY());
+                repaint();
                 //zoom = zoom * 0.75;
             }  
         }

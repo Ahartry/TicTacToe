@@ -24,7 +24,7 @@ public class SFrame extends JFrame{
 
     boolean clicked = false;
     
-    public SFrame(){
+    public SFrame(GFrame frame){
 
         Font font = new Font(null);
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -117,9 +117,9 @@ public class SFrame extends JFrame{
                     dispose();
                     new File(output).mkdirs();
                     move0.createNewFile();
-                    GFrame frame = new GFrame(3, false);
+                    frame.setupGame(3, false);
                     frame.getGPanel().setOutputDir(outputFile);
-                } catch (FontFormatException | IOException e1) {
+                } catch (Exception e1) {
                     e1.printStackTrace();
                 }
             }
