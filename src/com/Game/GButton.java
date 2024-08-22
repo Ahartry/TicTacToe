@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -41,6 +42,8 @@ public class GButton extends JButton{
 	private volatile boolean hovering = false;
 	private volatile boolean clicked = false;
 
+	private Image image = null;
+
 	public void setText(String t) {
 		text.setText(t);
 	}
@@ -48,6 +51,10 @@ public class GButton extends JButton{
 	public void setSubtext(String input){
 		subtext = input;
 		usingTooltip = true;
+	}
+
+	public void setImage(Image image){
+		this.image = image;
 	}
 
 
@@ -193,6 +200,14 @@ public class GButton extends JButton{
 		}
 
 		g2d.fillRoundRect(1+paddingX,1+paddingY,getWidth()-paddingX*2-2,getHeight()-paddingY*2-2,30,30);
+
+		// int imagePX = (getWidth() - imagex) / 2;
+		// int imagePY = (getHeight() - imagey) / 2;
+
+		if(image != null){
+			//g2d.drawImage(image, 0, 0, image.getWidth(null), image.getHeight(null), imagePX, imagePY, imagex + imagePX, imagey + imagePY, null);
+			g2d.drawImage(image, (getWidth() - image.getWidth(null)) / 2, (getHeight() - image.getHeight(null)) / 2, null);
+		}
 
 	}
 	

@@ -3,10 +3,10 @@ package com.Game;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class qAI {
+public class qAI3D {
 
-    QuantumBoard board;
-    QuantumBoard backup;
+    QuantumBoard3D board;
+    QuantumBoard3D backup;
     int bestMove1;
     int bestMove2;
     int bestScore = Integer.MIN_VALUE;
@@ -16,7 +16,7 @@ public class qAI {
 
     ArrayList<QuantumMove> startList;
 
-    public qAI(){
+    public qAI3D(){
 
     }
 
@@ -24,9 +24,9 @@ public class qAI {
         time *= x;
     }
 
-    public int checkCollapse(QuantumBoard board, int option1, int option2){
-        this.board = new QuantumBoard();
-        this.backup = new QuantumBoard();
+    public int checkCollapse(QuantumBoard3D board, int option1, int option2){
+        this.board = new QuantumBoard3D();
+        this.backup = new QuantumBoard3D();
 
         this.board.copy(board);
         this.backup.copy(board);
@@ -76,22 +76,27 @@ public class qAI {
         System.out.println("Best collapse is " + bestMove1 + " with a score of " + bestScore + " out of " + total / 2 + " (" + total + " branches checked)");
         board.collapseTile(bestMove1, board.getMoveCount() - 1);
 
-        movetotal = 0;
         total = 0;
         bestScore = Integer.MIN_VALUE;
 
         return bestMove1 + (bestMove2 * 3);
     }
 
-    public int checkQuantumBoard(QuantumBoard board){
+    public int checkQuantumBoard3D(QuantumBoard3D board){
 
-        this.board = new QuantumBoard();
-        this.backup = new QuantumBoard();
+        this.board = new QuantumBoard3D();
+        this.backup = new QuantumBoard3D();
 
         this.board.copy(board);
         this.backup.copy(board);
         startList = listAvailableMoves();
         long start = System.nanoTime();
+
+        bestMove1 = 0;
+        bestMove2 = 0;
+        bestScore = Integer.MIN_VALUE;
+        movetotal = 0;
+        total = 0;
 
         //time I give it
         start += time;
@@ -125,14 +130,13 @@ public class qAI {
         System.out.println("Best move is " + bestMove1 + ", " + bestMove2 + " with a score of " + bestScore + " out of " + movetotal + " (" + total + " branches checked)");
         board.move(new QuantumMove(bestMove1, bestMove2));
 
-        movetotal = 0;
         total = 0;
         bestScore = Integer.MIN_VALUE;
 
         return bestMove1 + (bestMove2 * 3);
     }
 
-    public void exploreRandom(QuantumBoard board, QuantumMove start){
+    public void exploreRandom(QuantumBoard3D board, QuantumMove start){
         while(true){
             ArrayList<Integer> options = board.listActiveTiles();
             if(options.size() == 1){
@@ -172,7 +176,7 @@ public class qAI {
             move1 = options.get(move1);
             move2 = options.get(move2);
 
-            //System.out.println("Playing random moves " + move1 + " and " + move2);
+            //System.out.println("Playing random moves " + move1 + " and " + move2 + " on turn " + board.getMoveCount());
 
             board.move(new QuantumMove(move1, move2));
             if(board.checkLoops(board.getMoveCount() - 1) == 1){
@@ -200,12 +204,17 @@ public class qAI {
     public ArrayList<QuantumMove> listAvailableMoves(){
         ArrayList<QuantumMove> list = new ArrayList<>();
 
-        for(int i = 0; i < 9; i++){
-            if(board.getBoardTile(i % 3, (int) Math.floor(i / 3)).getState() != State.Blank){
+        for(int i = 0; i < 27; i++){
+            if(board.getBoardTile(i % 3, (i - ((i * 9) / 9)) / 3, i / 9).getState() != State.Blank){
                 continue;
             }
-            for(int j = i + 1; j < 9; j++){
-                if(board.getBoardTile(j % 3, (int) Math.floor(j / 3)).getState() != State.Blank){
+            for(int j = i + 1; j < 27; j++){
+                if(board.getBoardTile(j % 3, (j - ((j * 9) / 9)) / 3, j / 9).getState() != State.Blank){
+                    continue;
+                }
+
+                //This should NOT be needed, be here we are
+                if(i == j){
                     continue;
                 }
                 list.add(new QuantumMove(i, j));

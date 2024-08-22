@@ -32,7 +32,7 @@ public class GToolTip extends JFrame{
         textLabel.setFont(font);
         textLabel.setText(text);
 
-        length = (int) (text.length() * 8.2);
+        length = (int) (text.length() * 7.8);
         setUndecorated(true);
         setLocationRelativeTo(null);
         setLocation((int) mouse.getX() + 15, (int) mouse.getY() + 20);

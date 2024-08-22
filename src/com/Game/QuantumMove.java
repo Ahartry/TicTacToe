@@ -13,9 +13,10 @@ public class QuantumMove {
         move2 = two;
     }
 
+    //this does a completely different thing (collapse options)
+    //the number input actually does nothing, but leaving it I guess
     public QuantumMove(int loc){
-        move1 = loc % 3;
-        move2 = loc / 3;
+
     }
 
     public void setMove1(int x){

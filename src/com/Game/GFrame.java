@@ -3,10 +3,12 @@ package com.Game;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -16,7 +18,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.swing.Box;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -29,9 +31,17 @@ public class GFrame extends JFrame{
     JLabel topLabel;
     GButton functionButton;
     GButton helpButton;
+    GButton backButton;
     Font font;
     
     public GFrame() throws Exception{
+
+        try {
+            Image image = ImageIO.read(getClass().getClassLoader().getResource("icon.png"));
+            setIconImage(image);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setupWindow();
@@ -41,10 +51,14 @@ public class GFrame extends JFrame{
     }
 
     public void setupGame(int gameType, boolean bot) throws FontFormatException, IOException{
-        remove(startPanel);
+        
+        getContentPane().removeAll();
+        revalidate();
 
         setResizable(true);
-        setSize(1000, 600);
+        setPreferredSize(new Dimension(1000, 600));
+        setLocationRelativeTo(null);
+        pack();
         setLocationRelativeTo(null);
         setTitle("Tic Tac Toe");
 
@@ -56,6 +70,61 @@ public class GFrame extends JFrame{
         functionButton.setFocusable(false);
         helpButton = new GButton("Help");
         helpButton.setFocusable(false);
+        backButton = new GButton("");
+        backButton.setFocusable(false);
+
+        topPanel.setBackground(Color.GRAY);
+
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        //this is used to check panel balancing
+
+        // leftPanel.setBackground(Color.RED);
+        // centerPanel.setBackground(Color.BLUE);
+        // rightPanel.setBackground(Color.GREEN);
+
+        leftPanel.setBackground(Color.GRAY);
+        centerPanel.setBackground(Color.GRAY);
+        rightPanel.setBackground(Color.GRAY);
+
+        leftPanel.setPreferredSize(new Dimension(280, leftPanel.getHeight()));
+        leftPanel.setMinimumSize(new Dimension(150, leftPanel.getHeight()));
+        rightPanel.setPreferredSize(new Dimension(280, rightPanel.getHeight()));
+        rightPanel.setMinimumSize(new Dimension(150, rightPanel.getHeight()));
+
+        try {
+            Image image = ImageIO.read(getClass().getClassLoader().getResource("back4.png"));
+            backButton.setImage(image);
+            //backButton.setImageSize(128, 86);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        //help button sizing
+        Dimension ddd = backButton.getPreferredSize();
+        ddd.width = 70;
+        ddd.height = 40;
+        backButton.setPreferredSize(ddd); 
+
+        leftPanel.add(backButton);
+        centerPanel.add(topLabel);
+
+        //help button sizing
+        Dimension dd = helpButton.getPreferredSize();
+        dd.width = 90;
+        helpButton.setPreferredSize(dd); 
+
+        if(gameType == 4 || gameType == 5){
+            rightPanel.add(functionButton);
+            functionButton.setText("Hide Lines");
+            Dimension d = functionButton.getPreferredSize();
+            d.width = 160;
+            functionButton.setPreferredSize(d); 
+        }
+
+        rightPanel.add(helpButton);
 
         bottomPanel = new GPanel(gameType, topLabel, functionButton, bot, this);
 
@@ -64,58 +133,23 @@ public class GFrame extends JFrame{
 
         topLabel.setFont(font);
         topLabel.setHorizontalAlignment(JLabel.CENTER);
-
         topPanel.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridy = 0;
-        gbc.weightx = 1;
 
-        //stupid
-        gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 0;
-        if(gameType == 4 || gameType == 5){
-            topPanel.add(Box.createRigidArea(new Dimension(250, 0)));
-        }else{
-            topPanel.add(Box.createRigidArea(new Dimension(90, 0)));
-        }
-
-        //gbc.gridwidth = 1;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridx = 2;
-
-        topPanel.setSize(new Dimension(1000, 50));
-        topPanel.setBackground(Color.GRAY);
-        topPanel.add(topLabel, gbc);
-
-        bottomPanel.setSize(new Dimension(1000, 500));
-        bottomPanel.requestFocus();
-
+        gbc.gridy = 0;
         gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        topPanel.add(leftPanel, gbc);
 
-        gbc.anchor = GridBagConstraints.LINE_END;
-        gbc.gridx = 3;
-        topPanel.add(helpButton);
+        gbc.gridx = 1;
+        gbc.weightx = 0.6;
+        topPanel.add(centerPanel, gbc);
 
-        gbc.gridx = 4;
-
-        //help button sizing
-        Dimension dd = helpButton.getPreferredSize();
-        dd.width = 90;
-        helpButton.setPreferredSize(dd); 
-        if(gameType == 3){
-            // topPanel.add(functionButton, gbc);
-            // functionButton.setText("Save");
-            // Dimension d = functionButton.getPreferredSize();
-            // d.width = 90;
-            // functionButton.setPreferredSize(d); 
-        }else if(gameType == 4 || gameType == 5){
-            topPanel.add(functionButton, gbc);
-            functionButton.setText("Hide Lines");
-            Dimension d = functionButton.getPreferredSize();
-            d.width = 160;
-            functionButton.setPreferredSize(d); 
-        }
+        gbc.gridx = 2;
+        gbc.weightx = 0;
+        topPanel.add(rightPanel, gbc);
 
         add(topPanel, BorderLayout.NORTH);
         add(bottomPanel);
@@ -136,6 +170,20 @@ public class GFrame extends JFrame{
 
         });
 
+        backButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                //System.out.println("Clicked");
+                try {
+                    setupWindow();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+                
+            }
+
+        });
+
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -149,11 +197,20 @@ public class GFrame extends JFrame{
     }
 
     public void setupWindow() throws Exception {
+        getContentPane().removeAll();
+        revalidate();
 
+        //yes, setLocationRelativeTo(null) is here 3 times. Gotta be sure
+
+        setLocationRelativeTo(null);
+        setVisible(false);
+        setResizable(true);
         setSize(400, 250);
         setLocationRelativeTo(null);
-        setTitle("Tic Tac Toe Game");
+        setTitle("Select your game");
         setResizable(false);
+        setVisible(true);
+        setLocationRelativeTo(null);
 
         startPanel = new JPanel();
         startPanel.setLayout(new GridBagLayout());
@@ -197,9 +254,9 @@ public class GFrame extends JFrame{
         quan3DButton.setPreferredSize(new Dimension(180, 40));
 
         //regButton.setToolTipText("The classic 3x3 board");
-        regButton.setSubtext(" The classic 3x3 board");
-        ultButton.setSubtext("A larger 9x9 board, made of smaller boards");
-        tranButton.setSubtext("A huge, 27x27 board, composed of massive boards");
+        regButton.setSubtext(" The classic 3x3 board ");
+        ultButton.setSubtext(" A larger 9x9 board, made of smaller boards​");
+        tranButton.setSubtext("​ A huge, 27x27 board, composed of massive boards​");
         quanButton.setSubtext(" There's no explaining this one");
         quan3DButton.setSubtext(" A 3D variant of quantum tic tac toe");
 
@@ -287,6 +344,7 @@ public class GFrame extends JFrame{
 
         add(startPanel);
         setVisible(true);
+        repaint();
     }
 
     public void askIfUserWantsBot(int gameType, Font font){
@@ -325,7 +383,7 @@ public class GFrame extends JFrame{
 
                 try {
                     //new GFrame(gameType, true);
-                    if(gameType == 2 || gameType == 4){
+                    if(gameType == 2 || gameType == 4 || gameType == 5){
                         askDifficulty(gameType, font);
                     }else{
                         setupGame(gameType, true);

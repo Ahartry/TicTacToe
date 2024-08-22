@@ -50,7 +50,7 @@ public class QuantumBoard3D {
 
         if(loc == start){
             result = 1;
-            System.out.println("Loop found");
+            //System.out.println("Loop found");
         }
 
         if(result == 1){
@@ -97,6 +97,10 @@ public class QuantumBoard3D {
                 }
             }
 
+        }
+
+        if(boardResult == -1){
+            //System.out.println("ERROR: Move " + turn + " in square " + start + " has no link");
         }
 
         return boardResult;
@@ -279,6 +283,8 @@ public class QuantumBoard3D {
 
         //diagonals
         for(int i = 0; i < 3; i++){
+
+            //x slices vertically, makes x from side
             if(boardArray[i][0][0].getState().equals(boardArray[i][1][1].getState()) && boardArray[i][0][0].getState().equals(boardArray[i][2][2].getState())){
                 if(boardArray[i][1][1].getState().equals(State.Player1)){
                     player1++;
@@ -309,6 +315,8 @@ public class QuantumBoard3D {
                     }  
                 }
             }
+
+            //y slices vertically, makes x from other side
             if(boardArray[0][i][0].getState().equals(boardArray[1][i][1].getState()) && boardArray[0][i][0].getState().equals(boardArray[2][i][2].getState())){
                 if(boardArray[1][i][1].getState().equals(State.Player1)){
                     player1++;
@@ -339,6 +347,8 @@ public class QuantumBoard3D {
                     }  
                 }
             }
+
+            //z crisscross, makes x from top down
             if(boardArray[0][0][i].getState().equals(boardArray[1][1][i].getState()) && boardArray[0][0][i].getState().equals(boardArray[2][2][i].getState())){
                 if(boardArray[1][1][i].getState().equals(State.Player1)){
                     player1++;
@@ -494,8 +504,8 @@ public class QuantumBoard3D {
     public int getMoveLocationInArray(int tile, int turn){
         int result = 0;
 
-        for(int i = 0; i < boardArray[tile % 3][(int) Math.floor((tile - (Math.floor(tile / 9) * 9)) / 3)][(int) Math.floor(tile / 9)].getMovesList().size(); i++){
-            if(boardArray[tile % 3][(int) Math.floor((tile - (Math.floor(tile / 9) * 9)) / 3)][(int) Math.floor(tile / 9)].getMovesList().get(i) == turn){
+        for(int i = 0; i < boardArray[tile % 3][(tile % 9) / 3][tile / 9].getMovesList().size(); i++){
+            if(boardArray[tile % 3][(tile % 9) / 3][tile / 9].getMovesList().get(i) == turn){
                 result = i;
             }
         }
@@ -532,37 +542,6 @@ public class QuantumBoard3D {
         }
 
     }
-
-    // public void checkBrokenLinks(){
-    //     int linksResolved = 0;
-
-    //     for(int i = 0; i < 3; i++){
-    //         for(int j = 0; j < 3; j++){
-    //             for(int l = 0; l < 3; l++){
-
-    //                 //iterates through moves on each square
-    //                 for(int k = 0; k < boardArray[i][j][l].getMovesList().size(); k++){
-
-    //                     int loc = (i + (3 * j) + (9 * l));
-
-    //                     int move = boardArray[i][j][l].getMovesList().get(k);
-
-    //                     int link = getLink(move, loc);
-                        
-    //                     if(link == -1){
-    //                         //System.out.println("No link for tile " + loc + ", move " + move);
-    //                         collapseTile(loc, move);
-    //                         linksResolved++;
-    //                     }
-    //                 }
-    //             }
-
-    //         }
-    //     }
-    //     if(linksResolved > 0){
-    //         checkBrokenLinks();
-    //     }
-    // }
     
     public QuantumBoard getQuantumBoard(int slice){
         QuantumBoard board = new QuantumBoard(this, slice);
@@ -582,6 +561,56 @@ public class QuantumBoard3D {
 
     public void incrementMoveCount(){
         moveCount++;
+    }
+
+    public void copy(QuantumBoard3D board){
+        //this might work (idk)
+        moveCount = board.getMoveCount();
+        result = 0;
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                for(int k = 0; k < 3; k++){
+                    boardArray[i][j][k].getMovesList().clear();
+                    boardArray[i][j][k].copy(board.getBoardTile(i, j, k));
+                }
+
+            }
+        }
+    }
+
+    public int getMoveCount(){
+        return moveCount;
+    }
+
+    public void move(QuantumMove move){
+        int z1 = move.getMove1() / 9;
+        int x1 = move.getMove1() % 3;
+        int y1 = (move.getMove1() % 9) / 3;
+
+        int z2 = move.getMove2() / 9;
+        int x2 = move.getMove2() % 3;
+        int y2 = (move.getMove2() % 9) / 3;
+
+        getBoardTile(x1, y1, z1).addMove(moveCount);
+        getBoardTile(x2, y2, z2).addMove(moveCount);
+        incrementMoveCount();
+    }
+
+    public ArrayList<Integer> listActiveTiles(){
+        ArrayList<Integer> list = new ArrayList<>();
+
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                for(int k = 0; k < 3; k++){
+                    if(boardArray[i][j][k].getState() == State.Blank){
+                        list.add(i + (j * 3) + (k * 9));
+                    }
+                }
+
+            }
+        }
+
+        return list;
     }
 
 }
