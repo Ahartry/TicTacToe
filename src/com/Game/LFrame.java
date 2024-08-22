@@ -1,9 +1,13 @@
 package com.Game;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,6 +25,14 @@ public class LFrame extends JFrame{
     GFrame frame;
 
     public LFrame(GFrame frame){
+
+        Font font = new Font(null);
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
 
         this.frame = frame;
         
@@ -47,6 +59,12 @@ public class LFrame extends JFrame{
         for(int i = 0; i < saveList.size(); i++){
             gbc.gridy = i;
             panel.add(new SaveMenu(saveList.get(i), this), gbc);
+        }
+
+        if(saveList.size() == 0){
+            JLabel label = new JLabel("No saves stored");
+            label.setFont(font);
+            panel.add(label);
         }
 
         add(panel);
@@ -201,6 +219,14 @@ public class LFrame extends JFrame{
     }
     
     public void refreshList(LFrame frame){
+        Font font = new Font(null);
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+        
         saveList.clear();
         panel.removeAll();
         //gets all the saves
@@ -228,6 +254,13 @@ public class LFrame extends JFrame{
             gbc.gridy = i;
             panel.add(new SaveMenu(saveList.get(i), frame), gbc);
         }
+
+        if(saveList.size() == 0){
+            JLabel label = new JLabel("No saves stored");
+            label.setFont(font);
+            panel.add(label);
+        }
+
 
         gbc.gridy += 1;
         gbc.weightx = 1;

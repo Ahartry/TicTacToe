@@ -6,9 +6,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -59,8 +61,9 @@ public class GFrame extends JFrame{
         setPreferredSize(new Dimension(1000, 600));
         setLocationRelativeTo(null);
         pack();
-        setLocationRelativeTo(null);
         setTitle("Tic Tac Toe");
+
+        centerFrame();
 
         System.out.println("\nStarting game type " + gameType + "\n");
 
@@ -176,6 +179,11 @@ public class GFrame extends JFrame{
                 //System.out.println("Clicked");
                 try {
                     setupWindow();
+
+                    //I do NOT trust this
+                    centerFrame();
+                    Thread.sleep(5);
+                    centerFrame();
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -194,13 +202,13 @@ public class GFrame extends JFrame{
               
             }
         });
+
+        centerFrame();
     }
 
     public void setupWindow() throws Exception {
         getContentPane().removeAll();
         revalidate();
-
-        //yes, setLocationRelativeTo(null) is here 3 times. Gotta be sure
 
         setLocationRelativeTo(null);
         setVisible(false);
@@ -211,6 +219,8 @@ public class GFrame extends JFrame{
         setResizable(false);
         setVisible(true);
         setLocationRelativeTo(null);
+
+        centerFrame();
 
         startPanel = new JPanel();
         startPanel.setLayout(new GridBagLayout());
@@ -311,7 +321,7 @@ public class GFrame extends JFrame{
         tranButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 //starts ultimate game
-                new SFrame(GFrame.this);
+                askLoad(3, font);
             } 
         });
 
@@ -345,6 +355,8 @@ public class GFrame extends JFrame{
         add(startPanel);
         setVisible(true);
         repaint();
+
+        centerFrame();
     }
 
     public void askIfUserWantsBot(int gameType, Font font){
@@ -596,6 +608,54 @@ public class GFrame extends JFrame{
         });
     }
 
+    public void askLoad(int gameType, Font font){
+        startPanel.removeAll();
+        startPanel.repaint();
+        startPanel.setLayout(new GridBagLayout());
+
+        GButton newButton = new GButton("New Game");
+        GButton loadButton = new GButton("Load Game");
+
+        newButton.setFont(font);
+        loadButton.setFont(font);
+
+        newButton.setPreferredSize(new Dimension(200, 40));
+        loadButton.setPreferredSize(new Dimension(200, 40));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+
+        gbc.gridx = 0;
+
+        startPanel.add(newButton, gbc);
+
+        gbc.gridx = 1;
+
+        startPanel.add(loadButton, gbc);
+
+        startPanel.repaint();
+        startPanel.revalidate();
+        startPanel.setVisible(true);
+
+        newButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+
+                new SFrame(GFrame.this);
+            } 
+            
+        });
+        loadButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+
+                new LFrame(GFrame.this);
+
+            } 
+            
+        });
+    }
+
     public GPanel getGPanel(){
         return bottomPanel;
     }
@@ -603,5 +663,16 @@ public class GFrame extends JFrame{
     public void setDepth(int x){
         bottomPanel.setDepth(x);
     }
+
+    private void centerFrame() {
+
+        Dimension windowSize = getSize();
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        Point centerPoint = ge.getCenterPoint();
+
+        int dx = centerPoint.x - windowSize.width / 2;
+        int dy = centerPoint.y - windowSize.height / 2;    
+        setLocation(dx, dy);
+}
 
 }

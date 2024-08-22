@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -69,6 +68,7 @@ public class SFrame extends JFrame{
         nameField.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e){
                 if(!clicked){
+                    setFocusable(true);
                     clicked = true;
                     nameField.setText("");
                     repaint();
