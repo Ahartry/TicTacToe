@@ -43,7 +43,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
     int offsetx = 0;
     int offsety = 0;
     int width = 1000;
-    int height = 540;
+    int height = 550;
+    int pwidth = 1000;
+    int pheight = 550;
     double zoom = 1;
     int buffer = 50;
     boolean turn;
@@ -109,7 +111,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         replayButton = new GButton("Replay");
 
-        //instantiates boards
+        //instantiates boards and sets default zooms
         if(game == 1){
             simpleBoard = new SimpleBoard();
             zoom = 0.75;
@@ -988,8 +990,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                     return;
                 }
     
-                int deltax = e.getX() - mouseLocx;
-                int deltay = e.getY() - mouseLocy;
+                int deltax = (e.getX() - mouseLocx);
+                int deltay = (e.getY() - mouseLocy);
     
                 mouseLocx = e.getX();
                 mouseLocy = e.getY();
@@ -999,10 +1001,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
     
                 movementCounter++;
 
-                //System.out.println("X offset: " + offsetx + ", Y offset: " + offsety);
-
-                //System.out.println(movementCounter);
-                //System.out.println(deltax);
                 repaint();
             }
             public void mouseMoved(MouseEvent e){
@@ -1210,9 +1208,14 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }else{
             g.setColor(Color.BLACK);
         }
+
+        // double xscale = (double) width / (double) pwidth;
+        // double yscale = (double) height / (double) pheight;
+
+        //System.out.println("Window is " + xscale + " of width and " + yscale + " of height");
         
-        thickness = width / 100;
         boundingSize = Math.min(width, height);
+        thickness = boundingSize / 50;
         xbound = (width - boundingSize) / 2;
         ybound = (height - boundingSize) / 2;
         cellSize = (int) boundingSize / 3;
@@ -1237,6 +1240,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
 
         buffer = (int) ((width / 40) * zoom);
+
+        // xbound = xbound + (int) (offsetx * xscale);
+        // ybound = ybound + (int) (offsety * yscale);
 
         xbound = xbound + offsetx;
         ybound = ybound + offsety;
@@ -1326,9 +1332,12 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }else{
             g.setColor(Color.BLACK);
         }
+
+        // double xscale = (double) width / (double) pwidth;
+        // double yscale = (double) height / (double) pheight;
         
-        thickness = width / 50;
         boundingSize = Math.min(width, height);
+        thickness = boundingSize / 25;
         xbound = (width - boundingSize) / 2;
         ybound = (height - boundingSize) / 2;
         cellSize = (int) boundingSize / 3;
@@ -1352,6 +1361,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
 
         buffer = (int) ((width / 50) * zoom);
+
+        // xbound = xbound + (int) (offsetx * xscale);
+        // ybound = ybound + (int) (offsety * yscale);
 
         xbound = xbound + offsetx;
         ybound = ybound + offsety;
@@ -1409,8 +1421,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
             g.setColor(Color.BLACK);
         }
         
-        thickness = width / 30;
+        // double xscale = (double) width / (double) pwidth;
+        // double yscale = (double) height / (double) pheight;
+       
         boundingSize = Math.min(width, height);
+        thickness = boundingSize / 15;
         xbound = (width - boundingSize) / 2;
         ybound = (height - boundingSize) / 2;
         cellSize = (int) boundingSize / 3;
@@ -1434,6 +1449,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
 
         buffer = (int) ((width / 60) * zoom);
+        
+        // xbound = xbound + (int) (offsetx * xscale);
+        // ybound = ybound + (int) (offsety * yscale);
 
         xbound = xbound + offsetx;
         ybound = ybound + offsety;
@@ -1464,8 +1482,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
     public void drawQuantumBoard(Graphics2D g, QuantumBoard board){
         g.setColor(Color.BLACK);
         
-        thickness = width / 100;
+        // double xscale = (double) width / (double) pwidth;
+        // double yscale = (double) height / (double) pheight;
+       
         boundingSize = Math.min(width, height);
+        thickness = boundingSize / 50;
         xbound = (width - boundingSize) / 2;
         ybound = (height - boundingSize) / 2;
         cellSize = (int) boundingSize / 3;
@@ -1490,6 +1511,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
 
         buffer = (int) ((width / 40) * zoom);
+        
+        // xbound = xbound + (int) (offsetx * xscale);
+        // ybound = ybound + (int) (offsety * yscale);
 
         xbound = xbound + offsetx;
         ybound = ybound + offsety;
@@ -1645,9 +1669,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         width = image.getWidth();
         height = image.getHeight();
-        
-        thickness = width / 40;
+
         boundingSize = Math.min(width, height);
+        thickness = boundingSize / 20;
         xbound = (width - boundingSize) / 2;
         ybound = (height - boundingSize) / 2;
         cellSize = (int) boundingSize / 3;
@@ -2101,7 +2125,25 @@ public class GPanel extends JPanel implements MouseWheelListener{
     public void resizeVariables(int width1, int height1){
         width = width1;
         height = height1;
-        
+
+        //do anything needed with comparing to old size
+
+        double xscale = (double) width / (double) pwidth;
+        double yscale = (double) height / (double) pheight;
+
+        double zoomscale = (double) Math.min(width, height) / (double) Math.min(pwidth, pheight);
+
+        offsetx *= xscale;
+        offsety *= yscale;
+
+        zoom *= zoomscale;
+
+        // System.out.println(zoom);
+        // System.out.println(width + " " + height + ", " + pwidth + " " + pheight);
+
+        // //sets the new previous size
+        pwidth = width;
+        pheight = height;
     }
 
     public int getRealX(MouseEvent e){

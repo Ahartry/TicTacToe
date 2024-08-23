@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class GFrame extends JFrame{
 
@@ -184,6 +185,13 @@ public class GFrame extends JFrame{
                     centerFrame();
                     Thread.sleep(5);
                     centerFrame();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            centerFrame();
+                        }
+                    });
+
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -195,7 +203,7 @@ public class GFrame extends JFrame{
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                bottomPanel.resizeVariables(e.getComponent().getWidth(), getContentPane().getHeight() - 50);
+                bottomPanel.resizeVariables(getContentPane().getWidth(), getContentPane().getHeight()/* */ - 50);
             }
             @Override
             public void componentMoved(ComponentEvent e) {
@@ -671,8 +679,18 @@ public class GFrame extends JFrame{
         Point centerPoint = ge.getCenterPoint();
 
         int dx = centerPoint.x - windowSize.width / 2;
-        int dy = centerPoint.y - windowSize.height / 2;    
+        int dy = centerPoint.y - windowSize.height / 2;
         setLocation(dx, dy);
-}
+
+        //to make sure it gets down when it can
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                setLocation(dx, dy);
+            }
+        });
+        setLocation(dx, dy);
+        
+    }
 
 }
