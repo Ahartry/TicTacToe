@@ -3,6 +3,7 @@ package com.Game;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -54,17 +55,8 @@ public class GFrame extends JFrame{
     }
 
     public void setupGame(int gameType, boolean bot) throws FontFormatException, IOException{
-        
+        setVisible(false);
         getContentPane().removeAll();
-        revalidate();
-
-        setResizable(true);
-        setPreferredSize(new Dimension(1000, 600));
-        setLocationRelativeTo(null);
-        pack();
-        setTitle("Tic Tac Toe");
-
-        centerFrame();
 
         System.out.println("\nStarting game type " + gameType + "\n");
 
@@ -211,24 +203,20 @@ public class GFrame extends JFrame{
             }
         });
 
-        centerFrame();
+        revalidate();
+        setTitle("Tic Tac Toe");
+
+        EventQueue.invokeLater(() -> {
+            setSize(1000, 600);
+            validate();
+            setLocationRelativeTo(null);
+            setVisible(true);
+        });
     }
 
     public void setupWindow() throws Exception {
-        getContentPane().removeAll();
-        revalidate();
-
-        setLocationRelativeTo(null);
         setVisible(false);
-        setResizable(true);
-        setSize(400, 250);
-        setLocationRelativeTo(null);
-        setTitle("Select your game");
-        setResizable(false);
-        setVisible(true);
-        setLocationRelativeTo(null);
-
-        centerFrame();
+        getContentPane().removeAll();
 
         startPanel = new JPanel();
         startPanel.setLayout(new GridBagLayout());
@@ -356,15 +344,21 @@ public class GFrame extends JFrame{
             
         });
 
-        startPanel.repaint();
-        startPanel.revalidate();
-        startPanel.setVisible(true);
+        // startPanel.repaint();
+        // startPanel.revalidate();
+        // startPanel.setVisible(true);
 
         add(startPanel);
-        setVisible(true);
-        repaint();
 
-        centerFrame();
+        revalidate();
+        setTitle("Choose your game");
+
+        EventQueue.invokeLater(() -> {
+            setSize(400, 250);
+            validate();
+            setLocationRelativeTo(null);
+            setVisible(true);
+        });
     }
 
     public void askIfUserWantsBot(int gameType, Font font){
