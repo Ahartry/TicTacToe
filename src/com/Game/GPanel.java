@@ -701,15 +701,12 @@ public class GPanel extends JPanel implements MouseWheelListener{
                         Point2D.Double click1 = new Point2D.Double(e.getX(), e.getY());
                         if(e.getY() < height / 3){
                             boardZ = 2;
-                            click1.setLocation(e.getX() - width / 2, e.getY() - 95);
-                            //System.out.println("Top board, " + click1.getX() + ", " + click1.getY());
+                            click1.setLocation(e.getX() - offsetx, e.getY() - offsety);
                         }else if(e.getY() > height / 3 && e.getY() < (2 * (height / 3))){
                             boardZ = 1;
-                            click1.setLocation(e.getX() - width / 2, e.getY() - 95 - (height / 3));
-                            //System.out.println("Middle board, " + click1.getX() + ", " + click1.getY());
+                            click1.setLocation(e.getX() - offsetx, e.getY() - offsety - (height / 3));
                         }else{
-                            click1.setLocation(e.getX() - width / 2, e.getY() - 95 - (2 * height / 3));
-                            //System.out.println("Bottom board, " + click1.getX() + ", " + click1.getY());
+                            click1.setLocation(e.getX() - offsetx, e.getY() - offsety - (2 * height / 3));
                         }
 
                         Point2D.Double click2 = new Point2D.Double();
@@ -1670,10 +1667,10 @@ public class GPanel extends JPanel implements MouseWheelListener{
         width = image.getWidth();
         height = image.getHeight();
 
-        boundingSize = Math.min(width, height);
-        thickness = boundingSize / 20;
-        xbound = (width - boundingSize) / 2;
-        ybound = (height - boundingSize) / 2;
+        boundingSize = 1024;
+        thickness = boundingSize / 40;
+        xbound = 512;
+        ybound = 512;
         cellSize = (int) boundingSize / 3;
 
         if(zoom > 1){
@@ -1847,9 +1844,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         int boardoffset = height / 3;
 
-        BufferedImage image0 = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
-        BufferedImage image1 = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
-        BufferedImage image2 = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image0 = new BufferedImage(2048, 2048, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image1 = new BufferedImage(2048, 2048, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image2 = new BufferedImage(2048, 2048, BufferedImage.TYPE_INT_ARGB);
 
         drawQuantumBoard3DSlice(image0, board, 0);
         drawQuantumBoard3DSlice(image1, board, 1);
@@ -1860,6 +1857,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         int quantumCellSize = cellSize / 3;
 
+        //for the links
         AffineTransform transform = new AffineTransform(Math.cos(theta), (-1 * Math.sin(theta)) / 2, Math.sin(theta), Math.cos(theta) / 2, offsetx, offsety);
 
         //draws links
@@ -2042,14 +2040,14 @@ public class GPanel extends JPanel implements MouseWheelListener{
         Point2D.Double click1 = new Point2D.Double(x, y);
         if(y < height / 3){
             boardZ = 2;
-            click1.setLocation(x - width / 2, x - 95);
+            click1.setLocation(x - offsetx, y - offsety);
             //System.out.println("Top board, " + click1.getX() + ", " + click1.getY());
         }else if(y > height / 3 && y < (2 * (height / 3))){
             boardZ = 1;
-            click1.setLocation(x - width / 2, y - 95 - (height / 3));
+            click1.setLocation(x - offsetx, y - offsety - (height / 3));
             //System.out.println("Middle board, " + click1.getX() + ", " + click1.getY());
         }else{
-            click1.setLocation(x - width / 2, y - 95 - (2 * height / 3));
+            click1.setLocation(x - offsetx, y - offsety - (2 * height / 3));
             //System.out.println("Bottom board, " + click1.getX() + ", " + click1.getY());
         }
 

@@ -120,13 +120,13 @@ public class GFrame extends JFrame{
         dd.width = 90;
         helpButton.setPreferredSize(dd); 
 
-        if(gameType == 4 || gameType == 5){
-            rightPanel.add(functionButton);
-            functionButton.setText("Hide Lines");
-            Dimension d = functionButton.getPreferredSize();
-            d.width = 160;
-            functionButton.setPreferredSize(d); 
-        }
+        // if(gameType == 4 || gameType == 5){
+        //     rightPanel.add(functionButton);
+        //     functionButton.setText("Hide Lines");
+        //     Dimension d = functionButton.getPreferredSize();
+        //     d.width = 160;
+        //     functionButton.setPreferredSize(d); 
+        // }
 
         rightPanel.add(helpButton);
 
