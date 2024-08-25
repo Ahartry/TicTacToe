@@ -302,7 +302,6 @@ public class GFrame extends JFrame{
             public void actionPerformed(ActionEvent e){ 
                 //starts regular game
                 try {
-                    //new GFrame(1, false);
                     setupGame(1, false);
                     setupGame(1, false);
                     repaint();
