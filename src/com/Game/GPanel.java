@@ -993,6 +993,32 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 mouseLocx = e.getX();
                 mouseLocy = e.getY();
 
+                double boardSize = Math.min(width, height) * zoom;
+
+                if(game == 2){
+                    boardSize *= 3;
+                }else if(game == 3){
+                    boardSize *= 9;
+                }
+
+                //stuff for keeping it close to view
+                if(offsetx > width + (boardSize / 2)){
+                    offsetx = width + (int) (boardSize / 2);
+                    return;
+                }
+                if(offsetx + boardSize < 0){
+                    offsetx = -1 * (int) boardSize;
+                    return;
+                }
+                if(offsety > height + (boardSize / 2)){
+                    offsety = height + (int) (boardSize / 2);
+                    return;
+                }
+                if(offsety + boardSize < 0){
+                    offsety = -1 * (int) boardSize;
+                    return;
+                }
+
                 offsetx = offsetx + deltax;
                 offsety = offsety + deltay;
     
@@ -1205,11 +1231,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }else{
             g.setColor(Color.BLACK);
         }
-
-        // double xscale = (double) width / (double) pwidth;
-        // double yscale = (double) height / (double) pheight;
-
-        //System.out.println("Window is " + xscale + " of width and " + yscale + " of height");
         
         boundingSize = Math.min(width, height);
         thickness = boundingSize / 50;
@@ -1237,9 +1258,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
 
         buffer = (int) ((width / 40) * zoom);
-
-        // xbound = xbound + (int) (offsetx * xscale);
-        // ybound = ybound + (int) (offsety * yscale);
 
         xbound = xbound + offsetx;
         ybound = ybound + offsety;
@@ -2129,15 +2147,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
         double xscale = (double) width / (double) pwidth;
         double yscale = (double) height / (double) pheight;
 
-        double zoomscale = (double) Math.min(width, height) / (double) Math.min(pwidth, pheight);
-
         offsetx *= xscale;
         offsety *= yscale;
-
-        zoom *= zoomscale;
-
-        // System.out.println(zoom);
-        // System.out.println(width + " " + height + ", " + pwidth + " " + pheight);
 
         // //sets the new previous size
         pwidth = width;

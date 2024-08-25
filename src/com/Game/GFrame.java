@@ -49,12 +49,13 @@ public class GFrame extends JFrame{
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setupWindow();
+        setupWindow();
 
         //setupGame(gameType, bot);
 
     }
 
-    public void setupGame(int gameType, boolean bot) throws FontFormatException, IOException{
+    public void setupGame(int gameType, boolean bot) throws Exception{
         setVisible(false);
         getContentPane().removeAll();
 
@@ -207,6 +208,10 @@ public class GFrame extends JFrame{
         setTitle("Tic Tac Toe");
 
         EventQueue.invokeLater(() -> {
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e1) {
+            }
             setSize(1000, 600);
             validate();
             setLocationRelativeTo(null);
@@ -294,12 +299,14 @@ public class GFrame extends JFrame{
         startPanel.add(quan3DButton, gbc);
 
         regButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
+            public void actionPerformed(ActionEvent e){ 
                 //starts regular game
                 try {
                     //new GFrame(1, false);
                     setupGame(1, false);
-                } catch (FontFormatException | IOException e1) {
+                    setupGame(1, false);
+                    repaint();
+                } catch (Exception e1) {
                     e1.printStackTrace();
                 }
             } 
@@ -354,6 +361,10 @@ public class GFrame extends JFrame{
         setTitle("Choose your game");
 
         EventQueue.invokeLater(() -> {
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e1) {
+            }
             setSize(400, 250);
             validate();
             setLocationRelativeTo(null);
@@ -401,6 +412,8 @@ public class GFrame extends JFrame{
                         askDifficulty(gameType, font);
                     }else{
                         setupGame(gameType, true);
+                        setupGame(gameType, true);
+                        repaint();
                         //setupWindow();
                     }
                     
@@ -416,6 +429,8 @@ public class GFrame extends JFrame{
 
                 try {
                     setupGame(gameType, false);
+                    setupGame(gameType, false);
+                    repaint();
                     //setupWindow();
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -517,6 +532,7 @@ public class GFrame extends JFrame{
             public void actionPerformed(ActionEvent e) { 
                 try {
                     setupGame(gameType, true);
+                    setupGame(gameType, true);
                     bottomPanel.setDepth(1);
                     //setupWindow();
                 } catch (Exception e1) {
@@ -528,6 +544,7 @@ public class GFrame extends JFrame{
         twoButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
+                    setupGame(gameType, true);
                     setupGame(gameType, true);
                     bottomPanel.setDepth(2);
                     //setupWindow();
@@ -541,6 +558,7 @@ public class GFrame extends JFrame{
             public void actionPerformed(ActionEvent e) { 
                 try {
                     setupGame(gameType, true);
+                    setupGame(gameType, true);
                     bottomPanel.setDepth(3);
                     //setupWindow();
                 } catch (Exception e1) {
@@ -552,6 +570,7 @@ public class GFrame extends JFrame{
         fourButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
+                    setupGame(gameType, true);
                     setupGame(gameType, true);
                     bottomPanel.setDepth(4);
                     //setupWindow();
@@ -565,6 +584,7 @@ public class GFrame extends JFrame{
             public void actionPerformed(ActionEvent e) { 
                 try {
                     setupGame(gameType, true);
+                    setupGame(gameType, true);
                     bottomPanel.setDepth(5);
                     //setupWindow();
                 } catch (Exception e1) {
@@ -576,6 +596,7 @@ public class GFrame extends JFrame{
         sixButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
+                    setupGame(gameType, true);
                     setupGame(gameType, true);
                     bottomPanel.setDepth(6);
                     //setupWindow();
@@ -589,6 +610,7 @@ public class GFrame extends JFrame{
             public void actionPerformed(ActionEvent e) { 
                 try {
                     setupGame(gameType, true);
+                    setupGame(gameType, true);
                     bottomPanel.setDepth(7);
                     //setupWindow();
                 } catch (Exception e1) {
@@ -600,6 +622,7 @@ public class GFrame extends JFrame{
         eightButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
+                    setupGame(gameType, true);
                     setupGame(gameType, true);
                     bottomPanel.setDepth(8);
                     //setupWindow();
