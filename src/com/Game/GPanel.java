@@ -313,10 +313,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                                 //checks each scale of board
                                 int resultsmall = massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).checkBoard(xcell, ycell);
-                                int resultlarge = massiveBoard.getBoardArray(xlargeboard, ylargeboard).checkBoard(xboard, yboard);
-                                int resultmassive = massiveBoard.checkBoard(xlargeboard, ylargeboard);
-
-                                //System.out.println("Massive result: " + resultmassive);
 
                                 turn = !turn;
 
@@ -369,6 +365,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     }
                                 }
 
+                                int resultlarge = massiveBoard.getBoardArray(xlargeboard, ylargeboard).checkBoard(xboard, yboard);
+
                                 if(resultlarge == 1){
                                     massiveBoard.getBoardArray(xlargeboard, ylargeboard).setState(State.Player1);
                                     massiveBoard.setActive(false);
@@ -389,6 +387,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                         massiveBoard.setActive(true);
                                     }
                                 }
+                                
+                                int resultmassive = massiveBoard.checkBoard(xlargeboard, ylargeboard);
 
                                 if(massiveBoard.getMoveTally() == 9){
                                     displayLabel.setText("Stalemate");

@@ -50,6 +50,7 @@ public class GToolTip extends JFrame{
                     Point loc = MouseInfo.getPointerInfo().getLocation();
                     setLocation((int) loc.getX() + 15, (int) loc.getY() + 20);
                     if(!active){
+                        kill();
                         break;
                     }
                     try {

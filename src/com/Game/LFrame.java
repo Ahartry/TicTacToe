@@ -153,11 +153,11 @@ public class LFrame extends JFrame{
                 int cell = Integer.parseInt(input.substring(3, 4));
     
                 xl = large % 3;
-                yl = (int) Math.floor(large / 3);
+                yl = large / 3;
                 xb = board % 3;
-                yb = (int) Math.floor(board / 3);
+                yb = board / 3;
                 xc = cell % 3;
-                yc = (int) Math.floor(cell / 3);
+                yc = cell / 3;
     
                 inputboard.getBoardArray(xl, yl).getBoardArray(xb, yb).getBoardArray(xc, yc).setState(state);
                 
@@ -185,18 +185,18 @@ public class LFrame extends JFrame{
             }
 
             //additional checks for larger victories
-            for(int k = 0; k < 3; k++){
-                for(int j = 0; j < 3; j++){
-                    int result = inputboard.getBoardArray(k, j).checkEntireBoard();
+            // for(int k = 0; k < 3; k++){
+            //     for(int j = 0; j < 3; j++){
+            //         int result = inputboard.getBoardArray(k, j).checkEntireBoard();
 
-                    if(result == 1){
-                        inputboard.getBoardArray(k, j).setState(State.Player1);
-                    }else if(result == 2){
-                        inputboard.getBoardArray(k, j).setState(State.Player2);
-                    }
+            //         if(result == 1){
+            //             inputboard.getBoardArray(k, j).setState(State.Player1);
+            //         }else if(result == 2){
+            //             inputboard.getBoardArray(k, j).setState(State.Player2);
+            //         }
 
-                }
-            }
+            //     }
+            // }
 
             xl = recentLarge % 3;
             yl = (int) Math.floor(recentLarge / 3);
