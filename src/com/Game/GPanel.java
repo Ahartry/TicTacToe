@@ -34,9 +34,9 @@ import javax.swing.SwingUtilities;
 
 public class GPanel extends JPanel implements MouseWheelListener{
 
-    Image xImage = new ImageIcon(getClass().getClassLoader().getResource("x.png")).getImage();
+    Image xImage = new ImageIcon(getClass().getClassLoader().getResource("kb2.png")).getImage();
     Image xImage2 = new ImageIcon(getClass().getClassLoader().getResource("x2.png")).getImage();
-    Image oImage = new ImageIcon(getClass().getClassLoader().getResource("o.png")).getImage();
+    Image oImage = new ImageIcon(getClass().getClassLoader().getResource("tori.png")).getImage();
     Image oImage2 = new ImageIcon(getClass().getClassLoader().getResource("o2.png")).getImage();
 
     int game;

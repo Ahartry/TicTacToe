@@ -15,9 +15,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
@@ -81,18 +78,8 @@ public class GButton extends JButton{
 		    	if(isEnabled()) {
 					status = Status.HOVER;
 					hovering = true;
-
-					Thread thread2 = new Thread(){
-						public void run(){
-							try {
-								playSound("ping.wav");
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					};
 					
-					thread2.start();
+					new Sound().play("ping.wav");
 
 					if(usingTooltip){
 						Thread thread = new Thread(){
@@ -228,26 +215,8 @@ public class GButton extends JButton{
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-	    	//new Sound().play("ping.wav");
+	    	new Sound().play("jack.wav");
 		}
 		
-	}
-
-	private void playSound(String string) throws Exception{
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(string);
-		if (inputStream == null) {
-			throw new IllegalArgumentException("File not found: " + string);
-		}else{
-			//System.out.println("Playing");
-		}
-
-		AudioInputStream audioStream = AudioSystem.getAudioInputStream(inputStream);
-		Clip audioClip = AudioSystem.getClip();
-		audioClip.open(audioStream);
-		audioClip.start();
-		//audioClip.loop(100);
-		Thread.sleep(audioClip.getMicrosecondLength() / 1000);
-		audioClip.close();
-		audioStream.close();
 	}
 }
