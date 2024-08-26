@@ -215,7 +215,8 @@ public class GButton extends JButton{
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-	    	new Sound().play("jack.wav");
+	    	//new Sound().play("jack.wav");
+			//new Sound().play("ping.wav");
 		}
 		
 	}

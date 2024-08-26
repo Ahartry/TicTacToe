@@ -49,6 +49,7 @@ public class GFrame extends JFrame{
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setupWindow();
+        //setupGame(1, false);
         setupWindow();
 
         //setupGame(gameType, bot);
