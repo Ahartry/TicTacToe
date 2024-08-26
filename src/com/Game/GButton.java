@@ -79,14 +79,20 @@ public class GButton extends JButton{
 		addMouseListener(new java.awt.event.MouseAdapter() {
 		    public void mouseEntered(java.awt.event.MouseEvent evt) {
 		    	if(isEnabled()) {
-					try {
-						System.out.println("attempting to play");
-						playSound("jack.wav");
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
 					status = Status.HOVER;
 					hovering = true;
+
+					Thread thread2 = new Thread(){
+						public void run(){
+							try {
+								playSound("ping.wav");
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					};
+					
+					thread2.start();
 
 					if(usingTooltip){
 						Thread thread = new Thread(){
@@ -122,7 +128,6 @@ public class GButton extends JButton{
 						
 						thread.start();
 					}
-
 		    	}
 		    	setCursor(new Cursor(Cursor.HAND_CURSOR));
 				repaint();
@@ -233,13 +238,14 @@ public class GButton extends JButton{
 		if (inputStream == null) {
 			throw new IllegalArgumentException("File not found: " + string);
 		}else{
-			System.out.println("Playing");
+			//System.out.println("Playing");
 		}
 
 		AudioInputStream audioStream = AudioSystem.getAudioInputStream(inputStream);
 		Clip audioClip = AudioSystem.getClip();
 		audioClip.open(audioStream);
 		audioClip.start();
+		//audioClip.loop(100);
 		Thread.sleep(audioClip.getMicrosecondLength() / 1000);
 		audioClip.close();
 		audioStream.close();
