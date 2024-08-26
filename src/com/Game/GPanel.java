@@ -303,10 +303,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                             int xcell = (int) Math.floor((3 * (relativeX - (xlargeboard * boundingSize * 3 + xboard * boundingSize))) / (boundingSize));
                             int ycell = (int) Math.floor((3 * (relativeY - (ylargeboard * boundingSize * 3 + yboard * boundingSize))) / (boundingSize));
-
-                            //System.out.println("LargeBoard: " + xlargeboard + ", " + ylargeboard);
-                            //System.out.println("Board: " + xboard + ", " + yboard);
-                            //System.out.println("Cell: " + xcell + ", " + ycell);
     
                             if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).getBoardTile(xcell, ycell).getState() == State.Blank && massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).getActive()){
                                 massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).setBoardTile(xcell, ycell, turn);
@@ -323,14 +319,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                 }else{
                                     massiveBoard.getBoardArray(xlargeboard, ylargeboard).setActive(true);
                                 }
-
-                                // //I think this is needed 
-                                // //nope, it is not
-                                // if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getState() == State.Blank && massiveBoard.getBoardArray(xlargeboard, ylargeboard).getMoveTally() != 9){
-                                //     massiveBoard.getBoardArray(xlargeboard, ylargeboard).setActive(true);
-                                // }else{
-                                //     massiveBoard.setActive(true);
-                                // }
 
                                 if(turn){
                                     displayLabel.setText("Player 2's turn");
@@ -387,7 +375,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                         massiveBoard.setActive(true);
                                     }
                                 }
-                                
+
                                 int resultmassive = massiveBoard.checkBoard(xlargeboard, ylargeboard);
 
                                 if(massiveBoard.getMoveTally() == 9){

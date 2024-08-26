@@ -18,6 +18,10 @@ import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 
 public class SFrame extends JFrame{
 
@@ -124,6 +128,41 @@ public class SFrame extends JFrame{
                 }
             }
 
+        });
+
+        nameField.getDocument().addDocumentListener(new DocumentListener(){
+    
+            public void changedUpdate(DocumentEvent arg0){
+                editCheck(arg0);
+            }
+
+            public void insertUpdate(DocumentEvent arg0){
+                editCheck(arg0);
+            }
+
+            public void removeUpdate(DocumentEvent arg0){
+                editCheck(arg0);
+            }
+
+            public void editCheck(DocumentEvent arg0){
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!clicked){
+                            setFocusable(true);
+                            clicked = true;
+                            try {
+                                nameField.setText(arg0.getDocument().getText(nameField.getText().length() - 1, 1));
+                            } catch (BadLocationException e) {
+                                e.printStackTrace();
+                            }
+                            repaint();
+                            revalidate();
+                            nameField.setForeground(Color.BLACK);
+                        }
+                    }
+                });
+            }
         });
     }
 }
