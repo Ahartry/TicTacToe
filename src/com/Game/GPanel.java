@@ -37,7 +37,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     Image xImage = new ImageIcon(getClass().getClassLoader().getResource("x.png")).getImage();
     Image xImage2 = new ImageIcon(getClass().getClassLoader().getResource("x2.png")).getImage();
     Image oImage = new ImageIcon(getClass().getClassLoader().getResource("o.png")).getImage();
-    Image oImage2 = new ImageIcon(getClass().getClassLoader().getResource("o.png")).getImage();
+    Image oImage2 = new ImageIcon(getClass().getClassLoader().getResource("o2.png")).getImage();
 
     int game;
     int offsetx = 0;
@@ -307,122 +307,12 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).getBoardTile(xcell, ycell).getState() == State.Blank && massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).getActive()){
                                 massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).setBoardTile(xcell, ycell, turn);
 
-                                //checks each scale of board
-                                int resultsmall = massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).checkBoard(xcell, ycell);
+                                int end = massiveMoveAftermath(xlargeboard, ylargeboard, xboard, yboard, xcell, ycell);
 
-                                turn = !turn;
-
-                                massiveBoard.setActive(false);
-
-                                if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).getState() == State.Blank && massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).getMoveTally() != 9){
-                                    massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).setActive(true);
-                                }else{
-                                    massiveBoard.getBoardArray(xlargeboard, ylargeboard).setActive(true);
-                                }
-
-                                if(turn){
-                                    displayLabel.setText("Player 2's turn");
-                                    displayLabel.setForeground(blue);
-
-                                }else{
-                                    displayLabel.setText("Player 1's turn");
-                                    displayLabel.setForeground(red);
+                                if(bot && end == 0){
                                     
                                 }
-                                
-
-                                if(resultsmall == 1){
-                                    massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).setState(State.Player1);
-                                    massiveBoard.setActive(false);
-
-                                    if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
-                                        massiveBoard.getBoardArray(xboard, yboard).setActive(true);
-                                    }else{
-                                        massiveBoard.setActive(true);
-                                    }
-                                    
-                                    
-                                }else if(resultsmall == 2){
-                                    massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).setState(State.Player2);
-                                    massiveBoard.setActive(false);
-
-                                    if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
-                                        massiveBoard.getBoardArray(xboard, yboard).setActive(true);
-                                    }else{
-                                        massiveBoard.setActive(true);
-                                    }
-                                }
-
-                                int resultlarge = massiveBoard.getBoardArray(xlargeboard, ylargeboard).checkBoard(xboard, yboard);
-
-                                if(resultlarge == 1){
-                                    massiveBoard.getBoardArray(xlargeboard, ylargeboard).setState(State.Player1);
-                                    massiveBoard.setActive(false);
-
-                                    if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
-                                        massiveBoard.getBoardArray(xboard, yboard).setActive(true);
-                                    }else{
-                                        massiveBoard.setActive(true);
-                                    }
-                                     
-                                }else if(resultlarge == 2){
-                                    massiveBoard.getBoardArray(xlargeboard, ylargeboard).setState(State.Player2);
-                                    massiveBoard.setActive(false);
-
-                                    if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
-                                        massiveBoard.getBoardArray(xboard, yboard).setActive(true);
-                                    }else{
-                                        massiveBoard.setActive(true);
-                                    }
-                                }
-
-                                int resultmassive = massiveBoard.checkBoard(xlargeboard, ylargeboard);
-
-                                if(massiveBoard.getMoveTally() == 9){
-                                    displayLabel.setText("Stalemate");
-                                    displayLabel.setForeground(Color.BLACK);
-                                    massiveBoard.setActive(false);
-
-                                    //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
-                                    
-                                }
-                                
-                                if(resultmassive == 1){
-                                    displayLabel.setText("Player 1 wins");
-                                    displayLabel.setForeground(red);
-                                    massiveBoard.setActive(false);
-
-                                    //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
-                                    
-                                }else if(resultmassive == 2){
-                                    displayLabel.setText("Player 2 wins");
-                                    displayLabel.setForeground(blue);
-                                    massiveBoard.setActive(false);
-
-                                    //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
-                                    
-                                }
-
-                                repaint();
-
-                                recentLarge = xlargeboard + (3 * ylargeboard);
-                                recentSimple = xboard + (3 * yboard);
-                                recentCell = xcell + (3 * ycell);
-
-                                try {
-                                    outputBoard(massiveBoard);
-                                } catch (FileNotFoundException e1) {
-                                    e1.printStackTrace();
-                                }
-
-                                //System.out.println(recentLarge + ", " + recentSimple + ", " + recentCell);
                             }
-
-                            
-                            //System.out.println("X: " + xcell + ", Y: " + ycell);
     
                         }
                     }else if(game == 4){
@@ -1170,6 +1060,121 @@ public class GPanel extends JPanel implements MouseWheelListener{
         repaint();
 
         return end;
+    }
+
+    public int massiveMoveAftermath(int xlargeboard, int ylargeboard, int xboard, int yboard, int xcell, int ycell){
+        //checks each scale of board
+        int resultsmall = massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).checkBoard(xcell, ycell);
+
+        turn = !turn;
+
+        massiveBoard.setActive(false);
+
+        if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).getState() == State.Blank && massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).getMoveTally() != 9){
+            massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).setActive(true);
+        }else{
+            massiveBoard.getBoardArray(xlargeboard, ylargeboard).setActive(true);
+        }
+
+        if(turn){
+            displayLabel.setText("Player 2's turn");
+            displayLabel.setForeground(blue);
+
+        }else{
+            displayLabel.setText("Player 1's turn");
+            displayLabel.setForeground(red);
+            
+        }
+        
+
+        if(resultsmall == 1){
+            massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).setState(State.Player1);
+            massiveBoard.setActive(false);
+
+            if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
+                massiveBoard.getBoardArray(xboard, yboard).setActive(true);
+            }else{
+                massiveBoard.setActive(true);
+            }
+            
+            
+        }else if(resultsmall == 2){
+            massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).setState(State.Player2);
+            massiveBoard.setActive(false);
+
+            if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
+                massiveBoard.getBoardArray(xboard, yboard).setActive(true);
+            }else{
+                massiveBoard.setActive(true);
+            }
+        }
+
+        int resultlarge = massiveBoard.getBoardArray(xlargeboard, ylargeboard).checkBoard(xboard, yboard);
+
+        if(resultlarge == 1){
+            massiveBoard.getBoardArray(xlargeboard, ylargeboard).setState(State.Player1);
+            massiveBoard.setActive(false);
+
+            if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
+                massiveBoard.getBoardArray(xboard, yboard).setActive(true);
+            }else{
+                massiveBoard.setActive(true);
+            }
+             
+        }else if(resultlarge == 2){
+            massiveBoard.getBoardArray(xlargeboard, ylargeboard).setState(State.Player2);
+            massiveBoard.setActive(false);
+
+            if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
+                massiveBoard.getBoardArray(xboard, yboard).setActive(true);
+            }else{
+                massiveBoard.setActive(true);
+            }
+        }
+
+        int resultmassive = massiveBoard.checkBoard(xlargeboard, ylargeboard);
+
+        if(massiveBoard.getMoveTally() == 9){
+            displayLabel.setText("Stalemate");
+            displayLabel.setForeground(Color.BLACK);
+            massiveBoard.setActive(false);
+
+            //replay button stuff
+            add(replayPanel, BorderLayout.SOUTH);
+            
+        }
+        
+        if(resultmassive == 1){
+            displayLabel.setText("Player 1 wins");
+            displayLabel.setForeground(red);
+            massiveBoard.setActive(false);
+
+            //replay button stuff
+            add(replayPanel, BorderLayout.SOUTH);
+            
+        }else if(resultmassive == 2){
+            displayLabel.setText("Player 2 wins");
+            displayLabel.setForeground(blue);
+            massiveBoard.setActive(false);
+
+            //replay button stuff
+            add(replayPanel, BorderLayout.SOUTH);
+            
+        }
+
+        repaint();
+
+        recentLarge = xlargeboard + (3 * ylargeboard);
+        recentSimple = xboard + (3 * yboard);
+        recentCell = xcell + (3 * ycell);
+
+        try {
+            outputBoard(massiveBoard);
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
+
+        return resultmassive;
     }
 
     @Override

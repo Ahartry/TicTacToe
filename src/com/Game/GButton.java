@@ -15,7 +15,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
-
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
@@ -77,6 +79,12 @@ public class GButton extends JButton{
 		addMouseListener(new java.awt.event.MouseAdapter() {
 		    public void mouseEntered(java.awt.event.MouseEvent evt) {
 		    	if(isEnabled()) {
+					try {
+						System.out.println("attempting to play");
+						playSound("jack.wav");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					status = Status.HOVER;
 					hovering = true;
 
@@ -218,5 +226,22 @@ public class GButton extends JButton{
 	    	//new Sound().play("ping.wav");
 		}
 		
+	}
+
+	private void playSound(String string) throws Exception{
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(string);
+		if (inputStream == null) {
+			throw new IllegalArgumentException("File not found: " + string);
+		}else{
+			System.out.println("Playing");
+		}
+
+		AudioInputStream audioStream = AudioSystem.getAudioInputStream(inputStream);
+		Clip audioClip = AudioSystem.getClip();
+		audioClip.open(audioStream);
+		audioClip.start();
+		Thread.sleep(audioClip.getMicrosecondLength() / 1000);
+		audioClip.close();
+		audioStream.close();
 	}
 }
