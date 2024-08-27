@@ -1,5 +1,7 @@
 package com.Game;
 
+import java.util.ArrayList;
+
 public class MassiveBoard {
 
     private LargeBoard[][] boardArray;
@@ -98,7 +100,7 @@ public class MassiveBoard {
         }
 
         if(result != 0){
-            System.out.println("Player " + result + " victory found");
+            //System.out.println("Player " + result + " victory found");
         }
         
         return result;
@@ -179,5 +181,104 @@ public class MassiveBoard {
             }
         }
     }
+
+    public void copy(MassiveBoard board){
+        //terribly inefficient, will fix later
+        for(int i = 0; i < 9; i++){
+            int xl = i % 3;
+            int yl = i / 3;
+            for(int j = 0; j < 9; j++){
+                int xb = j % 3;
+                int yb = j / 3;
+                for(int k = 0; k < 9; k++){
+                    int xc = k % 3;
+                    int yc = k / 3;
+
+                    State state = board.getBoardArray(xl, yl).getBoardArray(xb, yb).getBoardArray(xc, yc).getState();
+                    boardArray[xl][yl].getBoardArray(xb, yb).getBoardArray(xc, yc).setState(state);
+                }
+                State state = board.getBoardArray(xl, yl).getBoardArray(xb, yb).getState();
+                boardArray[xl][yl].getBoardArray(xb, yb).setState(state);
+
+                boolean activeb = board.getBoardArray(xl, yl).getBoardArray(xb, yb).getActive();
+                boardArray[xl][yl].getBoardArray(xb, yb).setActive(activeb);
+            }
+            State state = board.getBoardArray(xl, yl).getState();
+            boardArray[xl][yl].setState(state);
+
+            boolean activel = board.getBoardArray(xl, yl).getActive();
+            boardArray[xl][yl].setActive(activel);
+        }
+
+        boolean activel = board.getActive();
+        setActive(activel);
+    }
+
+    public ArrayList<MassiveMove> listActive(State turn){
+        ArrayList<MassiveMove> list = new ArrayList<>();
+        for(int i = 0; i < 9; i++){
+            int xl = i % 3;
+            int yl = i / 3;
+            // if(!boardArray[xl][yl].getActive()){
+            //     continue;
+            // }
+            for(int j = 0; j < 9; j++){
+                int xb = j % 3;
+                int yb = j / 3;
+                if(!boardArray[xl][yl].getBoardArray(xb, yb).getActive()){
+                    continue;
+                }
+                for(int k = 0; k < 9; k++){
+                    int xc = k % 3;
+                    int yc = k / 3;
+                    if(boardArray[xl][yl].getBoardArray(xb, yb).getBoardArray(xc, yc).getState() == State.Blank){
+                        list.add(new MassiveMove(i, j, k, turn));
+                    }
+                }
+            }
+        }
+
+        return list;
+
+    }
     
+    public int move(MassiveMove move){
+        int result = 0;
+        boardArray[move.getLarge() % 3][move.getLarge() / 3].getBoardArray(move.getBoard() % 3, move.getBoard() / 3).
+        getBoardArray(move.getCell() % 3, move.getCell() / 3).setState(move.getTurn());
+
+        boardArray[move.getLarge() % 3][move.getLarge() / 3].getBoardArray(move.getCell() % 3, move.getCell() / 3).setActive(true);
+
+        if(boardArray[move.getLarge() % 3][move.getLarge() / 3].getBoardArray(move.getBoard() % 3, move.getBoard() / 3).checkBoard(move.getCell() % 3, move.getCell() / 3) != 0){
+            result = 1;
+            boardArray[move.getBoard() % 3][move.getBoard() / 3].setActive(true);
+            boardArray[move.getLarge() % 3][move.getLarge() / 3].getBoardArray(move.getBoard() % 3, move.getBoard() / 3).setState(move.getTurn());
+            if(boardArray[move.getLarge() % 3][move.getLarge() / 3].checkBoard(move.getBoard() % 3, move.getBoard() / 3) != 0){
+                result = 2;
+                boardArray[move.getLarge() % 3][move.getLarge() / 3].setState(move.getTurn());
+                if(checkBoard(move.getLarge() % 3, move.getLarge() / 3) == 1){
+                    result = 3;
+                }else if(checkBoard(move.getLarge() % 3, move.getLarge() / 3) == 2){
+                    result = 4;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public void backTrack(ArrayList<MassiveMove> list){
+        for(int i = 0; i < list.size(); i++){
+            if(list.get(i).getCell() == -1){
+                if(list.get(i).getBoard() == -1){
+                    boardArray[list.get(i).getLarge() % 3][list.get(i).getLarge() / 3].setState(State.Blank);
+                }else{
+                    boardArray[list.get(i).getLarge() % 3][list.get(i).getLarge() / 3].getBoardArray(list.get(i).getBoard() % 3, list.get(i).getBoard() / 3).setState(State.Blank);
+                }
+            }else{
+                boardArray[list.get(i).getLarge() % 3][list.get(i).getLarge() / 3].getBoardArray(list.get(i).getBoard() % 3, list.get(i).getBoard() / 3).getBoardArray(list.get(i).getCell() % 3, list.get(i).getCell() / 3).setState(State.Blank);
+            }
+        }
+
+    }
 }

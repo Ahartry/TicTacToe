@@ -369,7 +369,7 @@ public class GFrame extends JFrame{
 
                 try {
                     //new GFrame(gameType, true);
-                    if(gameType == 2 || gameType == 4 || gameType == 5){
+                    if(gameType == 2 || gameType == 3 || gameType == 4 || gameType == 5){
                         askDifficulty(gameType, font);
                     }else{
                         setupGame(gameType, true);
@@ -492,10 +492,7 @@ public class GFrame extends JFrame{
         oneButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
-                    setupGame(gameType, true);
-                    setupGame(gameType, true);
-                    bottomPanel.setDepth(1);
-                    //setupWindow();
+                    botStart(gameType, 1);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -505,10 +502,7 @@ public class GFrame extends JFrame{
         twoButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
-                    setupGame(gameType, true);
-                    setupGame(gameType, true);
-                    bottomPanel.setDepth(2);
-                    //setupWindow();
+                    botStart(gameType, 2);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -518,10 +512,7 @@ public class GFrame extends JFrame{
         threeButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
-                    setupGame(gameType, true);
-                    setupGame(gameType, true);
-                    bottomPanel.setDepth(3);
-                    //setupWindow();
+                    botStart(gameType, 3);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -531,10 +522,7 @@ public class GFrame extends JFrame{
         fourButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
-                    setupGame(gameType, true);
-                    setupGame(gameType, true);
-                    bottomPanel.setDepth(4);
-                    //setupWindow();
+                    botStart(gameType, 4);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -544,10 +532,7 @@ public class GFrame extends JFrame{
         fiveButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
-                    setupGame(gameType, true);
-                    setupGame(gameType, true);
-                    bottomPanel.setDepth(5);
-                    //setupWindow();
+                    botStart(gameType, 5);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -557,10 +542,7 @@ public class GFrame extends JFrame{
         sixButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
-                    setupGame(gameType, true);
-                    setupGame(gameType, true);
-                    bottomPanel.setDepth(6);
-                    //setupWindow();
+                    botStart(gameType, 6);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -570,10 +552,7 @@ public class GFrame extends JFrame{
         sevenButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
-                    setupGame(gameType, true);
-                    setupGame(gameType, true);
-                    bottomPanel.setDepth(7);
-                    //setupWindow();
+                    botStart(gameType, 7);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -583,10 +562,7 @@ public class GFrame extends JFrame{
         eightButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 try {
-                    setupGame(gameType, true);
-                    setupGame(gameType, true);
-                    bottomPanel.setDepth(8);
-                    //setupWindow();
+                    botStart(gameType, 8);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -627,8 +603,8 @@ public class GFrame extends JFrame{
 
         newButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
-
-                new SFrame(GFrame.this);
+                askIfUserWantsBot(gameType, font);
+                //new SFrame(GFrame.this);
             } 
             
         });
@@ -663,5 +639,16 @@ public class GFrame extends JFrame{
             setLocationRelativeTo(null);
             setVisible(true);
         });
+    }
+
+    public void botStart(int gameType, int depth) throws Exception{
+        if(gameType != 3){
+            setupGame(gameType, true);
+            setupGame(gameType, true);
+            bottomPanel.setDepth(depth);
+        }else{
+            new SFrame(GFrame.this, true, depth);
+        }
+
     }
 }

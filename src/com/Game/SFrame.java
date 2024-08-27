@@ -27,7 +27,7 @@ public class SFrame extends JFrame{
 
     boolean clicked = false;
     
-    public SFrame(GFrame frame){
+    public SFrame(GFrame frame, boolean bot, int depth){
 
         Font font = new Font(null);
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -121,7 +121,8 @@ public class SFrame extends JFrame{
                     dispose();
                     new File(output).mkdirs();
                     move0.createNewFile();
-                    frame.setupGame(3, false);
+                    frame.setupGame(3, bot);
+                    frame.setDepth(depth);
                     frame.getGPanel().setOutputDir(outputFile);
                 } catch (Exception e1) {
                     e1.printStackTrace();

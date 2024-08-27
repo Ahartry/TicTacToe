@@ -74,6 +74,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     AI AI;
     qAI qAI;
     qAI3D qAI3D;
+    oAI oAI;
 
     int count = 0;
     int turnCount = 0;
@@ -148,6 +149,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         AI = new AI(gameType);
         qAI = new qAI();
         qAI3D = new qAI3D();
+        oAI = new oAI();
 
         //replay button stuff
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -310,7 +312,19 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                 int end = massiveMoveAftermath(xlargeboard, ylargeboard, xboard, yboard, xcell, ycell);
 
                                 if(bot && end == 0){
-                                    
+                                    displayLabel.setText("Player 2 is thinking");
+                                    displayLabel.setForeground(blue);
+                                    repaint();
+
+                                    //from chatgpt to make the ui update
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //maybe temporary, create new one
+                                            MassiveMove move = new oAI(depth).checkMassiveBoard(massiveBoard);
+                                            massiveMoveAftermath(move.getLarge() % 3, move.getLarge() / 3, move.getBoard() % 3, move.getBoard() / 3, move.getCell() % 3, move.getCell() / 3);
+                                        }
+                                    });
                                 }
                             }
     
@@ -970,7 +984,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             frame.setDepth(depth);
                         }
                     }else{
-                        new SFrame(frame);
+                        new SFrame(frame, bot, depth);
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
