@@ -7,11 +7,9 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -20,12 +18,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 public class GFrame extends JFrame{
 
@@ -49,10 +45,8 @@ public class GFrame extends JFrame{
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setupWindow();
-        //setupGame(1, false);
-        setupWindow();
-
-        //setupGame(gameType, bot);
+        fancyResize(400, 250);
+        setLocationRelativeTo(null);
 
     }
 
@@ -175,17 +169,6 @@ public class GFrame extends JFrame{
                 try {
                     setupWindow();
 
-                    //I do NOT trust this
-                    centerFrame();
-                    Thread.sleep(5);
-                    centerFrame();
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            centerFrame();
-                        }
-                    });
-
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -205,19 +188,8 @@ public class GFrame extends JFrame{
             }
         });
 
-        revalidate();
         setTitle("Tic Tac Toe");
-
-        EventQueue.invokeLater(() -> {
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e1) {
-            }
-            setSize(1000, 600);
-            validate();
-            setLocationRelativeTo(null);
-            setVisible(true);
-        });
+        fancyResize(1000, 600);
     }
 
     public void setupWindow() throws Exception {
@@ -357,19 +329,8 @@ public class GFrame extends JFrame{
 
         add(startPanel);
 
-        revalidate();
         setTitle("Choose your game");
-
-        EventQueue.invokeLater(() -> {
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e1) {
-            }
-            setSize(400, 250);
-            validate();
-            setLocationRelativeTo(null);
-            setVisible(true);
-        });
+        fancyResize(400, 250);
     }
 
     public void askIfUserWantsBot(int gameType, Font font){
@@ -689,25 +650,18 @@ public class GFrame extends JFrame{
         bottomPanel.setDepth(x);
     }
 
-    private void centerFrame() {
+    private void fancyResize(int x, int y){
+        revalidate();
 
-        Dimension windowSize = getSize();
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        Point centerPoint = ge.getCenterPoint();
-
-        int dx = centerPoint.x - windowSize.width / 2;
-        int dy = centerPoint.y - windowSize.height / 2;
-        setLocation(dx, dy);
-
-        //to make sure it gets down when it can
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                setLocation(dx, dy);
+        EventQueue.invokeLater(() -> {
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e1) {
             }
+            setSize(x, y);
+            validate();
+            setLocationRelativeTo(null);
+            setVisible(true);
         });
-        setLocation(dx, dy);
-        
     }
-
 }
