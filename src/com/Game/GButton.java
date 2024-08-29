@@ -41,7 +41,7 @@ public class GButton extends JButton{
 	private volatile boolean hovering = false;
 	private volatile boolean clicked = false;
 
-	private Sound sound = new Sound();
+	private Sound sound;
 
 	private Image image = null;
 

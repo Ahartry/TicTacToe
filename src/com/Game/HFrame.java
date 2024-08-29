@@ -16,7 +16,7 @@ import javax.swing.SwingConstants;
 
 public class HFrame extends JFrame{
     
-    public HFrame(int gameType) throws FontFormatException, IOException{
+    public HFrame(int gameType, Sound sound) throws FontFormatException, IOException{
 
         int width = 500;
         int height = 350;
@@ -45,6 +45,7 @@ public class HFrame extends JFrame{
         okButton.setFont(font);
         okButton.setVerticalAlignment(SwingConstants.BOTTOM);
         okButton.setHorizontalAlignment(SwingConstants.CENTER);
+        okButton.setSound(sound);
 
         add(panel);
 

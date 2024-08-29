@@ -23,12 +23,14 @@ public class LFrame extends JFrame{
     JPanel panel;
 
     GFrame frame;
+    Sound sound;
 
     int gameType;
 
-    public LFrame(GFrame frame, int game){
+    public LFrame(GFrame frame, int game, Sound sound){
 
         gameType = game;
+        this.sound = sound;
 
         Font font = new Font(null);
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -62,7 +64,7 @@ public class LFrame extends JFrame{
         //adds the saves
         for(int i = 0; i < saveList.size(); i++){
             gbc.gridy = i;
-            panel.add(new SaveMenu(saveList.get(i), this, gameType), gbc);
+            panel.add(new SaveMenu(saveList.get(i), this, gameType, sound), gbc);
         }
 
         if(saveList.size() == 0){
@@ -271,7 +273,7 @@ public class LFrame extends JFrame{
         for(int i = 0; i < saveList.size(); i++){
             //System.out.println(i);
             gbc.gridy = i;
-            panel.add(new SaveMenu(saveList.get(i), frame, gameType), gbc);
+            panel.add(new SaveMenu(saveList.get(i), frame, gameType, sound), gbc);
         }
 
         if(saveList.size() == 0){

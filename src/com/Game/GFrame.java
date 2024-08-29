@@ -33,6 +33,7 @@ public class GFrame extends JFrame{
     GButton helpButton;
     GButton backButton;
     Font font;
+    Sound sound;
     
     public GFrame() throws Exception{
 
@@ -42,11 +43,10 @@ public class GFrame extends JFrame{
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        sound = new Sound();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setupWindow();
-        fancyResize(400, 270);
-        setLocationRelativeTo(null);
 
     }
 
@@ -64,6 +64,10 @@ public class GFrame extends JFrame{
         helpButton.setFocusable(false);
         backButton = new GButton("");
         backButton.setFocusable(false);
+
+        functionButton.setSound(sound);
+        helpButton.setSound(sound);
+        backButton.setSound(sound);
 
         topPanel.setBackground(Color.GRAY);
 
@@ -118,7 +122,7 @@ public class GFrame extends JFrame{
 
         rightPanel.add(helpButton);
 
-        bottomPanel = new GPanel(gameType, topLabel, functionButton, bot, this);
+        bottomPanel = new GPanel(gameType, topLabel, functionButton, bot, this, sound);
 
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
         font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(30f);
@@ -153,7 +157,7 @@ public class GFrame extends JFrame{
             public void mouseClicked(MouseEvent e) {
                 //System.out.println("Clicked");
                 try {
-                    new HFrame(gameType);
+                    new HFrame(gameType, sound);
                 } catch (FontFormatException | IOException e1) {
                     e1.printStackTrace();
                 }
@@ -190,8 +194,7 @@ public class GFrame extends JFrame{
 
         setTitle("Tic Tac Toe");
         fancyResize(1000, 600);
-        setLocationRelativeTo(null);
-        fancyResize(1000, 600);
+        getGPanel().repaint();
     }
 
     public void setupWindow() throws Exception {
@@ -251,7 +254,6 @@ public class GFrame extends JFrame{
         quan3DButton.setPreferredSize(new Dimension(180, 40));
         settingsButton.setPreferredSize(new Dimension(50, 40));
 
-        Sound sound = new Sound();
         // sound.loadSound("ping.wav");
         regButton.setSound(sound);
         ultButton.setSound(sound);
@@ -355,8 +357,6 @@ public class GFrame extends JFrame{
 
         setTitle("Choose your game");
         fancyResize(400, 270);
-        setLocationRelativeTo(null);
-        fancyResize(400, 270);
     }
 
     public void askIfUserWantsBot(int gameType, Font font){
@@ -369,6 +369,9 @@ public class GFrame extends JFrame{
 
         singleplayerButton.setFont(font);
         multiplayerButton.setFont(font);
+
+        singleplayerButton.setSound(sound);
+        multiplayerButton.setSound(sound);
 
         singleplayerButton.setPreferredSize(new Dimension(200, 40));
         multiplayerButton.setPreferredSize(new Dimension(200, 40));
@@ -416,7 +419,7 @@ public class GFrame extends JFrame{
 
                 try {
                     if(gameType == 3){
-                        new SFrame(GFrame.this, false, 4, gameType);
+                        new SFrame(GFrame.this, false, 4, gameType, sound);
                     }else{
                         setupGame(gameType, false);
                         setupGame(gameType, false);
@@ -458,6 +461,15 @@ public class GFrame extends JFrame{
         sixButton.setFont(font);
         sevenButton.setFont(font);
         eightButton.setFont(font);
+
+        oneButton.setSound(sound);
+        twoButton.setSound(sound);
+        threeButton.setSound(sound);
+        fourButton.setSound(sound);
+        fiveButton.setSound(sound);
+        sixButton.setSound(sound);
+        sevenButton.setSound(sound);
+        eightButton.setSound(sound);
         
         oneButton.setPreferredSize(new Dimension(100, 40));
         twoButton.setPreferredSize(new Dimension(100, 40));
@@ -612,6 +624,9 @@ public class GFrame extends JFrame{
         newButton.setFont(font);
         loadButton.setFont(font);
 
+        newButton.setSound(sound);
+        loadButton.setSound(sound);
+
         newButton.setPreferredSize(new Dimension(200, 40));
         loadButton.setPreferredSize(new Dimension(200, 40));
 
@@ -642,7 +657,7 @@ public class GFrame extends JFrame{
         loadButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
 
-                new LFrame(GFrame.this, gameType);
+                new LFrame(GFrame.this, gameType, sound);
 
             } 
             
@@ -671,11 +686,6 @@ public class GFrame extends JFrame{
             setLocationRelativeTo(null);
             setVisible(true);
         });
-
-        //I don't trust it
-        // EventQueue.invokeLater(() -> {
-        //     setLocationRelativeTo(null);
-        // });
     }
 
     public void botStart(int gameType, int depth) throws Exception{
@@ -684,7 +694,7 @@ public class GFrame extends JFrame{
             setupGame(gameType, true);
             bottomPanel.setDepth(depth);
         }else{
-            new SFrame(GFrame.this, true, depth, gameType);
+            new SFrame(GFrame.this, true, depth, gameType, sound);
         }
 
     }

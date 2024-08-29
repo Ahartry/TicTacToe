@@ -26,8 +26,10 @@ import javax.swing.text.BadLocationException;
 public class SFrame extends JFrame{
 
     boolean clicked = false;
+    Sound sound;
     
-    public SFrame(GFrame frame, boolean bot, int depth, int game){
+    public SFrame(GFrame frame, boolean bot, int depth, int game, Sound sound){
+        this.sound = sound;
 
         Font font = new Font(null);
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -68,6 +70,7 @@ public class SFrame extends JFrame{
 
         GButton okButton = new GButton("Start");
         okButton.setFont(font);
+        okButton.setSound(sound);
 
         nameField.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e){

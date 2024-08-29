@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 
 public class SaveMenu extends JPanel{
     
-    public SaveMenu(String saveName, LFrame frame, int game){
+    public SaveMenu(String saveName, LFrame frame, int game, Sound sound){
 
         //make font
         Font font = new Font(null);
@@ -30,9 +30,11 @@ public class SaveMenu extends JPanel{
 
         GButton loadButton = new GButton("Load");
         loadButton.setFont(font);
+        loadButton.setSound(sound);
 
         GButton deleteButton = new GButton("Delete");
         deleteButton.setFont(font);
+        deleteButton.setSound(sound);
 
         //set sizes
         Dimension d = label.getPreferredSize();

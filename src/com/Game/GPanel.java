@@ -76,6 +76,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
     qAI3D qAI3D;
     oAI oAI;
 
+    Sound sound;
+
     int count = 0;
     int turnCount = 0;
     boolean quantumMove = false;
@@ -106,15 +108,17 @@ public class GPanel extends JPanel implements MouseWheelListener{
     File outputDir;
     String outputPath;
 
-    public GPanel(int gameType, JLabel displayLabel1, GButton button, boolean bot, GFrame frame) throws FontFormatException, IOException{
+    public GPanel(int gameType, JLabel displayLabel1, GButton button, boolean bot, GFrame frame, Sound sound) throws FontFormatException, IOException{
 
         game = gameType;
 
         displayLabel = displayLabel1;
 
         replayButton = new GButton("Replay");
+        replayButton.setSound(sound);
         
         this.bot = bot;
+        this.sound = sound;
 
         //instantiates boards and sets default zooms
         if(game == 1){
@@ -988,7 +992,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             frame.setDepth(depth);
                         }
                     }else{
-                        new SFrame(frame, bot, depth, 3);
+                        new SFrame(frame, bot, depth, 3, sound);
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
