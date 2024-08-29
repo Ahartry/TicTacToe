@@ -45,6 +45,33 @@ public class GButton extends JButton{
 
 	private Image image = null;
 
+	public void setColor(Color c){
+		int r = c.getRed();
+		int g = c.getGreen();
+		int b = c.getBlue();
+
+		int r2 = clamp(r - 30);
+		int g2 = clamp(g - 30);
+		int b2 = clamp(b - 30);
+
+		int r3 = clamp(r + 50);
+		int g3 = clamp(g + 50);
+		int b3 = clamp(b + 50);
+
+		mainColor = c;
+		clickedColor = new Color(r2, g2, b2, 255);
+		hoverColor = new Color(r3, g3, b3, 255);
+	}
+
+	public int clamp(int x){
+		if(x < 0){
+			x = 0;
+		}else if(x > 255){
+			x = 255;
+		}
+		return x;
+	}
+
 	public void setText(String t) {
 		text.setText(t);
 	}

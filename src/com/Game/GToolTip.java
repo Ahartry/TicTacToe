@@ -54,7 +54,7 @@ public class GToolTip extends JFrame{
                         kill();
                         break;
                     }
-                    if(counter > 300){
+                    if(counter > 200){
                         kill();
                         break; 
                     }

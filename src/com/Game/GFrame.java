@@ -10,6 +10,7 @@ import java.awt.FontFormatException;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -18,6 +19,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,6 +37,10 @@ public class GFrame extends JFrame{
     GButton backButton;
     Font font;
     Sound sound;
+    Color color = new Color(0,150,50,255);
+    ArrayList<GButton> buttonList = new ArrayList<>();
+    boolean fullscreen = true;
+    boolean gaming = false;
     
     public GFrame() throws Exception{
 
@@ -51,6 +58,8 @@ public class GFrame extends JFrame{
     }
 
     public void setupGame(int gameType, boolean bot) throws Exception{
+        gaming = true;
+        buttonList.clear();
         setVisible(false);
         getContentPane().removeAll();
 
@@ -68,6 +77,14 @@ public class GFrame extends JFrame{
         functionButton.setSound(sound);
         helpButton.setSound(sound);
         backButton.setSound(sound);
+
+        functionButton.setColor(color);
+        helpButton.setColor(color);
+        backButton.setColor(color);
+
+        buttonList.add(functionButton);
+        buttonList.add(helpButton);
+        buttonList.add(backButton);
 
         topPanel.setBackground(Color.GRAY);
 
@@ -198,6 +215,8 @@ public class GFrame extends JFrame{
     }
 
     public void setupWindow() throws Exception {
+        gaming = false;
+        buttonList.clear();
         Image image = null;
         try {
             image = ImageIO.read(getClass().getClassLoader().getResource("settings.png"));
@@ -261,6 +280,20 @@ public class GFrame extends JFrame{
         quanButton.setSound(sound);
         quan3DButton.setSound(sound);
         settingsButton.setSound(sound);
+
+        regButton.setColor(color);
+        ultButton.setColor(color);
+        tranButton.setColor(color);
+        quanButton.setColor(color);
+        quan3DButton.setColor(color);
+        settingsButton.setColor(color);
+
+        buttonList.add(regButton);
+        buttonList.add(ultButton);
+        buttonList.add(tranButton);
+        buttonList.add(quanButton);
+        buttonList.add(quan3DButton);
+        buttonList.add(settingsButton);
 
         //regButton.setToolTipText("The classic 3x3 board");
         regButton.setSubtext(" The classic 3x3 board ");
@@ -349,6 +382,13 @@ public class GFrame extends JFrame{
             } 
         });
 
+        settingsButton.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+                //starts quantum game
+                new CFrame(GFrame.this, sound, font, color);
+            } 
+        });
+
         // startPanel.repaint();
         // startPanel.revalidate();
         // startPanel.setVisible(true);
@@ -360,6 +400,7 @@ public class GFrame extends JFrame{
     }
 
     public void askIfUserWantsBot(int gameType, Font font){
+        buttonList.clear();
         startPanel.removeAll();
         startPanel.repaint();
         startPanel.setLayout(new GridBagLayout());
@@ -372,6 +413,12 @@ public class GFrame extends JFrame{
 
         singleplayerButton.setSound(sound);
         multiplayerButton.setSound(sound);
+
+        singleplayerButton.setColor(color);
+        multiplayerButton.setColor(color);
+
+        buttonList.add(singleplayerButton);
+        buttonList.add(multiplayerButton);
 
         singleplayerButton.setPreferredSize(new Dimension(200, 40));
         multiplayerButton.setPreferredSize(new Dimension(200, 40));
@@ -437,6 +484,7 @@ public class GFrame extends JFrame{
     }
 
     public void askDifficulty(int gameType, Font font){
+        buttonList.clear();
         startPanel.removeAll();
         startPanel.repaint();
 
@@ -470,6 +518,15 @@ public class GFrame extends JFrame{
         sixButton.setSound(sound);
         sevenButton.setSound(sound);
         eightButton.setSound(sound);
+
+        oneButton.setColor(color);
+        twoButton.setColor(color);
+        threeButton.setColor(color);
+        fourButton.setColor(color);
+        fiveButton.setColor(color);
+        sixButton.setColor(color);
+        sevenButton.setColor(color);
+        eightButton.setColor(color);
         
         oneButton.setPreferredSize(new Dimension(100, 40));
         twoButton.setPreferredSize(new Dimension(100, 40));
@@ -479,6 +536,15 @@ public class GFrame extends JFrame{
         sixButton.setPreferredSize(new Dimension(100, 40));
         sevenButton.setPreferredSize(new Dimension(100, 40));
         eightButton.setPreferredSize(new Dimension(100, 40));
+
+        buttonList.add(oneButton);
+        buttonList.add(twoButton);
+        buttonList.add(threeButton);
+        buttonList.add(fourButton);
+        buttonList.add(fiveButton);
+        buttonList.add(sixButton);
+        buttonList.add(sevenButton);
+        buttonList.add(eightButton);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridBagLayout());
@@ -614,6 +680,7 @@ public class GFrame extends JFrame{
     }
 
     public void askLoad(int gameType, Font font){
+        buttonList.clear();
         startPanel.removeAll();
         startPanel.repaint();
         startPanel.setLayout(new GridBagLayout());
@@ -629,6 +696,12 @@ public class GFrame extends JFrame{
 
         newButton.setPreferredSize(new Dimension(200, 40));
         loadButton.setPreferredSize(new Dimension(200, 40));
+
+        newButton.setColor(color);
+        loadButton.setColor(color);
+
+        buttonList.add(newButton);
+        buttonList.add(loadButton);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.CENTER;
@@ -673,7 +746,20 @@ public class GFrame extends JFrame{
     }
 
     private void fancyResize(int x, int y){
-        revalidate();
+        //revalidate();
+
+        if(fullscreen && gaming){
+            final int left = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).left;
+            final int right = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).right;
+            final int top = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).top;
+            final int bottom = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom;
+            final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            final int width = screenSize.width - left - right;
+            final int height = screenSize.height - top - bottom;
+            setSize(width, height);
+            setVisible(true);
+            return;
+        }
 
         EventQueue.invokeLater(() -> {
             //setLocationRelativeTo(null);
@@ -701,5 +787,13 @@ public class GFrame extends JFrame{
 
     public void setTopText(String s){
         topLabel.setText(s);
+    }
+
+    public void setColor(Color c){
+        color = c;
+        for(int i = 0; i < buttonList.size(); i++){
+            buttonList.get(i).setColor(c);
+        }
+        repaint();
     }
 }
