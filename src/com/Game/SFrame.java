@@ -27,7 +27,7 @@ public class SFrame extends JFrame{
 
     boolean clicked = false;
     
-    public SFrame(GFrame frame, boolean bot, int depth){
+    public SFrame(GFrame frame, boolean bot, int depth, int game){
 
         Font font = new Font(null);
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -41,7 +41,7 @@ public class SFrame extends JFrame{
         GridBagConstraints gbc = new GridBagConstraints();
 
         //set name based on other folders
-        String path = System.getProperty("user.dir") + File.separator + "Saves";
+        String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + Integer.toString(game);
         File file = new File(path);
         
         String[] directories = file.list(new FilenameFilter() {

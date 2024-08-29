@@ -57,7 +57,7 @@ public class oAI {
             }
         }
         bestMove.print();
-        System.out.println(total + " branches checked, " + bestScore + " wins");
+        System.out.println(total + " branches checked, " + bestScore + " net wins\n");
         board2.move(bestMove);
 
         return bestMove;

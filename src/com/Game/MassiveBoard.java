@@ -23,7 +23,7 @@ public class MassiveBoard {
 
     public MassiveBoard (){
         boardArray = new LargeBoard[3][3];
-        System.out.println("Generating Massive Board");
+        //System.out.println("Generating Massive Board");
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
                 boardArray[i][j] = new LargeBoard();

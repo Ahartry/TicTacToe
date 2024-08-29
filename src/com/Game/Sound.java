@@ -1,6 +1,9 @@
 package com.Game;
 
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -9,30 +12,8 @@ import javax.sound.sampled.LineListener;
 
 public class Sound implements LineListener{
 	
-    private static boolean soundEffects = true;
-    
-//    public static final Clip victory = loadSound("victory fanfare.wav");
-//    public static final Clip clicked = loadSound("ping.wav");
-//    public static final Clip kazoo = loadSound("two kazoo fanfare.wav");
-//    public static final Clip used = loadSound("wet-click.wav");
-//    public static final Clip pickUp = loadSound("Dealing Card.wav");
-//    public static final Clip removed = loadSound("ui confirmation alert-a1.wav");
-//    
-//    private static Clip loadSound(String s) {
-//    	try {
-//    	InputStream in = Sound.class.getResourceAsStream(s);
-//    	
-//        AudioInputStream audioStream = AudioSystem.getAudioInputStream(in);
-//        
-//        Clip c = AudioSystem.getClip();
-//        c.addLineListener(new Sound());
-//        c.open(audioStream);
-//        return c;
-//    	}catch(Exception a) {
-//    		System.out.println("There was an error loading the audio file");
-//    	}
-//    	return null;
-//    }
+	private static boolean soundEffects = true;
+	private ExecutorService soundThreadPool = Executors.newFixedThreadPool(10);
     
     public static void setEffects(boolean b) {
     	soundEffects = b;
@@ -45,21 +26,34 @@ public class Sound implements LineListener{
     
     public void play(String s) {
     	if(soundEffects) {
-    		Thread t = new Thread() {
-    				public void run() {
-    					try {
-    			        	URL url = this.getClass().getClassLoader().getResource(s);
+    		// Thread t = new Thread() {
+    		// 		public void run() {
+    		// 			try {
+    		// 	        	URL url = this.getClass().getClassLoader().getResource(s);
     			        	
-    			            AudioInputStream audioStream = AudioSystem.getAudioInputStream(url);
+    		// 	            AudioInputStream audioStream = AudioSystem.getAudioInputStream(url);
     			        
-    			        Clip c = AudioSystem.getClip();
-    			        c.addLineListener(new Sound());
-    			        c.open(audioStream);
-    			        c.start();
-    					}catch(Exception a) {a.printStackTrace();}
-    				}
-    		};
-    		t.start();
+    		// 	        Clip c = AudioSystem.getClip();
+    		// 	        c.addLineListener(new Sound());
+    		// 	        c.open(audioStream);
+    		// 	        c.start();
+    		// 			}catch(Exception a) {a.printStackTrace();}
+    		// 		}
+    		// };
+    		// t.start();
+			soundThreadPool.submit(() -> {
+				try {
+					URL url = this.getClass().getClassLoader().getResource(s);
+					
+					AudioInputStream audioStream = AudioSystem.getAudioInputStream(url);
+				
+				Clip c = AudioSystem.getClip();
+				c.addLineListener(new Sound());
+				c.open(audioStream);
+				c.start();
+				}catch(Exception a) {a.printStackTrace();}
+			});
+
     	}
     }
     
@@ -68,10 +62,9 @@ public class Sound implements LineListener{
         LineEvent.Type type = event.getType();
          
         if (type == LineEvent.Type.START) {
-//            System.out.println("Playback started.");
+//          System.out.println("Playback started.");
         } else if (type == LineEvent.Type.STOP) {
-                	event.getLine().close();
-//                    System.out.println("Playback completed.");
+            event.getLine().close();
 
         }
  

@@ -97,6 +97,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     boolean collapseMove = false;
 
+    boolean bot;
+
     double theta = Math.PI / 4;
     int imagex = 0;
     int imagey = 0;
@@ -111,6 +113,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
         displayLabel = displayLabel1;
 
         replayButton = new GButton("Replay");
+        
+        this.bot = bot;
 
         //instantiates boards and sets default zooms
         if(game == 1){
@@ -207,7 +211,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(red);
 
                                     //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
+                                    replay();
                                     
                                 }else if(result == 2){
                                     simpleBoard.setState(State.Player2);
@@ -215,7 +219,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(blue);
 
                                     //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
+                                    replay();
                                     
                                 }
 
@@ -224,7 +228,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(Color.BLACK);
 
                                     //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
+                                    replay();
                                     
                                 }
 
@@ -403,7 +407,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             
                                                             result = 1;
                                                             //replay button stuff
-                                                            add(replayPanel, BorderLayout.SOUTH);
+                                                            replay();
                                                         }
 
                                                         if(boardresult == 1){
@@ -414,7 +418,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                                                             result = 1;
                                                             //replay button stuff
-                                                            add(replayPanel, BorderLayout.SOUTH);
+                                                            replay();
                                                             quantumBoard.setState(State.Player1);
                                                             
                                                         }else if(boardresult == 2){
@@ -425,7 +429,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             
                                                             result = 1;
                                                             //replay button stuff
-                                                            add(replayPanel, BorderLayout.SOUTH);
+                                                            replay();
                                                             quantumBoard.setState(State.Player2);
                                                             
                                                         }
@@ -455,7 +459,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                             quantumBoard.clear();
                             
                                                             //replay button stuff
-                                                            add(replayPanel, BorderLayout.SOUTH);
+                                                            replay();
                                                         }
                                                     }else{
                                                         quantumBoard.clear();
@@ -553,7 +557,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(Color.BLACK);
     
                                     //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
+                                    replay();
                                     
                                 }
     
@@ -565,7 +569,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(red);
     
                                     //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
+                                    replay();
                                     
                                 }else if(boardresult == 2){
                                     quantumBoard.setState(State.Player2);
@@ -573,7 +577,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(blue);
     
                                     //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
+                                    replay();
                                     
                                 }
                                 repaint();
@@ -682,7 +686,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             
                                                             result = 1;
                                                             //replay button stuff
-                                                            add(replayPanel, BorderLayout.SOUTH);
+                                                            replay();
                                                         }
 
                                                         if(boardresult == 1){
@@ -693,7 +697,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                                                             result = 1;
                                                             //replay button stuff
-                                                            add(replayPanel, BorderLayout.SOUTH);
+                                                            replay();
                                                             quantumBoard3D.setState(State.Player1);
                                                             
                                                         }else if(boardresult == 2){
@@ -704,7 +708,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             
                                                             result = 1;
                                                             //replay button stuff
-                                                            add(replayPanel, BorderLayout.SOUTH);
+                                                            replay();
                                                             quantumBoard3D.setState(State.Player2);
                                                             
                                                         }
@@ -737,7 +741,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                             quantumBoard3D.clear();
                             
                                                             //replay button stuff
-                                                            add(replayPanel, BorderLayout.SOUTH);
+                                                            replay();
                                                         }
                                                     }else{
                                                         quantumBoard3D.clear();
@@ -835,7 +839,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(Color.BLACK);
     
                                     //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
+                                    replay();
                                     
                                 }
     
@@ -847,7 +851,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(red);
     
                                     //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
+                                    replay();
                                     
                                 }else if(boardresult == 2){
                                     quantumBoard3D.setState(State.Player2);
@@ -855,7 +859,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setForeground(blue);
     
                                     //replay button stuff
-                                    add(replayPanel, BorderLayout.SOUTH);
+                                    replay();
                                     
                                 }
                                 repaint();
@@ -984,7 +988,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             frame.setDepth(depth);
                         }
                     }else{
-                        new SFrame(frame, bot, depth);
+                        new SFrame(frame, bot, depth, 3);
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -1041,7 +1045,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             end = 1;
 
             //replay button stuff
-            add(replayPanel, BorderLayout.SOUTH);
+            replay();
             
         }
 
@@ -1056,7 +1060,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             end = 1;
 
             //replay button stuff
-            add(replayPanel, BorderLayout.SOUTH);
+            replay();
             
         }else if(result == 2){
             largeBoard.setState(State.Player2);
@@ -1067,7 +1071,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             end = 1;
 
             //replay button stuff
-            add(replayPanel, BorderLayout.SOUTH);
+            replay();
             
 
         }
@@ -1154,7 +1158,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             massiveBoard.setActive(false);
 
             //replay button stuff
-            add(replayPanel, BorderLayout.SOUTH);
+            replay();
             
         }
         
@@ -1164,7 +1168,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             massiveBoard.setActive(false);
 
             //replay button stuff
-            add(replayPanel, BorderLayout.SOUTH);
+            replay();
             
         }else if(resultmassive == 2){
             displayLabel.setText("Player 2 wins");
@@ -1172,7 +1176,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             massiveBoard.setActive(false);
 
             //replay button stuff
-            add(replayPanel, BorderLayout.SOUTH);
+            replay();
             
         }
 
@@ -1398,7 +1402,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             g.fillRect(xbound + buffer, ybound + (2 * boundingSize) - (thickness / 2), boundingSize * 3 - buffer- buffer, thickness);
         }else{
             int boardX = boardIndex % 3;
-            int boardY = (int) Math.floor(boardIndex /3);
+            int boardY = boardIndex /3;
 
             g.fillRect(xbound + boundingSize - (thickness / 2) + (boundingSize * 3 * boardX), ybound + buffer + (boundingSize * 3 * boardY), thickness, boundingSize * 3 - buffer- buffer);
             g.fillRect(xbound + (2 * boundingSize) - (thickness / 2) + (boundingSize * 3 * boardX), ybound + buffer + (boundingSize * 3 * boardY), thickness, boundingSize * 3 - buffer- buffer);
@@ -1407,7 +1411,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             g.fillRect(xbound + buffer + (boundingSize * 3 * boardX), ybound + (2 * boundingSize) - (thickness / 2) + (boundingSize * 3 * boardY), boundingSize * 3 - buffer- buffer, thickness);
 
             int x = boardIndex % 3;
-            int y = (int) Math.floor(boardIndex / 3);
+            int y = boardIndex / 3;
 
             double iconScale = 0.8;
             double iconOffset = (boundingSize - (boundingSize * iconScale)) / 2;
@@ -1487,7 +1491,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         for(int i = 0; i < 9; i++){
 
             int x = i % 3;
-            int y = (int) Math.floor(i / 3);
+            int y = i / 3;
 
             drawLargeBoard(g, massiveBoard.getBoardArray(x, y), false, i);
 
@@ -2191,7 +2195,16 @@ public class GPanel extends JPanel implements MouseWheelListener{
         output += recentSimple;
 
         //System.out.print(recentCell + " ");
-        output += recentCell + " ";
+        output += recentCell;
+
+        if(bot){
+            output += 1;
+        }else{
+            output += 0;
+        }
+        output += depth;
+
+        output += " ";
 
         int moveTally = 0;
 
@@ -2263,6 +2276,38 @@ public class GPanel extends JPanel implements MouseWheelListener{
             displayLabel.setForeground(red);
             
         }
+
+        int end = board.checkEntireBoard();
+
+        if(end == 1){
+            displayLabel.setForeground(red);
+            displayLabel.setText("Player 1 wins");
+            replay();
+            board.setActive(false);
+        }else if(end == 2){
+            displayLabel.setForeground(blue);
+            displayLabel.setText("Player 2 wins");
+            replay();
+            board.setActive(false);
+        }
+
+        //handles the first bot move
+        if(bot && end == 0 && turn){
+            displayLabel.setText("Player 2 is thinking");
+            displayLabel.setForeground(blue);
+            repaint();
+
+            //from chatgpt to make the ui update
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    //maybe temporary, create new one
+                    MassiveMove move = new oAI(depth).checkMassiveBoard(massiveBoard);
+                    massiveMoveAftermath(move.getLarge() % 3, move.getLarge() / 3, move.getBoard() % 3, move.getBoard() / 3, move.getCell() % 3, move.getCell() / 3);
+                }
+            });
+        }
+    
     }
 
     public void setOutputDir(File file){
@@ -2294,5 +2339,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }else if(game == 5){
             qAI3D.setDifficulty(x);
         }
+    }
+
+    public void replay(){
+        add(replayPanel, BorderLayout.SOUTH);
     }
 }

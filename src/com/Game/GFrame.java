@@ -45,7 +45,7 @@ public class GFrame extends JFrame{
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setupWindow();
-        fancyResize(400, 250);
+        fancyResize(400, 270);
         setLocationRelativeTo(null);
 
     }
@@ -190,16 +190,28 @@ public class GFrame extends JFrame{
 
         setTitle("Tic Tac Toe");
         fancyResize(1000, 600);
+        setLocationRelativeTo(null);
+        fancyResize(1000, 600);
     }
 
     public void setupWindow() throws Exception {
+        Image image = null;
+        try {
+            image = ImageIO.read(getClass().getClassLoader().getResource("settings.png"));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         setVisible(false);
         getContentPane().removeAll();
 
         startPanel = new JPanel();
-        startPanel.setLayout(new GridBagLayout());
+        startPanel.setLayout(new BorderLayout());
         startPanel.setFocusable(true);
         startPanel.requestFocus();
+
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        JPanel topPanel = new JPanel(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.CENTER;
@@ -215,27 +227,38 @@ public class GFrame extends JFrame{
         GButton tranButton = new GButton("Omega");
         GButton quanButton = new GButton("Quantum");
         GButton quan3DButton = new GButton("Quantum 3D");
-        GButton loadButton = new GButton("Load");
+        GButton settingsButton = new GButton("  ");
+
+        settingsButton.setImage(image);
         
         regButton.setFont(font);
         ultButton.setFont(font);
         tranButton.setFont(font);
         quanButton.setFont(font);
         quan3DButton.setFont(font);
-        loadButton.setFont(font);
 
         regButton.setFocusable(false);
         ultButton.setFocusable(false);
         tranButton.setFocusable(false);
         quanButton.setFocusable(false);
         quan3DButton.setFocusable(false);
-        loadButton.setFocusable(false);
+        settingsButton.setFocusable(false);
 
         regButton.setPreferredSize(new Dimension(180, 40));
         ultButton.setPreferredSize(new Dimension(180, 40));
         tranButton.setPreferredSize(new Dimension(180, 40));
         quanButton.setPreferredSize(new Dimension(180, 40));
         quan3DButton.setPreferredSize(new Dimension(180, 40));
+        settingsButton.setPreferredSize(new Dimension(50, 40));
+
+        Sound sound = new Sound();
+        // sound.loadSound("ping.wav");
+        regButton.setSound(sound);
+        ultButton.setSound(sound);
+        tranButton.setSound(sound);
+        quanButton.setSound(sound);
+        quan3DButton.setSound(sound);
+        settingsButton.setSound(sound);
 
         //regButton.setToolTipText("The classic 3x3 board");
         regButton.setSubtext(" The classic 3x3 board ");
@@ -244,32 +267,42 @@ public class GFrame extends JFrame{
         quanButton.setSubtext(" There's no explaining this one");
         quan3DButton.setSubtext(" A 3D variant of quantum tic tac toe");
 
+        gbc.gridx = 0;
         gbc.gridy = 1;
 
-        startPanel.add(regButton, gbc);
-
-        // gbc.gridx = 2;
+        buttonPanel.add(regButton, gbc);
 
         gbc.gridy = 2;
 
-        startPanel.add(ultButton, gbc);
-
-        // gbc.gridx = 0;
-        // gbc.gridy = 2;
+        buttonPanel.add(ultButton, gbc);
 
         gbc.gridy = 3;
 
-        startPanel.add(tranButton, gbc);
-
-        // gbc.gridx = 2;
+        buttonPanel.add(tranButton, gbc);
 
         gbc.gridy = 4;
 
-        startPanel.add(quanButton, gbc);
+        buttonPanel.add(quanButton, gbc);
 
         gbc.gridy = 5;
 
-        startPanel.add(quan3DButton, gbc);
+        buttonPanel.add(quan3DButton, gbc);
+
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+
+        startPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        gbc.gridy = 0;
+        //topPanel.setPreferredSize(new Dimension(400, 100));
+        topPanel.setMinimumSize(new Dimension(400, 100));
+        startPanel.add(topPanel, BorderLayout.NORTH);
+
+        gbc.anchor = GridBagConstraints.NORTHEAST;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+
+        topPanel.add(settingsButton, gbc);
 
         regButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e){ 
@@ -314,15 +347,6 @@ public class GFrame extends JFrame{
             } 
         });
 
-        loadButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-
-                new LFrame(GFrame.this);
-
-            } 
-            
-        });
-
         // startPanel.repaint();
         // startPanel.revalidate();
         // startPanel.setVisible(true);
@@ -330,7 +354,9 @@ public class GFrame extends JFrame{
         add(startPanel);
 
         setTitle("Choose your game");
-        fancyResize(400, 250);
+        fancyResize(400, 270);
+        setLocationRelativeTo(null);
+        fancyResize(400, 270);
     }
 
     public void askIfUserWantsBot(int gameType, Font font){
@@ -389,9 +415,14 @@ public class GFrame extends JFrame{
             public void actionPerformed(ActionEvent e) { 
 
                 try {
-                    setupGame(gameType, false);
-                    setupGame(gameType, false);
-                    repaint();
+                    if(gameType == 3){
+                        new SFrame(GFrame.this, false, 4, gameType);
+                    }else{
+                        setupGame(gameType, false);
+                        setupGame(gameType, false);
+                        repaint();
+                    }
+
                     //setupWindow();
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -611,7 +642,7 @@ public class GFrame extends JFrame{
         loadButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
 
-                new LFrame(GFrame.this);
+                new LFrame(GFrame.this, gameType);
 
             } 
             
@@ -630,6 +661,7 @@ public class GFrame extends JFrame{
         revalidate();
 
         EventQueue.invokeLater(() -> {
+            //setLocationRelativeTo(null);
             try {
                 Thread.sleep(5);
             } catch (InterruptedException e1) {
@@ -639,6 +671,11 @@ public class GFrame extends JFrame{
             setLocationRelativeTo(null);
             setVisible(true);
         });
+
+        //I don't trust it
+        // EventQueue.invokeLater(() -> {
+        //     setLocationRelativeTo(null);
+        // });
     }
 
     public void botStart(int gameType, int depth) throws Exception{
@@ -647,8 +684,12 @@ public class GFrame extends JFrame{
             setupGame(gameType, true);
             bottomPanel.setDepth(depth);
         }else{
-            new SFrame(GFrame.this, true, depth);
+            new SFrame(GFrame.this, true, depth, gameType);
         }
 
+    }
+
+    public void setTopText(String s){
+        topLabel.setText(s);
     }
 }

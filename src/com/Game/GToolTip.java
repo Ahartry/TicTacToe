@@ -37,7 +37,6 @@ public class GToolTip extends JFrame{
         setLocationRelativeTo(null);
         setLocation((int) mouse.getX() + 15, (int) mouse.getY() + 20);
         setShape(new RoundRectangle2D.Double(0, 0, length, 20, 5, 5));
-        //getRootPane().setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
         getRootPane().setBorder(new LineBorder(Color.black, 2, true));
         setSize(length, 20);
         add(textLabel);
@@ -46,12 +45,18 @@ public class GToolTip extends JFrame{
 
         Thread thread = new Thread(){
             public void run(){
+                int counter = 0;
                 while(true){
                     Point loc = MouseInfo.getPointerInfo().getLocation();
                     setLocation((int) loc.getX() + 15, (int) loc.getY() + 20);
+                    counter++;
                     if(!active){
                         kill();
                         break;
+                    }
+                    if(counter > 300){
+                        kill();
+                        break; 
                     }
                     try {
                         Thread.sleep(10);

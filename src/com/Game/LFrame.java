@@ -24,7 +24,11 @@ public class LFrame extends JFrame{
 
     GFrame frame;
 
-    public LFrame(GFrame frame){
+    int gameType;
+
+    public LFrame(GFrame frame, int game){
+
+        gameType = game;
 
         Font font = new Font(null);
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -37,7 +41,7 @@ public class LFrame extends JFrame{
         this.frame = frame;
         
         //gets all the saves
-        String path = System.getProperty("user.dir") + File.separator + "Saves";
+        String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + Integer.toString(game);
         File file = new File(path);
         
         String[] directories = file.list(new FilenameFilter() {
@@ -58,7 +62,7 @@ public class LFrame extends JFrame{
         //adds the saves
         for(int i = 0; i < saveList.size(); i++){
             gbc.gridy = i;
-            panel.add(new SaveMenu(saveList.get(i), this), gbc);
+            panel.add(new SaveMenu(saveList.get(i), this, gameType), gbc);
         }
 
         if(saveList.size() == 0){
@@ -131,6 +135,20 @@ public class LFrame extends JFrame{
             MassiveBoard inputboard = new MassiveBoard();
     
             String input;
+
+            boolean bot = false;
+            int difficulty = 0;
+
+            if(firstBlock.length() > 5){
+                //this means that it is a newer filetype
+                int ai = Integer.parseInt(firstBlock.substring(5, 6));
+                difficulty = Integer.parseInt(firstBlock.substring(6, 7));
+
+                if(ai == 1){
+                    bot = true;
+                }
+
+            }
     
     
             //int i = 0;
@@ -205,10 +223,11 @@ public class LFrame extends JFrame{
             xc = recentCell % 3;
             yc = (int) Math.floor(recentCell / 3);
     
-            frame.setupGame(3, false);
+            frame.setupGame(3, bot);
+            frame.setDepth(difficulty);
             inputboard.calculateActive(xl, yl, xb, yb, xc, yc);
-            frame.getGPanel().setMassiveBoard(inputboard, turn);
             frame.getGPanel().setOutputDir(file.getParentFile());
+            frame.getGPanel().setMassiveBoard(inputboard, turn);
     
             scan.close();
         }else{
@@ -230,7 +249,7 @@ public class LFrame extends JFrame{
         saveList.clear();
         panel.removeAll();
         //gets all the saves
-        String path = System.getProperty("user.dir") + File.separator + "Saves";
+        String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + Integer.toString(gameType);
         File file = new File(path);
         
         String[] directories = file.list(new FilenameFilter() {
@@ -252,7 +271,7 @@ public class LFrame extends JFrame{
         for(int i = 0; i < saveList.size(); i++){
             //System.out.println(i);
             gbc.gridy = i;
-            panel.add(new SaveMenu(saveList.get(i), frame), gbc);
+            panel.add(new SaveMenu(saveList.get(i), frame, gameType), gbc);
         }
 
         if(saveList.size() == 0){
@@ -278,7 +297,7 @@ public class LFrame extends JFrame{
 
         ArrayList<File> fileList = new ArrayList<File>();
         for(int i = 0; i < input.size(); i++){
-            String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + input.get(i);
+            String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + Integer.toString(gameType) + File.separator + input.get(i);
             File file = new File(path);
             int fileCount=file.list().length;
             String savePath = path + File.separator + "move" + fileCount;

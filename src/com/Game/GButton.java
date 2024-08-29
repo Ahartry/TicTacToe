@@ -41,6 +41,8 @@ public class GButton extends JButton{
 	private volatile boolean hovering = false;
 	private volatile boolean clicked = false;
 
+	private Sound sound = new Sound();
+
 	private Image image = null;
 
 	public void setText(String t) {
@@ -54,6 +56,10 @@ public class GButton extends JButton{
 
 	public void setImage(Image image){
 		this.image = image;
+	}
+
+	public void setSound(Sound sound){
+		this.sound = sound;
 	}
 
 
@@ -79,7 +85,7 @@ public class GButton extends JButton{
 					status = Status.HOVER;
 					hovering = true;
 					
-					new Sound().play("ping.wav");
+					sound.play("ping.wav");
 
 					if(usingTooltip){
 						Thread thread = new Thread(){
