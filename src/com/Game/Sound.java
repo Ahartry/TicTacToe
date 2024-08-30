@@ -47,6 +47,10 @@ public class Sound implements LineListener{
 		c.start();
 		}catch(Exception a) {a.printStackTrace();}
     }
+
+    // public void stop(){
+    //     control.
+    // }
     
     @Override
     public void update(LineEvent event) {

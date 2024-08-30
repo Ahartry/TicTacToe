@@ -11,6 +11,8 @@ import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,9 +42,13 @@ public class CFrame extends JFrame{
     CButton b7;
     CButton b8;
     int c = 1;
+    int secret = 0;
     JSlider soundSlider;
     JSlider musicSlider;
     JCheckBox fullscreenBox;
+
+    float soundV;
+    float musicV;
 
     GFrame frame;
 
@@ -50,6 +56,9 @@ public class CFrame extends JFrame{
         color = color2;
 
         this.frame = frame;
+
+        soundV = (float) sound.getVolume();
+        musicV = (float) music.getVolume();
 
         JPanel contentPanel = new JPanel(new GridBagLayout());
 
@@ -171,7 +180,15 @@ public class CFrame extends JFrame{
         setFont(font);
         //setResizable(false);
         setVisible(true);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                sound.setVolume(soundV);
+                music.setVolume(musicV);
+                dispose();
+            }
+        });
 
         okButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -234,6 +251,15 @@ public class CFrame extends JFrame{
         this.color = color;
         okButton.setColor(color);
         c = index;
+        if(index == 4){
+            secret++;
+            if(secret == 5){
+                secret = 0;
+                new AFrame(frame);
+            }
+        }else{
+            secret = 0;
+        }
         repaint();
     }
 

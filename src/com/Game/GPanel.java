@@ -26,7 +26,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.awt.RenderingHints;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,10 +33,10 @@ import javax.swing.SwingUtilities;
 
 public class GPanel extends JPanel implements MouseWheelListener{
 
-    Image xImage = new ImageIcon(getClass().getClassLoader().getResource("x.png")).getImage();
-    Image xImage2 = new ImageIcon(getClass().getClassLoader().getResource("x2.png")).getImage();
-    Image oImage = new ImageIcon(getClass().getClassLoader().getResource("o.png")).getImage();
-    Image oImage2 = new ImageIcon(getClass().getClassLoader().getResource("o2.png")).getImage();
+    Image xImage;
+    Image xImage2;
+    Image oImage;
+    Image oImage2;
 
     int game;
     int offsetx = 0;
@@ -59,6 +58,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     int cellSize;
     Color red = new Color(200, 30, 0);
     Color blue = new Color(10, 75, 190);
+    Color buttonColor;
     SimpleBoard simpleBoard;
     LargeBoard largeBoard;
     MassiveBoard massiveBoard;
@@ -109,6 +109,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
     String outputPath;
 
     public GPanel(int gameType, JLabel displayLabel1, GButton button, boolean bot, GFrame frame, Sound sound) throws FontFormatException, IOException{
+
+        xImage = frame.getxImage();
+        oImage = frame.getoImage();
+        xImage2 = frame.getxImage2();
+        oImage2 = frame.getoImage2();
 
         game = gameType;
 
@@ -2348,5 +2353,32 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     public void replay(){
         add(replayPanel, BorderLayout.SOUTH);
+    }
+
+    public void setColor(Color c){
+        buttonColor = c;
+    }
+
+    public void setImages(Image x1, Image o1, Image x2, Image o2){
+        xImage = x1;
+        xImage2 = x2;
+        oImage = o1;
+        oImage2 = o2;
+    }
+    
+    public Image getxImage(){
+        return xImage;
+    }
+
+    public Image getoImage(){
+        return oImage;
+    }
+
+    public Image getxImage2(){
+        return xImage2;
+    }
+
+    public Image getoImage2(){
+        return oImage2;
     }
 }

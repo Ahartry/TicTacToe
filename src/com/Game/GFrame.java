@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,6 +47,10 @@ public class GFrame extends JFrame{
     Sound music;
     Color color = new Color(0,150,50,255);
     ArrayList<GButton> buttonList = new ArrayList<>();
+    Image xImage = new ImageIcon(getClass().getClassLoader().getResource("x.png")).getImage();
+    Image xImage2 = new ImageIcon(getClass().getClassLoader().getResource("x2.png")).getImage();
+    Image oImage = new ImageIcon(getClass().getClassLoader().getResource("o.png")).getImage();
+    Image oImage2 = new ImageIcon(getClass().getClassLoader().getResource("o2.png")).getImage();
     boolean fullscreen = false;
     boolean gaming = false;
     
@@ -188,7 +193,7 @@ public class GFrame extends JFrame{
             public void mouseClicked(MouseEvent e) {
                 //System.out.println("Clicked");
                 try {
-                    new HFrame(gameType, sound);
+                    new HFrame(gameType, sound, color);
                 } catch (FontFormatException | IOException e1) {
                     e1.printStackTrace();
                 }
@@ -886,8 +891,18 @@ public class GFrame extends JFrame{
         int fullsc = Integer.parseInt(scanner.next());
         int colorC = Integer.parseInt(scanner.next());
 
-        sound.presetVolume((soundV / 2) - 44);
-        music.presetVolume((musicV / 2) - 44);
+        if(soundV == 0){
+            sound.presetVolume(-80f);
+        }else{
+            sound.presetVolume((soundV / 2) - 44);
+        }
+
+        if(musicV == 0){
+            music.presetVolume(-80f);
+        }else{
+            music.presetVolume((musicV / 2) - 44);
+        }
+
         if(fullsc == 1){
             fullscreen = true;
         }
@@ -904,5 +919,38 @@ public class GFrame extends JFrame{
         }
 
         scanner.close();
+    }
+
+    public Image getxImage(){
+        return xImage;
+    }
+
+    public Image getoImage(){
+        return oImage;
+    }
+
+    public Image getxImage2(){
+        return xImage2;
+    }
+
+    public Image getoImage2(){
+        return oImage2;
+    }
+
+    public void setImages(Image x1, Image o1, Image x2, Image o2){
+        xImage = x1;
+        xImage2 = x2;
+        oImage = o1;
+        oImage2 = o2;
+    }
+
+    public void setImageX(Image x1){
+        xImage = x1;
+        xImage2 = x1;
+    }
+
+    public void setImageO(Image o1){
+        oImage = o1;
+        oImage2 = o1;
     }
 }

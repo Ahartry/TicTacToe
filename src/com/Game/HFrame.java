@@ -1,6 +1,7 @@
 package com.Game;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
@@ -8,7 +9,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,7 +17,7 @@ import javax.swing.SwingConstants;
 
 public class HFrame extends JFrame{
     
-    public HFrame(int gameType, Sound sound) throws FontFormatException, IOException{
+    public HFrame(int gameType, Sound sound, Color c) throws FontFormatException, IOException{
 
         int width = 500;
         int height = 350;
@@ -55,6 +55,7 @@ public class HFrame extends JFrame{
         okButton.setVerticalAlignment(SwingConstants.BOTTOM);
         okButton.setHorizontalAlignment(SwingConstants.CENTER);
         okButton.setSound(sound);
+        okButton.setColor(c);
 
         add(panel);
 
