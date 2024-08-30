@@ -11,7 +11,11 @@ import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
@@ -35,6 +39,10 @@ public class CFrame extends JFrame{
     CButton b6;
     CButton b7;
     CButton b8;
+    int c = 1;
+    JSlider soundSlider;
+    JSlider musicSlider;
+    JCheckBox fullscreenBox;
 
     GFrame frame;
 
@@ -45,7 +53,7 @@ public class CFrame extends JFrame{
 
         JPanel contentPanel = new JPanel(new GridBagLayout());
 
-        JSlider soundSlider = new JSlider();
+        soundSlider = new JSlider();
         soundSlider.setMinimum(0);
         soundSlider.setMaximum(100);
         soundSlider.setOrientation(SwingConstants.HORIZONTAL);
@@ -56,7 +64,7 @@ public class CFrame extends JFrame{
         soundSlider.setSnapToTicks(true);
         soundSlider.setValue((int) (sound.getVolume() + 44) * 2);
 
-        JSlider musicSlider = new JSlider();
+        musicSlider = new JSlider();
         musicSlider.setMinimum(0);
         musicSlider.setMaximum(100);
         musicSlider.setOrientation(SwingConstants.HORIZONTAL);
@@ -87,7 +95,7 @@ public class CFrame extends JFrame{
 
         JLabel fullscreenLabel = new JLabel("     Fullscreen:  ");
         fullscreenLabel.setFont(font);
-        JCheckBox fullscreenBox = new JCheckBox();
+        fullscreenBox = new JCheckBox();
 
         JPanel fullscPanel = new JPanel();
         fullscPanel.add(fullscreenLabel);
@@ -106,14 +114,14 @@ public class CFrame extends JFrame{
         JLabel colorLabel = new JLabel();
         colorLabel.setFont(font);
         colorLabel.setText("   Color:");
-        b1 = new CButton(new Color(0, 150, 50), this);
-        b2 = new CButton(new Color(0, 150, 200), this);
-        b3 = new CButton(new Color(0, 50, 200), this);
-        b4 = new CButton(new Color(50, 0, 150), this);
-        b5 = new CButton(new Color(255, 200, 00), this);
-        b6 = new CButton(new Color(255, 100, 0), this);
-        b7 = new CButton(new Color(200, 0, 0), this);
-        b8 = new CButton(new Color(0, 0, 0), this);
+        b1 = new CButton(new Color(0, 150, 50), this, 1);
+        b2 = new CButton(new Color(0, 150, 200), this, 2);
+        b3 = new CButton(new Color(0, 50, 200), this, 3);
+        b4 = new CButton(new Color(50, 0, 150), this, 4);
+        b5 = new CButton(new Color(255, 200, 00), this, 5);
+        b6 = new CButton(new Color(255, 100, 0), this, 6);
+        b7 = new CButton(new Color(200, 0, 0), this, 7);
+        b8 = new CButton(new Color(0, 0, 0), this, 8);
 
         JPanel c2Panel = new JPanel();
         c2Panel.add(colorLabel);
@@ -170,6 +178,7 @@ public class CFrame extends JFrame{
             public void mouseClicked(MouseEvent e) {
                 frame.setColor(color);
                 frame.setFullscreen(fullscreenBox.isSelected());
+                writeConfig();
                 dispose();
                 repaint();
             }
@@ -221,10 +230,44 @@ public class CFrame extends JFrame{
 
     }
 
-    public void setColor(Color color){
+    public void setColor(Color color, int index){
         this.color = color;
         okButton.setColor(color);
+        c = index;
         repaint();
+    }
+
+    public void writeConfig(){
+
+        int full = 0;
+        if(fullscreenBox.isSelected()){
+            full = 1;
+        }
+
+        String string = soundSlider.getValue() + " " + musicSlider.getValue() + " " + full + " " + c;
+        String currentDirectory = System.getProperty("user.dir");
+
+        // // Create a File object for the current directory
+        // File directory = new File(currentDirectory);
+
+        // // Get a list of files in the directory
+        // File[] files = directory.listFiles();
+
+        File config = new File(currentDirectory + "/config.txt");
+        config.delete();
+
+        Path path = Path.of("config.txt");
+
+        try {
+            // Create the file and write the content to it
+            Files.write(path, string.getBytes(), StandardOpenOption.CREATE);
+
+            System.out.println("Config file recreated successfully.");
+        } catch (IOException e) {
+            // Handle file creation error
+            System.err.println("Error creating the file: " + e.getMessage());
+        }
+
     }
 
 }

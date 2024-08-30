@@ -13,13 +13,15 @@ public class CButton extends JButton{
 
     Color color;
     boolean selected = false;
+    int i;
 
     public void unselect(){
         selected = false;
         repaint();
     }
 
-    public CButton(Color c, CFrame frame){
+    public CButton(Color c, CFrame frame, int index){
+        i = index;
 
         color = c;
 
@@ -33,7 +35,7 @@ public class CButton extends JButton{
 		    public void mouseReleased(java.awt.event.MouseEvent evt) {
 				if(isEnabled()){
                     //setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                    frame.setColor(c);
+                    frame.setColor(c, i);
                     selected = true;
                     repaint();
                 }

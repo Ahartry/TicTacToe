@@ -66,6 +66,10 @@ public class Sound implements LineListener{
         control.setValue((float)volume);
     }
 
+    public void presetVolume(double x){
+        volume = x;
+    }
+
     public double getVolume(){
         return volume;
     }

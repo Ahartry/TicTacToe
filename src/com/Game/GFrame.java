@@ -17,11 +17,18 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -53,6 +60,7 @@ public class GFrame extends JFrame{
         }
         sound = new Sound();
         music = new Sound();
+        configLoad();
         music.play("song.wav", true);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -64,6 +72,7 @@ public class GFrame extends JFrame{
         gaming = true;
         buttonList.clear();
         setVisible(false);
+        setResizable(true);
         getContentPane().removeAll();
 
         System.out.println("\nStarting game type " + gameType + "\n");
@@ -247,12 +256,18 @@ public class GFrame extends JFrame{
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
         Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
 
+        stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        Font font2 = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(25f);
+
         GButton regButton = new GButton("Regular");
         GButton ultButton = new GButton("Ultimate");
         GButton tranButton = new GButton("Omega");
         GButton quanButton = new GButton("Quantum");
         GButton quan3DButton = new GButton("Quantum 3D");
         GButton settingsButton = new GButton("  ");
+
+        JLabel titleLabel1 = new JLabel("Ultimate Tic Tac Toe Collection");
+        titleLabel1.setFont(font2);
 
         settingsButton.setImage(image);
         
@@ -306,23 +321,23 @@ public class GFrame extends JFrame{
         quan3DButton.setSubtext(" A 3D variant of quantum tic tac toe");
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
 
         buttonPanel.add(regButton, gbc);
 
-        gbc.gridy = 2;
+        gbc.gridy = 3;
 
         buttonPanel.add(ultButton, gbc);
 
-        gbc.gridy = 3;
+        gbc.gridy = 4;
 
         buttonPanel.add(tranButton, gbc);
 
-        gbc.gridy = 4;
+        gbc.gridy = 5;
 
         buttonPanel.add(quanButton, gbc);
 
-        gbc.gridy = 5;
+        gbc.gridy = 6;
 
         buttonPanel.add(quan3DButton, gbc);
 
@@ -334,13 +349,19 @@ public class GFrame extends JFrame{
         gbc.gridy = 0;
         //topPanel.setPreferredSize(new Dimension(400, 100));
         topPanel.setMinimumSize(new Dimension(400, 100));
-        startPanel.add(topPanel, BorderLayout.NORTH);
+        startPanel.add(topPanel, BorderLayout.SOUTH);
 
         gbc.anchor = GridBagConstraints.NORTHEAST;
         gbc.weightx = 1;
         gbc.weighty = 1;
 
         topPanel.add(settingsButton, gbc);
+
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridy = 0;
+        buttonPanel.add(titleLabel1, gbc);
+        gbc.gridy = 1;
+        buttonPanel.add(Box.createVerticalStrut(15), gbc);
 
         regButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e){ 
@@ -399,7 +420,7 @@ public class GFrame extends JFrame{
         add(startPanel);
 
         setTitle("Choose your game");
-        fancyResize(400, 270);
+        fancyResize(400, 320);
     }
 
     public void askIfUserWantsBot(int gameType, Font font){
@@ -760,17 +781,18 @@ public class GFrame extends JFrame{
             final int width = screenSize.width - left - right;
             final int height = screenSize.height - top - bottom;
             setSize(width, height);
+            setLocationRelativeTo(null);
             setVisible(true);
             return;
         }
 
         EventQueue.invokeLater(() -> {
-            //setLocationRelativeTo(null);
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e1) {
-            }
             setSize(x, y);
+            if(gaming){
+                setResizable(true);
+            }else{
+                setResizable(false);
+            }
             validate();
             setLocationRelativeTo(null);
             setVisible(true);
@@ -806,5 +828,71 @@ public class GFrame extends JFrame{
 
     public boolean getFullscreen(){
         return fullscreen;
+    }
+
+    public void configLoad() throws FileNotFoundException{
+        //sound, music, fullscreen, color
+        String configDefault = "75 75 0 1";
+
+        Scanner scanner;
+
+        String currentDirectory = System.getProperty("user.dir");
+
+        // Create a File object for the current directory
+        File directory = new File(currentDirectory);
+
+        // Get a list of files in the directory
+        File[] files = directory.listFiles();
+
+        Path path = Path.of("config.txt");
+
+        boolean configFound = false;
+        // Display the list of files
+        if (files != null) {
+            for (File file : files) {
+                if(file.getName().equals("config.txt")){
+                    configFound = true;
+                }
+            }
+        }
+        if(!configFound){
+            try {
+                // Create the file and write the content to it
+                Files.write(path, configDefault.getBytes(), StandardOpenOption.CREATE);
+    
+                System.out.println("Config file recreated successfully.");
+            } catch (IOException e) {
+                // Handle file creation error
+                System.err.println("Error creating the file: " + e.getMessage());
+            }
+        }
+
+        File config = new File(currentDirectory + "/config.txt");
+
+        scanner = new Scanner(config);
+
+        int soundV = Integer.parseInt(scanner.next());
+        int musicV = Integer.parseInt(scanner.next());
+        int fullsc = Integer.parseInt(scanner.next());
+        int colorC = Integer.parseInt(scanner.next());
+
+        sound.presetVolume((soundV / 2) - 44);
+        music.presetVolume((musicV / 2) - 44);
+        if(fullsc == 1){
+            fullscreen = true;
+        }
+
+        switch (colorC){
+            case 1: color = new Color(0, 150, 50);break;
+            case 2: color = new Color(0, 150, 200);break;
+            case 3: color = new Color(0, 50, 200);break;
+            case 4: color = new Color(50, 0, 150);break;
+            case 5: color = new Color(255, 200, 00);break;
+            case 6: color = new Color(255, 100, 0);break;
+            case 7: color = new Color(200, 0, 0);break;
+            case 8: color = new Color(0, 0, 0);break;
+        }
+
+        scanner.close();
     }
 }
