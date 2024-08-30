@@ -26,7 +26,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.JFrame;
@@ -65,6 +64,9 @@ public class GFrame extends JFrame{
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setupWindow();
+        fancyResize(400, 330);
+        fancyResize(400, 320);
+        setLocationRelativeTo(null);
 
     }
 
@@ -223,6 +225,10 @@ public class GFrame extends JFrame{
 
         setTitle("Tic Tac Toe");
         fancyResize(1000, 600);
+        setLocationRelativeTo(null);
+        if(GFrame.this.getWidth() != 1000){
+            fancyResize(1000, 600);
+        }
         getGPanel().repaint();
     }
 
@@ -770,16 +776,17 @@ public class GFrame extends JFrame{
     }
 
     private void fancyResize(int x, int y){
+
+        final int left = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).left;
+        final int right = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).right;
+        final int top = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).top;
+        final int bottom = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom;
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        final int width = screenSize.width - left - right;
+        final int height = screenSize.height - top - bottom;
         //revalidate();
 
         if(fullscreen && gaming){
-            final int left = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).left;
-            final int right = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).right;
-            final int top = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).top;
-            final int bottom = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom;
-            final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            final int width = screenSize.width - left - right;
-            final int height = screenSize.height - top - bottom;
             setSize(width, height);
             setLocationRelativeTo(null);
             setVisible(true);
@@ -796,6 +803,9 @@ public class GFrame extends JFrame{
             validate();
             setLocationRelativeTo(null);
             setVisible(true);
+            if(this.getX() != (width - x) / 2){
+                setLocationRelativeTo(null);
+            }
         });
     }
 

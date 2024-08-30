@@ -191,7 +191,7 @@ public class CFrame extends JFrame{
             public void stateChanged(ChangeEvent e) {
                 double v = (musicSlider.getValue() / 2) - 44;
                 if(musicSlider.getValue() == 0){
-                    v = -50;
+                    v = -80;
                 }
                 music.setVolume(v);
             }
@@ -204,7 +204,7 @@ public class CFrame extends JFrame{
             public void stateChanged(ChangeEvent e) {
                 double v = (soundSlider.getValue() / 2) - 44;
                 if(soundSlider.getValue() == 0){
-                    v = -50;
+                    v = -80;
                 }
                 sound.setVolume(v);
             }

@@ -1414,16 +1414,17 @@ public class GPanel extends JPanel implements MouseWheelListener{
             g.fillRect(xbound + buffer + (boundingSize * 3 * boardX), ybound + boundingSize - (thickness / 2) + (boundingSize * 3 * boardY), boundingSize * 3 - buffer- buffer, thickness);
             g.fillRect(xbound + buffer + (boundingSize * 3 * boardX), ybound + (2 * boundingSize) - (thickness / 2) + (boundingSize * 3 * boardY), boundingSize * 3 - buffer- buffer, thickness);
 
-            int x = boardIndex % 3;
-            int y = boardIndex / 3;
+            //for some reason, this causes visual bug (don't want to figure out why, this just works as a fix)
+            // int x = boardIndex % 3;
+            // int y = boardIndex / 3;
 
-            double iconScale = 0.8;
-            double iconOffset = (boundingSize - (boundingSize * iconScale)) / 2;
-            if(board.getState() == State.Player1){
-                g.drawImage(xImage, (int) (xbound + iconOffset) + (x * boundingSize) + (boundingSize * 9 * boardX), (int) (ybound + iconOffset) + (y * boundingSize) + (boundingSize * 9 * boardY), (int) (boundingSize * iconScale), (int) (boundingSize * iconScale), null);
-            }else if (board.getState() == State.Player2){
-                g.drawImage(oImage, (int) (xbound + iconOffset) + (x * boundingSize) + (boundingSize * 9 * boardX), (int) (ybound + iconOffset) + (y * boundingSize) + (boundingSize * 9 * boardY), (int) (boundingSize * iconScale), (int) (boundingSize * iconScale), null);
-            }
+            // double iconScale = 0.8;
+            // double iconOffset = (boundingSize - (boundingSize * iconScale)) / 2;
+            // // if(board.getState() == State.Player1){
+            // //     g.drawImage(xImage, (int) (xbound + iconOffset) + (x * boundingSize) + (boundingSize * 9 * boardX), (int) (ybound + iconOffset) + (y * boundingSize) + (boundingSize * 9 * boardY), (int) (boundingSize * iconScale), (int) (boundingSize * iconScale), null);
+            // // }else if (board.getState() == State.Player2){
+            // //     g.drawImage(oImage, (int) (xbound + iconOffset) + (x * boundingSize) + (boundingSize * 9 * boardX), (int) (ybound + iconOffset) + (y * boundingSize) + (boundingSize * 9 * boardY), (int) (boundingSize * iconScale), (int) (boundingSize * iconScale), null);
+            // // }
         }
 
 
