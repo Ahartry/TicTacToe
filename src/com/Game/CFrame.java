@@ -10,6 +10,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -19,6 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class CFrame extends JFrame{
 
@@ -35,7 +38,8 @@ public class CFrame extends JFrame{
 
     GFrame frame;
 
-    public CFrame(GFrame frame, Sound sound, Font font, Color color2){
+    public CFrame(GFrame frame, Sound sound, Sound music, Font font, Color color2){
+        color = color2;
 
         this.frame = frame;
 
@@ -50,6 +54,7 @@ public class CFrame extends JFrame{
         soundSlider.setPaintTicks(true);
         soundSlider.setPreferredSize(new Dimension(150, 60));
         soundSlider.setSnapToTicks(true);
+        soundSlider.setValue((int) (sound.getVolume() + 44) * 2);
 
         JSlider musicSlider = new JSlider();
         musicSlider.setMinimum(0);
@@ -60,6 +65,7 @@ public class CFrame extends JFrame{
         musicSlider.setPaintTicks(true);
         musicSlider.setPreferredSize(new Dimension(150, 60));
         musicSlider.setSnapToTicks(true);
+        musicSlider.setValue((int) (music.getVolume() + 44) * 2);
 
         JLabel soundLabel = new JLabel();
         JLabel musicLabel = new JLabel();
@@ -86,6 +92,9 @@ public class CFrame extends JFrame{
         JPanel fullscPanel = new JPanel();
         fullscPanel.add(fullscreenLabel);
         fullscPanel.add(fullscreenBox);
+        if(frame.getFullscreen()){
+            fullscreenBox.setSelected(true);
+        }
 
         okButton = new GButton("Confirm");
         okButton.setSound(sound);
@@ -160,10 +169,54 @@ public class CFrame extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 frame.setColor(color);
+                frame.setFullscreen(fullscreenBox.isSelected());
                 dispose();
                 repaint();
             }
 
+        });
+
+        musicSlider.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                double v = (musicSlider.getValue() / 2) - 44;
+                if(musicSlider.getValue() == 0){
+                    v = -50;
+                }
+                music.setVolume(v);
+            }
+            
+        });
+
+        soundSlider.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                double v = (soundSlider.getValue() / 2) - 44;
+                if(soundSlider.getValue() == 0){
+                    v = -50;
+                }
+                sound.setVolume(v);
+            }
+            
+        });
+        soundSlider.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseExited(MouseEvent e) {}
+            @Override
+            public void mousePressed(MouseEvent e) {}
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                sound.play("ping.wav");
+            }
+            
         });
 
     }

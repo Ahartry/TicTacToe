@@ -37,9 +37,10 @@ public class GFrame extends JFrame{
     GButton backButton;
     Font font;
     Sound sound;
+    Sound music;
     Color color = new Color(0,150,50,255);
     ArrayList<GButton> buttonList = new ArrayList<>();
-    boolean fullscreen = true;
+    boolean fullscreen = false;
     boolean gaming = false;
     
     public GFrame() throws Exception{
@@ -51,6 +52,8 @@ public class GFrame extends JFrame{
             ex.printStackTrace();
         }
         sound = new Sound();
+        music = new Sound();
+        music.play("song.wav", true);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setupWindow();
@@ -385,7 +388,7 @@ public class GFrame extends JFrame{
         settingsButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
                 //starts quantum game
-                new CFrame(GFrame.this, sound, font, color);
+                new CFrame(GFrame.this, sound, music, font, color);
             } 
         });
 
@@ -795,5 +798,13 @@ public class GFrame extends JFrame{
             buttonList.get(i).setColor(c);
         }
         repaint();
+    }
+
+    public void setFullscreen(boolean x){
+        fullscreen =x;
+    }
+
+    public boolean getFullscreen(){
+        return fullscreen;
     }
 }
