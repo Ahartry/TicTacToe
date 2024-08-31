@@ -17,12 +17,13 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.imageio.ImageIO;
@@ -373,7 +374,7 @@ public class GFrame extends JFrame{
         add(startPanel);
         setTitle("Choose your game");
     
-        fancyResize(400,320);
+        fancyResize(400,330);
     }
 
     public void askIfUserWantsBot(int gameType, Font font){
@@ -788,21 +789,21 @@ public class GFrame extends JFrame{
         return fullscreen;
     }
 
-    public void configLoad() throws FileNotFoundException{
+    public void configLoad() throws Exception{
         //sound, music, fullscreen, color
         String configDefault = "75 75 0 1";
 
         Scanner scanner;
 
-        String currentDirectory = System.getProperty("user.dir");
+        String jarDir = getJarContainingFolder(getClass());
 
         // Create a File object for the current directory
-        File directory = new File(currentDirectory);
+        File directory = new File(jarDir);
 
         // Get a list of files in the directory
         File[] files = directory.listFiles();
 
-        Path path = Path.of("config.txt");
+        Path path = Path.of(jarDir + File.separator + "config.txt");
 
         boolean configFound = false;
         // Display the list of files
@@ -825,7 +826,7 @@ public class GFrame extends JFrame{
             }
         }
 
-        File config = new File(currentDirectory + "/config.txt");
+        File config = path.toFile();
 
         scanner = new Scanner(config);
 
@@ -896,4 +897,22 @@ public class GFrame extends JFrame{
         oImage = o1;
         oImage2 = o1;
     }
+
+    @SuppressWarnings("rawtypes")
+    public String getJarContainingFolder(Class aclass) throws Exception {
+        CodeSource codeSource = aclass.getProtectionDomain().getCodeSource();
+      
+        File jarFile;
+      
+        if (codeSource.getLocation() != null) {
+          jarFile = new File(codeSource.getLocation().toURI());
+        }
+        else {
+          String path = aclass.getResource(aclass.getSimpleName() + ".class").getPath();
+          String jarFilePath = path.substring(path.indexOf(":") + 1, path.indexOf("!"));
+          jarFilePath = URLDecoder.decode(jarFilePath, "UTF-8");
+          jarFile = new File(jarFilePath);
+        }
+        return jarFile.getParentFile().getAbsolutePath();
+      }
 }

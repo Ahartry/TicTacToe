@@ -49,6 +49,7 @@ public class CFrame extends JFrame{
 
     float soundV;
     float musicV;
+    boolean full;
 
     GFrame frame;
 
@@ -59,6 +60,7 @@ public class CFrame extends JFrame{
 
         soundV = (float) sound.getVolume();
         musicV = (float) music.getVolume();
+        full = frame.getFullscreen();
 
         JPanel contentPanel = new JPanel(new GridBagLayout());
 
@@ -271,18 +273,18 @@ public class CFrame extends JFrame{
         }
 
         String string = soundSlider.getValue() + " " + musicSlider.getValue() + " " + full + " " + c;
-        String currentDirectory = System.getProperty("user.dir");
 
-        // // Create a File object for the current directory
-        // File directory = new File(currentDirectory);
+        String jarDir = null;
+        try {
+            jarDir = frame.getJarContainingFolder(getClass());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        // // Get a list of files in the directory
-        // File[] files = directory.listFiles();
+        Path path = Path.of(jarDir + File.separator + "config.txt");
 
-        File config = new File(currentDirectory + "/config.txt");
+        File config = path.toFile();
         config.delete();
-
-        Path path = Path.of("config.txt");
 
         try {
             // Create the file and write the content to it
