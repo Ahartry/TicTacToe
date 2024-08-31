@@ -3,7 +3,6 @@ package com.Game;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -32,6 +31,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class GFrame extends JFrame{
 
@@ -69,369 +69,311 @@ public class GFrame extends JFrame{
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setupWindow();
-        fancyResize(400, 330);
-        fancyResize(400, 320);
-        setLocationRelativeTo(null);
+        setVisible(true);
 
     }
 
-    public void setupGame(int gameType, boolean bot) throws Exception{
-        gaming = true;
+    public void setupGame(int gameType, boolean bot)throws Exception{
+        if(!SwingUtilities.isEventDispatchThread()){
+            SwingUtilities.invokeLater(()->{
+                try{
+                    setupGame(gameType,bot);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            });
+            return;
+        }
+    
+        gaming=true;
         buttonList.clear();
-        setVisible(false);
+        //setVisible(false);
         setResizable(true);
         getContentPane().removeAll();
-
-        System.out.println("\nStarting game type " + gameType + "\n");
-
-        topPanel = new JPanel();
-        topLabel = new JLabel("Player 1's turn");
-        functionButton = new GButton("");
+    
+        System.out.println("\nStarting game type "+gameType+"\n");
+    
+        topPanel=new JPanel();
+        topLabel=new JLabel("Player 1's turn");
+        functionButton=new GButton("");
         functionButton.setFocusable(false);
-        helpButton = new GButton("Help");
+        helpButton=new GButton("Help");
         helpButton.setFocusable(false);
-        backButton = new GButton("");
+        backButton=new GButton("");
         backButton.setFocusable(false);
-
+    
         functionButton.setSound(sound);
         helpButton.setSound(sound);
         backButton.setSound(sound);
-
+    
         functionButton.setColor(color);
         helpButton.setColor(color);
         backButton.setColor(color);
-
+    
         buttonList.add(functionButton);
         buttonList.add(helpButton);
         buttonList.add(backButton);
-
+    
         topPanel.setBackground(Color.GRAY);
-
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-        //this is used to check panel balancing
-
-        // leftPanel.setBackground(Color.RED);
-        // centerPanel.setBackground(Color.BLUE);
-        // rightPanel.setBackground(Color.GREEN);
-
+    
+        JPanel leftPanel=new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel centerPanel=new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel rightPanel=new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    
         leftPanel.setBackground(Color.GRAY);
         centerPanel.setBackground(Color.GRAY);
         rightPanel.setBackground(Color.GRAY);
-
-        leftPanel.setPreferredSize(new Dimension(280, leftPanel.getHeight()));
-        leftPanel.setMinimumSize(new Dimension(150, leftPanel.getHeight()));
-        rightPanel.setPreferredSize(new Dimension(280, rightPanel.getHeight()));
-        rightPanel.setMinimumSize(new Dimension(150, rightPanel.getHeight()));
-
-        try {
-            Image image = ImageIO.read(getClass().getClassLoader().getResource("back4.png"));
+    
+        leftPanel.setPreferredSize(new Dimension(280,leftPanel.getHeight()));
+        leftPanel.setMinimumSize(new Dimension(150,leftPanel.getHeight()));
+        rightPanel.setPreferredSize(new Dimension(280,rightPanel.getHeight()));
+        rightPanel.setMinimumSize(new Dimension(150,rightPanel.getHeight()));
+    
+        try{
+            Image image=ImageIO.read(getClass().getClassLoader().getResource("back4.png"));
             backButton.setImage(image);
-            //backButton.setImageSize(128, 86);
-        } catch (Exception ex) {
+        }catch(Exception ex){
             ex.printStackTrace();
         }
-
-        //help button sizing
-        Dimension ddd = backButton.getPreferredSize();
-        ddd.width = 70;
-        ddd.height = 40;
-        backButton.setPreferredSize(ddd); 
-
+    
+        Dimension ddd=backButton.getPreferredSize();
+        ddd.width=70;
+        ddd.height=40;
+        backButton.setPreferredSize(ddd);
+    
         leftPanel.add(backButton);
         centerPanel.add(topLabel);
-
-        //help button sizing
-        Dimension dd = helpButton.getPreferredSize();
-        dd.width = 90;
-        helpButton.setPreferredSize(dd); 
-
-        // if(gameType == 4 || gameType == 5){
-        //     rightPanel.add(functionButton);
-        //     functionButton.setText("Hide Lines");
-        //     Dimension d = functionButton.getPreferredSize();
-        //     d.width = 160;
-        //     functionButton.setPreferredSize(d); 
-        // }
-
+    
+        Dimension dd=helpButton.getPreferredSize();
+        dd.width=90;
+        helpButton.setPreferredSize(dd);
+    
         rightPanel.add(helpButton);
-
-        bottomPanel = new GPanel(gameType, topLabel, functionButton, bot, this, sound);
-
-        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
-        font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(30f);
-
+    
+        bottomPanel=new GPanel(gameType,topLabel,functionButton,bot,this,sound);
+        bottomPanel.setPreferredSize(new Dimension(1000,550));
+    
+        InputStream stream=ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        font=Font.createFont(Font.TRUETYPE_FONT,stream).deriveFont(30f);
+    
         topLabel.setFont(font);
         topLabel.setHorizontalAlignment(JLabel.CENTER);
         topPanel.setLayout(new GridBagLayout());
-
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-        gbc.fill = GridBagConstraints.BOTH;
-        topPanel.add(leftPanel, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 0.6;
-        topPanel.add(centerPanel, gbc);
-
-        gbc.gridx = 2;
-        gbc.weightx = 0;
-        topPanel.add(rightPanel, gbc);
-
-        add(topPanel, BorderLayout.NORTH);
+    
+        GridBagConstraints gbc=new GridBagConstraints();
+        gbc.gridx=0;
+        gbc.gridy=0;
+        gbc.weightx=0;
+        gbc.fill=GridBagConstraints.BOTH;
+        topPanel.add(leftPanel,gbc);
+    
+        gbc.gridx=1;
+        gbc.weightx=0.6;
+        topPanel.add(centerPanel,gbc);
+    
+        gbc.gridx=2;
+        gbc.weightx=0;
+        topPanel.add(rightPanel,gbc);
+    
+        add(topPanel,BorderLayout.NORTH);
         add(bottomPanel);
-        setVisible(true);
-
-        //help function
-        helpButton.addMouseListener(new MouseAdapter() {
+    
+        bottomPanel.setColor(color);
+    
+        helpButton.addMouseListener(new MouseAdapter(){
             @Override
-            public void mouseClicked(MouseEvent e) {
-                //System.out.println("Clicked");
-                try {
-                    new HFrame(gameType, sound, color);
-                } catch (FontFormatException | IOException e1) {
+            public void mouseClicked(MouseEvent e){
+                try{
+                    new HFrame(gameType,sound,color);
+                }catch(FontFormatException|IOException e1){
                     e1.printStackTrace();
                 }
-                
             }
-
         });
-
-        backButton.addMouseListener(new MouseAdapter() {
+    
+        backButton.addMouseListener(new MouseAdapter(){
             @Override
-            public void mouseClicked(MouseEvent e) {
-                //System.out.println("Clicked");
-                try {
+            public void mouseClicked(MouseEvent e){
+                try{
                     setupWindow();
-
-                } catch (Exception e1) {
+                }catch(Exception e1){
                     e1.printStackTrace();
                 }
+            }
+        });
+    
+        addComponentListener(new ComponentAdapter(){
+            @Override
+            public void componentResized(ComponentEvent e){
+                bottomPanel.resizeVariables(getContentPane().getWidth(),getContentPane().getHeight()-50);
+            }
+            @Override
+            public void componentMoved(ComponentEvent e){
                 
             }
-
         });
-
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                bottomPanel.resizeVariables(getContentPane().getWidth(), getContentPane().getHeight()/* */ - 50);
-            }
-            @Override
-            public void componentMoved(ComponentEvent e) {
-              
-            }
-        });
-
+    
         setTitle("Tic Tac Toe");
-        fancyResize(1000, 600);
-        setLocationRelativeTo(null);
-        if(GFrame.this.getWidth() != 1000){
-            fancyResize(1000, 600);
-        }
-        getGPanel().repaint();
+        SwingUtilities.invokeLater(()->fancyResize(1000,600)); 
     }
 
-    public void setupWindow() throws Exception {
+    public void setupWindow()throws Exception{
+        if(!SwingUtilities.isEventDispatchThread()){
+            SwingUtilities.invokeLater(()->{
+                try{
+                    setupWindow(); // Ensure this does not cause recursion
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            });
+            return;
+        }
+    
+        setResizable(false);
         gaming = false;
         buttonList.clear();
         Image image = null;
-        try {
-            image = ImageIO.read(getClass().getClassLoader().getResource("settings.png"));
-        } catch (Exception ex) {
+        try{
+            image=ImageIO.read(getClass().getClassLoader().getResource("settings.png"));
+        }catch(Exception ex){
             ex.printStackTrace();
         }
-
-        setVisible(false);
+    
+        //setVisible(false);
         getContentPane().removeAll();
-
-        startPanel = new JPanel();
+    
+        startPanel=new JPanel();
         startPanel.setLayout(new BorderLayout());
         startPanel.setFocusable(true);
         startPanel.requestFocus();
-
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
-        JPanel topPanel = new JPanel(new GridBagLayout());
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        //gbc.fill = GridBagConstraints.BOTH;
-
-        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
-        Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(20f);
-
-        stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
-        Font font2 = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(25f);
-
-        GButton regButton = new GButton("Regular");
-        GButton ultButton = new GButton("Ultimate");
-        GButton tranButton = new GButton("Omega");
-        GButton quanButton = new GButton("Quantum");
-        GButton quan3DButton = new GButton("Quantum 3D");
-        GButton settingsButton = new GButton("  ");
-
-        JLabel titleLabel1 = new JLabel("Ultimate Tic Tac Toe Collection");
+    
+        JPanel buttonPanel=new JPanel(new GridBagLayout());
+        JPanel topPanel=new JPanel(new GridBagLayout());
+    
+        GridBagConstraints gbc=new GridBagConstraints();
+        gbc.anchor=GridBagConstraints.CENTER;
+        gbc.weightx=1;
+        gbc.weighty=1;
+    
+        InputStream stream=ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        Font font=Font.createFont(Font.TRUETYPE_FONT,stream).deriveFont(20f);
+        InputStream stream2=ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
+        Font font2=Font.createFont(Font.TRUETYPE_FONT,stream2).deriveFont(25f);
+    
+        GButton regButton=new GButton("Regular");
+        GButton ultButton=new GButton("Ultimate");
+        GButton tranButton=new GButton("Omega");
+        GButton quanButton=new GButton("Quantum");
+        GButton quan3DButton=new GButton("Quantum 3D");
+        GButton settingsButton=new GButton("  ");
+    
+        JLabel titleLabel1=new JLabel("Ultimate Tic Tac Toe Collection");
         titleLabel1.setFont(font2);
-
+    
         settingsButton.setImage(image);
-        
+    
         regButton.setFont(font);
         ultButton.setFont(font);
         tranButton.setFont(font);
         quanButton.setFont(font);
         quan3DButton.setFont(font);
-
+    
         regButton.setFocusable(false);
         ultButton.setFocusable(false);
         tranButton.setFocusable(false);
         quanButton.setFocusable(false);
         quan3DButton.setFocusable(false);
         settingsButton.setFocusable(false);
-
-        regButton.setPreferredSize(new Dimension(180, 40));
-        ultButton.setPreferredSize(new Dimension(180, 40));
-        tranButton.setPreferredSize(new Dimension(180, 40));
-        quanButton.setPreferredSize(new Dimension(180, 40));
-        quan3DButton.setPreferredSize(new Dimension(180, 40));
-        settingsButton.setPreferredSize(new Dimension(50, 40));
-
-        // sound.loadSound("ping.wav");
+    
+        regButton.setPreferredSize(new Dimension(180,40));
+        ultButton.setPreferredSize(new Dimension(180,40));
+        tranButton.setPreferredSize(new Dimension(180,40));
+        quanButton.setPreferredSize(new Dimension(180,40));
+        quan3DButton.setPreferredSize(new Dimension(180,40));
+        settingsButton.setPreferredSize(new Dimension(50,40));
+    
         regButton.setSound(sound);
         ultButton.setSound(sound);
         tranButton.setSound(sound);
         quanButton.setSound(sound);
         quan3DButton.setSound(sound);
         settingsButton.setSound(sound);
-
+    
         regButton.setColor(color);
         ultButton.setColor(color);
         tranButton.setColor(color);
         quanButton.setColor(color);
         quan3DButton.setColor(color);
         settingsButton.setColor(color);
-
+    
         buttonList.add(regButton);
         buttonList.add(ultButton);
         buttonList.add(tranButton);
         buttonList.add(quanButton);
         buttonList.add(quan3DButton);
         buttonList.add(settingsButton);
-
-        //regButton.setToolTipText("The classic 3x3 board");
+    
         regButton.setSubtext(" The classic 3x3 board ");
         ultButton.setSubtext(" A larger 9x9 board, made of regular boards");
         tranButton.setSubtext("​ A huge, 27x27 board, composed of ultimate boards​");
         quanButton.setSubtext(" There's no explaining this one");
         quan3DButton.setSubtext(" A 3D variant of quantum tic tac toe");
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-
-        buttonPanel.add(regButton, gbc);
-
-        gbc.gridy = 3;
-
-        buttonPanel.add(ultButton, gbc);
-
-        gbc.gridy = 4;
-
-        buttonPanel.add(tranButton, gbc);
-
-        gbc.gridy = 5;
-
-        buttonPanel.add(quanButton, gbc);
-
-        gbc.gridy = 6;
-
-        buttonPanel.add(quan3DButton, gbc);
-
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-
-        startPanel.add(buttonPanel, BorderLayout.CENTER);
-
-        gbc.gridy = 0;
-        //topPanel.setPreferredSize(new Dimension(400, 100));
-        topPanel.setMinimumSize(new Dimension(400, 100));
-        startPanel.add(topPanel, BorderLayout.SOUTH);
-
-        gbc.anchor = GridBagConstraints.NORTHEAST;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-
-        topPanel.add(settingsButton, gbc);
-
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridy = 0;
-        buttonPanel.add(titleLabel1, gbc);
-        gbc.gridy = 1;
-        buttonPanel.add(Box.createVerticalStrut(15), gbc);
-
-        regButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e){ 
-                //starts regular game
-                try {
-                    setupGame(1, false);
-                    setupGame(1, false);
-                    repaint();
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            } 
+    
+        gbc.gridx=0;
+        gbc.gridy=2;
+        buttonPanel.add(regButton,gbc);
+    
+        gbc.gridy=3;
+        buttonPanel.add(ultButton,gbc);
+    
+        gbc.gridy=4;
+        buttonPanel.add(tranButton,gbc);
+    
+        gbc.gridy=5;
+        buttonPanel.add(quanButton,gbc);
+    
+        gbc.gridy=6;
+        buttonPanel.add(quan3DButton,gbc);
+    
+        gbc.gridy=1;
+        gbc.gridx=0;
+        startPanel.add(buttonPanel,BorderLayout.CENTER);
+    
+        gbc.gridy=0;
+        topPanel.setMinimumSize(new Dimension(400,100));
+        startPanel.add(topPanel,BorderLayout.SOUTH);
+    
+        gbc.anchor=GridBagConstraints.NORTHEAST;
+        gbc.weightx=1;
+        gbc.weighty=1;
+        topPanel.add(settingsButton,gbc);
+    
+        gbc.anchor=GridBagConstraints.CENTER;
+        gbc.gridy=0;
+        buttonPanel.add(titleLabel1,gbc);
+        gbc.gridy=1;
+        buttonPanel.add(Box.createVerticalStrut(15),gbc);
+    
+        regButton.addActionListener(e->{
+            try{
+                setupGame(1,false);
+                setupGame(1,false);
+                repaint();
+            }catch(Exception e1){
+                e1.printStackTrace();
+            }
         });
-
-        ultButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                //starts massive game
-                askIfUserWantsBot(2, font);
-            } 
-        });
-
-        
-
-        tranButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                //starts ultimate game
-                askLoad(3, font);
-            } 
-        });
-
-        quanButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                //starts quantum game
-                askIfUserWantsBot(4, font);
-            } 
-        });
-
-        quan3DButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                //starts quantum game
-                askIfUserWantsBot(5, font);
-            } 
-        });
-
-        settingsButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                //starts quantum game
-                new CFrame(GFrame.this, sound, music, font, color);
-            } 
-        });
-
-        // startPanel.repaint();
-        // startPanel.revalidate();
-        // startPanel.setVisible(true);
-
+    
+        ultButton.addActionListener(e->askIfUserWantsBot(2,font));
+        tranButton.addActionListener(e->askLoad(3,font));
+        quanButton.addActionListener(e->askIfUserWantsBot(4,font));
+        quan3DButton.addActionListener(e->askIfUserWantsBot(5,font));
+        settingsButton.addActionListener(e->new CFrame(GFrame.this,sound,music,font,color));
+    
         add(startPanel);
-
         setTitle("Choose your game");
-        fancyResize(400, 320);
+    
+        fancyResize(400,320);
     }
 
     public void askIfUserWantsBot(int gameType, Font font){
@@ -781,7 +723,12 @@ public class GFrame extends JFrame{
     }
 
     private void fancyResize(int x, int y){
-
+        // Ensure this method runs on the Event Dispatch Thread (EDT)
+        if(!SwingUtilities.isEventDispatchThread()){
+            SwingUtilities.invokeLater(() -> fancyResize(x, y));
+            return;
+        }
+    
         final int left = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).left;
         final int right = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).right;
         final int top = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).top;
@@ -789,29 +736,22 @@ public class GFrame extends JFrame{
         final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         final int width = screenSize.width - left - right;
         final int height = screenSize.height - top - bottom;
-        //revalidate();
-
+    
         if(fullscreen && gaming){
-            setSize(width, height);
-            setLocationRelativeTo(null);
-            setVisible(true);
-            return;
+            setBounds(0, 0, width, height);
+        }else{
+            int xPos = (width - x) / 2;
+            int yPos = (height - y) / 2;
+            setBounds(xPos, yPos, x, y);
         }
+    
+        //setVisible(true);
+        validate();
+        repaint();
 
-        EventQueue.invokeLater(() -> {
-            setSize(x, y);
-            if(gaming){
-                setResizable(true);
-            }else{
-                setResizable(false);
-            }
-            validate();
-            setLocationRelativeTo(null);
-            setVisible(true);
-            if(this.getX() != (width - x) / 2){
-                setLocationRelativeTo(null);
-            }
-        });
+        if(gaming){
+            getGPanel().repaint();
+        }
     }
 
     public void botStart(int gameType, int depth) throws Exception{
@@ -833,6 +773,9 @@ public class GFrame extends JFrame{
         color = c;
         for(int i = 0; i < buttonList.size(); i++){
             buttonList.get(i).setColor(c);
+        }
+        if(gaming){
+            bottomPanel.setColor(c);
         }
         repaint();
     }

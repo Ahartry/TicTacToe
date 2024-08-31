@@ -564,6 +564,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                 if(blankCount < 2){
                                     displayLabel.setText("Stalemate");
                                     displayLabel.setForeground(Color.BLACK);
+                                    moveDrawLoc = -1;
     
                                     //replay button stuff
                                     replay();
@@ -576,6 +577,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     quantumBoard.setState(State.Player1);
                                     displayLabel.setText("Player 1 wins");
                                     displayLabel.setForeground(red);
+                                    moveDrawLoc = -1;
     
                                     //replay button stuff
                                     replay();
@@ -584,6 +586,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     quantumBoard.setState(State.Player2);
                                     displayLabel.setText("Player 2 wins");
                                     displayLabel.setForeground(blue);
+                                    moveDrawLoc = -1;
     
                                     //replay button stuff
                                     replay();
@@ -846,6 +849,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                 if(blankCount < 2){
                                     displayLabel.setText("Stalemate");
                                     displayLabel.setForeground(Color.BLACK);
+                                    moveDrawLoc = -1;
     
                                     //replay button stuff
                                     replay();
@@ -858,6 +862,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     quantumBoard3D.setState(State.Player1);
                                     displayLabel.setText("Player 1 wins");
                                     displayLabel.setForeground(red);
+                                    moveDrawLoc = -1;
     
                                     //replay button stuff
                                     replay();
@@ -866,6 +871,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     quantumBoard3D.setState(State.Player2);
                                     displayLabel.setText("Player 2 wins");
                                     displayLabel.setForeground(blue);
+                                    moveDrawLoc = -1;
     
                                     //replay button stuff
                                     replay();
@@ -2357,6 +2363,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     public void setColor(Color c){
         buttonColor = c;
+        replayButton.setColor(c);
     }
 
     public void setImages(Image x1, Image o1, Image x2, Image o2){
