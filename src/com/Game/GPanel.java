@@ -187,7 +187,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             public void mouseReleased(MouseEvent e) { 
                 if(movementCounter == 0){
 
-                    if(game == 1){
+                    if(game == 1 && simpleBoard.getState() == State.Blank){
                         if((e.getX() > xbound && e.getX() < (xbound + boundingSize) && e.getY() > ybound && e.getY() < (ybound + boundingSize)) && simpleBoard.getState() == State.Blank){
                             int xboard = e.getX() - xbound;
                             int yboard = e.getY() - ybound;
@@ -248,7 +248,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             //System.out.println("X: " + xcell + ", Y: " + ycell);
     
                         }
-                    }else if(game == 2){
+                    }else if(game == 2 && largeBoard.getState() == State.Blank){
                         //System.out.println("\nclick1");
                         if((e.getX() > xbound && e.getX() < (xbound + (boundingSize * 3)) && e.getY() > ybound && e.getY() < (ybound + (boundingSize * 3))) && largeBoard.getState() == State.Blank){
                             //System.out.println("click2");
@@ -305,7 +305,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                         }else if((e.getX() > xbound && e.getX() < (xbound + (boundingSize * 3)) && e.getY() > ybound && e.getY() < (ybound + (boundingSize * 3))) && largeBoard.getState() != State.Blank){
                             //System.out.println("Error here");
                         }
-                    }else if(game == 3){
+                    }else if(game == 3 && massiveBoard.getState() == State.Blank){
                         if((e.getX() > xbound && e.getX() < (xbound + (boundingSize * 9)) && e.getY() > ybound && e.getY() < (ybound + (boundingSize * 9))) && massiveBoard.getState() == State.Blank){
                             int relativeX = e.getX() - xbound;
                             int relativeY = e.getY() - ybound;
@@ -342,8 +342,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             }
     
                         }
-                    }else if(game == 4){
-                        if((e.getX() > xbound && e.getX() < (xbound + boundingSize) && e.getY() > ybound && e.getY() < (ybound + boundingSize)) && quantumBoard.getState() == State.Blank && result == 0){
+                    }else if(game == 4 && quantumBoard.getState() == State.Blank){
+                        if(quantumBoard.getState() == State.Blank && (e.getX() > xbound && e.getX() < (xbound + boundingSize) && e.getY() > ybound && e.getY() < (ybound + boundingSize)) && quantumBoard.getState() == State.Blank && result == 0){
                             int xboard = e.getX() - xbound;
                             int yboard = e.getY() - ybound;
     
@@ -352,7 +352,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                             theSquare = xcell + (ycell * 3);
     
-                            if(quantumBoard.getBoardTile(xcell, ycell).getState() == State.Blank && e.getButton() == MouseEvent.BUTTON1){
+                            if(quantumBoard.getState() == State.Blank && quantumBoard.getBoardTile(xcell, ycell).getState() == State.Blank && e.getButton() == MouseEvent.BUTTON1){
 
                                 if(quantumMove && (xcell + (ycell * 3)) != recentCell){
                                     quantumBoard.getBoardTile(xcell, ycell).addMove(turnCount);
@@ -413,6 +413,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                             displayLabel.setText("Stalemate");
                                                             displayLabel.setForeground(Color.BLACK);
                                                             quantumBoard.clear();
+
+                                                            //so that it can't be played on again
+                                                            quantumBoard.setState(State.Player1);
                             
                                                             result = 1;
                                                             //replay button stuff
@@ -529,7 +532,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             
                             //System.out.println("X: " + xcell + ", Y: " + ycell);
     
-                        }else if(result == 1){
+                        }else if(result == 1 && quantumBoard.getState() == State.Blank){
                             //choosing the collpase
                             int selection = -1;
                             if(((e.getX() > (xbound + ((recentSquare1 % 3) * cellSize))) && (e.getX() < (xbound + ((recentSquare1 % 3) * cellSize) + cellSize)) && (e.getY() > (ybound + ((int) (Math.floor(recentSquare1 / 3)) * cellSize))) && (e.getY() < (ybound + ((int) (Math.floor(recentSquare1 / 3)) * cellSize) + cellSize)))){
@@ -565,6 +568,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setText("Stalemate");
                                     displayLabel.setForeground(Color.BLACK);
                                     moveDrawLoc = -1;
+
+                                    //so that it can't be played on again
+                                    quantumBoard.setState(State.Player1);
     
                                     //replay button stuff
                                     replay();
@@ -596,7 +602,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             }
                             
                         }
-                    }else if(game == 5){
+                    }else if(game == 5 && quantumBoard3D.getState() == State.Blank){
                         AffineTransform transform = new AffineTransform(Math.cos(theta), (-1 * Math.sin(theta)) / 2, Math.sin(theta), Math.cos(theta) / 2, offsetx, offsety);
                         try {
                             transform.invert();
@@ -620,7 +626,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                         Point2D.Double click2 = new Point2D.Double();
                         transform.deltaTransform(click1, click2);
 
-                        if((click2.getX() > xbound && click2.getX() < (xbound + boundingSize) && click2.getY() > ybound && click2.getY() < (ybound + boundingSize)) && quantumBoard3D.getState() == State.Blank && result == 0){
+                        if(quantumBoard3D.getState() == State.Blank && (click2.getX() > xbound && click2.getX() < (xbound + boundingSize) && click2.getY() > ybound && click2.getY() < (ybound + boundingSize)) && quantumBoard3D.getState() == State.Blank && result == 0){
                             int xboard = (int) click2.getX() - xbound;
                             int yboard = (int) click2.getY() - ybound;
     
@@ -631,7 +637,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                             //System.out.println("Square " + xcell + ", " + ycell + " on board" + boardZ);
     
-                            if(quantumBoard3D.getBoardTile(xcell, ycell, boardZ).getState() == State.Blank && e.getButton() == MouseEvent.BUTTON1){
+                            if(quantumBoard3D.getState() == State.Blank && quantumBoard3D.getBoardTile(xcell, ycell, boardZ).getState() == State.Blank && e.getButton() == MouseEvent.BUTTON1){
 
                                 if(quantumMove && (xcell + (ycell * 3) + (boardZ * 9)) != recentCell){
                                     quantumBoard3D.getBoardTile(xcell, ycell, boardZ).addMove(turnCount);
@@ -695,6 +701,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                             displayLabel.setText("Stalemate");
                                                             displayLabel.setForeground(Color.BLACK);
                                                             quantumBoard3D.clear();
+
+                                                            //so that it can't be played on again
+                                                            quantumBoard3D.setState(State.Player1);
                             
                                                             result = 1;
                                                             //replay button stuff
@@ -751,6 +760,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                             displayLabel.setText("Stalemate");
                                                             displayLabel.setForeground(Color.BLACK);
                                                             quantumBoard3D.clear();
+                                                            
+                                                            //thing
+                                                            quantumBoard3D.setState(State.Player1);
                             
                                                             //replay button stuff
                                                             replay();
@@ -806,7 +818,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             
                             //System.out.println("X: " + xcell + ", Y: " + ycell);
     
-                        }else if(result == 1){
+                        }else if(result == 1 && quantumBoard3D.getState() == State.Blank){
                             //choosing the collpase
                             int selection = -1;
                             int adjustedSquare1X = xbound + ((recentSquare1 % 3) * cellSize);
@@ -850,6 +862,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     displayLabel.setText("Stalemate");
                                     displayLabel.setForeground(Color.BLACK);
                                     moveDrawLoc = -1;
+
+                                    //so that it can't be played on again
+                                    quantumBoard3D.setState(State.Player1);
     
                                     //replay button stuff
                                     replay();
@@ -993,7 +1008,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             @Override
             public void mouseClicked(MouseEvent e) {
 
-                closeWindow();
+                //closeWindow();
                 try {
                     if(gameType != 3){
                         frame.setupGame(gameType, bot);
@@ -1001,6 +1016,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                         //handles difficulty
                         if(gameType != 1){
                             frame.setDepth(depth);
+                        
                         }
                     }else{
                         new SFrame(frame, bot, depth, 3, sound);
@@ -1690,7 +1706,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
 
         if(result == 1){
-            if(moveDrawLoc != -1){
+            if(moveDrawLoc != -1 && quantumBoard.getState() == State.Blank){
                 drawMove(g, moveDrawLoc, turnCount - 1);
             }
         }
@@ -2069,7 +2085,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     public void calculateHover3D(double x, double y){
         moveDrawLoc = -1;
 
-        if(result == 0){
+        if(result == 0 || quantumBoard.getState() != State.Blank){
             return;
         }
         

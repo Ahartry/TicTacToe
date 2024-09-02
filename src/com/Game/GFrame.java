@@ -358,7 +358,7 @@ public class GFrame extends JFrame{
         regButton.addActionListener(e->{
             try{
                 setupGame(1,false);
-                setupGame(1,false);
+                System.out.println("Chandelier wanted a line here");
                 repaint();
             }catch(Exception e1){
                 e1.printStackTrace();
