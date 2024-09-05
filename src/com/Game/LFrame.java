@@ -1,5 +1,6 @@
 package com.Game;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GridBagConstraints;
@@ -24,10 +25,12 @@ public class LFrame extends JFrame{
 
     GFrame frame;
     Sound sound;
+    Color c;
 
     int gameType;
 
-    public LFrame(GFrame frame, int game, Sound sound){
+    public LFrame(GFrame frame, int game, Sound sound, Color color){
+        c = color;
 
         gameType = game;
         this.sound = sound;
@@ -64,7 +67,7 @@ public class LFrame extends JFrame{
         //adds the saves
         for(int i = 0; i < saveList.size(); i++){
             gbc.gridy = i;
-            panel.add(new SaveMenu(saveList.get(i), this, gameType, sound), gbc);
+            panel.add(new SaveMenu(saveList.get(i), this, gameType, sound, color), gbc);
         }
 
         if(saveList.size() == 0){
@@ -273,7 +276,7 @@ public class LFrame extends JFrame{
         for(int i = 0; i < saveList.size(); i++){
             //System.out.println(i);
             gbc.gridy = i;
-            panel.add(new SaveMenu(saveList.get(i), frame, gameType, sound), gbc);
+            panel.add(new SaveMenu(saveList.get(i), frame, gameType, sound, c), gbc);
         }
 
         if(saveList.size() == 0){

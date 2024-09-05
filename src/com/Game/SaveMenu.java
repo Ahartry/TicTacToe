@@ -1,5 +1,6 @@
 package com.Game;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -14,7 +15,7 @@ import javax.swing.JPanel;
 
 public class SaveMenu extends JPanel{
     
-    public SaveMenu(String saveName, LFrame frame, int game, Sound sound){
+    public SaveMenu(String saveName, LFrame frame, int game, Sound sound, Color color){
 
         //make font
         Font font = new Font(null);
@@ -31,10 +32,12 @@ public class SaveMenu extends JPanel{
         GButton loadButton = new GButton("Load");
         loadButton.setFont(font);
         loadButton.setSound(sound);
+        loadButton.setColor(color);
 
         GButton deleteButton = new GButton("Delete");
         deleteButton.setFont(font);
         deleteButton.setSound(sound);
+        deleteButton.setColor(color);
 
         //set sizes
         Dimension d = label.getPreferredSize();

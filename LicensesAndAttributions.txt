@@ -1,6 +1,6 @@
 font.ttf is Open Sans Bold, and uses the SIL Open Font License, which is included at the end of this document
 
-Sounds and images are created by me, excluding the secret themes which are from wikipedia
+Sounds and images are created by me
 
 Special thanks to smiles, Sparrowtail24, Gekky, Chandelier, and the Grassman, for their help with coding and testing
 

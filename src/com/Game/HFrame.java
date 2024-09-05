@@ -20,14 +20,14 @@ public class HFrame extends JFrame{
     public HFrame(int gameType, Sound sound, Color c) throws FontFormatException, IOException{
 
         int width = 500;
-        int height = 350;
+        int height = 380;
 
         //I need more explanation space
         if(gameType == 4){
             height *= 1.4;
         }
         if(gameType == 1){
-            height /= 2;
+            height /= 2.2;
         }
         if(gameType == 3){
             height *= 1.1;

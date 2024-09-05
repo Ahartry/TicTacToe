@@ -253,4 +253,16 @@ public class GButton extends JButton{
 		}
 		
 	}
+
+	public boolean hasTooltip(){
+		if(toolTip != null){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public GToolTip getToolTip(){
+		return toolTip;
+	}
 }

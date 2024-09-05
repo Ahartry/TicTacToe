@@ -87,6 +87,11 @@ public class GFrame extends JFrame{
         }
     
         gaming=true;
+        for(int i = 0; i < buttonList.size(); i++){
+            if(buttonList.get(i).hasTooltip()){
+                buttonList.get(i).getToolTip().kill();
+            }
+        }
         buttonList.clear();
         //setVisible(false);
         setResizable(true);
@@ -232,6 +237,11 @@ public class GFrame extends JFrame{
     
         setResizable(false);
         gaming = false;
+        for(int i = 0; i < buttonList.size(); i++){
+            if(buttonList.get(i).hasTooltip()){
+                buttonList.get(i).getToolTip().kill();
+            }
+        }
         buttonList.clear();
         Image image = null;
         try{
@@ -708,7 +718,7 @@ public class GFrame extends JFrame{
         loadButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
 
-                new LFrame(GFrame.this, gameType, sound);
+                new LFrame(GFrame.this, gameType, sound, color);
 
             } 
             
