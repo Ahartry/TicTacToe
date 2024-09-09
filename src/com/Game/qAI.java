@@ -172,8 +172,6 @@ public class qAI {
             move1 = options.get(move1);
             move2 = options.get(move2);
 
-            //System.out.println("Playing random moves " + move1 + " and " + move2);
-
             board.move(new QuantumMove(move1, move2));
             if(board.checkLoops(board.getMoveCount() - 1) == 1){
                 if(r.nextBoolean()){

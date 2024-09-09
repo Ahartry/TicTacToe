@@ -455,6 +455,12 @@ public class QuantumBoard {
             }
         }
     }
+
+    public QuantumMove checkRows(boolean turn){
+        QuantumMove move = new QuantumMove(-1, -1);
+
+        return move;
+    }
 }
 
 

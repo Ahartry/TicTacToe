@@ -156,8 +156,7 @@ public class GFrame extends JFrame{
     
         rightPanel.add(helpButton);
     
-        bottomPanel=new GPanel(gameType,topLabel,functionButton,bot,this,sound);
-        bottomPanel.setPreferredSize(new Dimension(1000,550));
+        bottomPanel = new GPanel(gameType,topLabel,functionButton,bot,this,sound);
     
         InputStream stream=ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
         font=Font.createFont(Font.TRUETYPE_FONT,stream).deriveFont(30f);
@@ -211,7 +210,7 @@ public class GFrame extends JFrame{
         addComponentListener(new ComponentAdapter(){
             @Override
             public void componentResized(ComponentEvent e){
-                bottomPanel.resizeVariables(getContentPane().getWidth(),getContentPane().getHeight()-50);
+                bottomPanel.resizeVariables(getContentPane().getWidth(),getContentPane().getHeight() - 50);
             }
             @Override
             public void componentMoved(ComponentEvent e){
@@ -220,7 +219,9 @@ public class GFrame extends JFrame{
         });
     
         setTitle("Tic Tac Toe");
-        SwingUtilities.invokeLater(()->fancyResize(1000,600)); 
+        SwingUtilities.invokeLater(()->fancyResize(1000,600));
+        bottomPanel.resizeVariables(getContentPane().getWidth(),getContentPane().getHeight() - 50);
+        bottomPanel.repaint();
     }
 
     public void setupWindow()throws Exception{

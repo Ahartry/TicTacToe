@@ -2085,7 +2085,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     public void calculateHover3D(double x, double y){
         moveDrawLoc = -1;
 
-        if(result == 0 || quantumBoard.getState() != State.Blank){
+        if(result == 0 || quantumBoard3D.getState() != State.Blank){
             return;
         }
         
@@ -2187,13 +2187,25 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         //do anything needed with comparing to old size
 
-        double xscale = (double) width / (double) pwidth;
-        double yscale = (double) height / (double) pheight;
+        int pmidx = pwidth / 2;
+        int pmidy = pheight / 2;
 
-        offsetx *= xscale;
-        offsety *= yscale;
+        double xoffsetc = offsetx - pmidx;
+        double yoffsetc = offsety - pmidy;
 
-        // //sets the new previous size
+        // xoffsetc /= pmidx;
+        // yoffsetc /= pmidy;
+
+        offsetx = (int) ((width / 2) + xoffsetc);
+        offsety = (int) ((height / 2) + yoffsetc);
+
+        // double xscale = (double) width / (double) pwidth;
+        // double yscale = (double) height / (double) pheight;
+
+        // offsetx *= xscale;
+        // offsety *= yscale;
+
+        //sets the new previous size
         pwidth = width;
         pheight = height;
     }
