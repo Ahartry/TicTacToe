@@ -450,9 +450,12 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                     if(result == 1){
                                                         return;
                                                     }
+                                                    int move = 0;
                                                     if(quantumBoard.getState() == State.Blank){
-                                                        qAI.checkQuantumBoard(quantumBoard);
+                                                        move = qAI.checkQuantumBoard(quantumBoard);
                                                     }
+                                                    recentSquare1 = move / 9;
+                                                    recentSquare2 = move % 9;
                                                     result = quantumBoard.checkLoops(turnCount);
                                                     turnCount++;
                                                     turn = !turn;
@@ -475,6 +478,21 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                         }
                                                     }else{
                                                         quantumBoard.clear();
+                                                    }
+                                                    //does stuff if a loop is found
+                                                    if(result == 0){
+                                                        //System.out.println("No loop");
+                                                    }else{
+                                                        //System.out.println("Loop");
+                                                        if(turn){
+                                                            displayLabel.setText("Player 2 chooses collapse");
+                        
+                                                        }else{
+                                                            displayLabel.setText("Player 1 chooses collapse");
+                                                            
+                                                        }
+
+                                                        moveDrawLoc = recentSquare1;
                                                     }
                                                     
                                                     repaint();
@@ -2193,17 +2211,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
         double xoffsetc = offsetx - pmidx;
         double yoffsetc = offsety - pmidy;
 
-        // xoffsetc /= pmidx;
-        // yoffsetc /= pmidy;
-
         offsetx = (int) ((width / 2) + xoffsetc);
         offsety = (int) ((height / 2) + yoffsetc);
-
-        // double xscale = (double) width / (double) pwidth;
-        // double yscale = (double) height / (double) pheight;
-
-        // offsetx *= xscale;
-        // offsety *= yscale;
 
         //sets the new previous size
         pwidth = width;

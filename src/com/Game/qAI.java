@@ -10,6 +10,7 @@ public class qAI {
     int bestMove1;
     int bestMove2;
     int bestScore = Integer.MIN_VALUE;
+    int bestEnemyScore = Integer.MAX_VALUE;
     int movetotal;
     int total;
     int time = 50000000;
@@ -83,32 +84,50 @@ public class qAI {
         return bestMove1 + (bestMove2 * 3);
     }
 
-    public int checkQuantumBoard(QuantumBoard board){
+    public int checkQuantumBoard(QuantumBoard RealBoard){
 
-        this.board = new QuantumBoard();
-        this.backup = new QuantumBoard();
+        board = new QuantumBoard();
+        backup = new QuantumBoard();
+        board.copy(RealBoard);
+        backup.copy(RealBoard);
 
-        this.board.copy(board);
-        this.backup.copy(board);
         startList = listAvailableMoves();
         long start = System.nanoTime();
 
+        int empty = RealBoard.listActiveTiles().size();
+        //number of combinations (moves)
+        int timeThing = empty * (empty + 1) / 2;
+
         //time I give it
-        start += time;
+        //start += time;
+        
+        long timePerBranch = time / (timeThing * timeThing);
 
-        //System.out.println("Checking " + startList.size() + " available moves");
+        //iterates through the ply 1 list
+        for(int i = 0; i < startList.size(); i++){
+            //resets the stuff and prepares for the next search
+            backup.copy(RealBoard);
+            backup.move(startList.get(i));
+            ArrayList<QuantumMove> nextList = new ArrayList<>(listAvailableMoves(backup));
+            bestEnemyScore = Integer.MAX_VALUE;
 
-        while(System.nanoTime() < start){
-            for(int i = 0; i < startList.size(); i++){
-                board.copy(backup);
+            //iterates through the ply 2 list
+            for(int j = 0; j < nextList.size(); j++){
+                //repeatedly searches from this point
+                while(System.nanoTime() < (start + timePerBranch)){
+                    board.copy(backup);
+                    board.move(nextList.get(j));
+                    exploreRandom(board, nextList.get(j));
+                    total++;
+                }
+                if(nextList.get(j).getWins() < bestEnemyScore){
+                    bestEnemyScore = nextList.get(j).getWins();
+                }
+                start += timePerBranch;
 
-                //move count is now incremented inside move2
-                //System.out.println("Playing starting move of " + startList.get(i).getMove1() + " " + startList.get(i).getMove2() + " on turn " + board.getMoveCount());
-                board.move(startList.get(i));
-                exploreRandom(board, startList.get(i));
-                total++;
-                //System.out.println("iterated");
             }
+            startList.get(i).addWin(bestEnemyScore);
+
         }
 
         for(int i = 0; i < startList.size(); i++){
@@ -120,16 +139,14 @@ public class qAI {
             }
         }
 
-        board.copy(backup);
-
         System.out.println("Best move is " + bestMove1 + ", " + bestMove2 + " with a score of " + bestScore + " out of " + movetotal + " (" + total + " branches checked)");
-        board.move(new QuantumMove(bestMove1, bestMove2));
+        RealBoard.move(new QuantumMove(bestMove1, bestMove2));
 
         movetotal = 0;
         total = 0;
         bestScore = Integer.MIN_VALUE;
 
-        return bestMove1 + (bestMove2 * 3);
+        return bestMove1 + (bestMove2 * 9);
     }
 
     public void exploreRandom(QuantumBoard board, QuantumMove start){
@@ -199,11 +216,29 @@ public class qAI {
         ArrayList<QuantumMove> list = new ArrayList<>();
 
         for(int i = 0; i < 9; i++){
-            if(board.getBoardTile(i % 3, (int) Math.floor(i / 3)).getState() != State.Blank){
+            if(board.getBoardTile(i % 3, i / 3).getState() != State.Blank){
                 continue;
             }
             for(int j = i + 1; j < 9; j++){
-                if(board.getBoardTile(j % 3, (int) Math.floor(j / 3)).getState() != State.Blank){
+                if(board.getBoardTile(j % 3, j / 3).getState() != State.Blank){
+                    continue;
+                }
+                list.add(new QuantumMove(i, j));
+            }
+        }
+
+        return list;
+    }
+
+    public ArrayList<QuantumMove> listAvailableMoves(QuantumBoard board){
+        ArrayList<QuantumMove> list = new ArrayList<>();
+
+        for(int i = 0; i < 9; i++){
+            if(board.getBoardTile(i % 3, i / 3).getState() != State.Blank){
+                continue;
+            }
+            for(int j = i + 1; j < 9; j++){
+                if(board.getBoardTile(j % 3, j / 3).getState() != State.Blank){
                     continue;
                 }
                 list.add(new QuantumMove(i, j));
