@@ -658,12 +658,14 @@ public class GPanel extends JPanel implements MouseWheelListener{
                             if(quantumBoard3D.getState() == State.Blank && quantumBoard3D.getBoardTile(xcell, ycell, boardZ).getState() == State.Blank && e.getButton() == MouseEvent.BUTTON1){
 
                                 if(quantumMove && (xcell + (ycell * 3) + (boardZ * 9)) != recentCell){
-                                    quantumBoard3D.getBoardTile(xcell, ycell, boardZ).addMove(turnCount);
+                                    //quantumBoard3D.getBoardTile(xcell, ycell, boardZ).addMove(turnCount);
 
-                                    quantumBoard3D.getBoardTile(recentCell % 3, (recentCell - ((recentCell / 9) * 9)) / 3, recentCell / 9).addMove(turnCount);
+                                    //quantumBoard3D.getBoardTile(recentCell % 3, (recentCell - ((recentCell / 9) * 9)) / 3, recentCell / 9).addMove(turnCount);
 
                                     //don't really need this here I think
-                                    quantumBoard3D.incrementMoveCount();
+                                    //quantumBoard3D.incrementMoveCount();
+
+                                    quantumBoard3D.move(new QuantumMove(recentCell, (xcell + (ycell * 3) + (boardZ * 9))));
 
                                     recentSquare1 = xcell + (ycell * 3) + (boardZ * 9);
                                     recentSquare2 = recentCell;
@@ -756,9 +758,12 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                     if(result == 1){
                                                         return;
                                                     }
+                                                    int move = 0;
                                                     if(quantumBoard3D.getState() == State.Blank){
-                                                        qAI3D.checkQuantumBoard3D(quantumBoard3D);
+                                                        move = qAI3D.checkQuantumBoard3D(quantumBoard3D);
                                                     }
+                                                    recentSquare1 = move / 27;
+                                                    recentSquare2 = move % 27;
                                                     result = quantumBoard3D.checkLoops(turnCount);
                                                     turnCount++;
                                                     turn = !turn;
@@ -787,6 +792,21 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                         }
                                                     }else{
                                                         quantumBoard3D.clear();
+                                                    }
+                                                    //does stuff if a loop is found
+                                                    if(result == 0){
+                                                        //System.out.println("No loop");
+                                                    }else{
+                                                        //System.out.println("Loop");
+                                                        if(turn){
+                                                            displayLabel.setText("Player 2 chooses collapse");
+                        
+                                                        }else{
+                                                            displayLabel.setText("Player 1 chooses collapse");
+                                                            
+                                                        }
+
+                                                        moveDrawLoc = recentSquare1;
                                                     }
                                                     
                                                     repaint();
@@ -2212,7 +2232,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
         double yoffsetc = offsety - pmidy;
 
         offsetx = (int) ((width / 2) + xoffsetc);
-        offsety = (int) ((height / 2) + yoffsetc);
+        if(game != 5){
+            offsety = (int) ((height / 2) + yoffsetc);
+        }
 
         //sets the new previous size
         pwidth = width;
