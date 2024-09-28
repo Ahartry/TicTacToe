@@ -1,6 +1,7 @@
 package com.Game;
 
 import java.util.ArrayList;
+import java.util.SplittableRandom;
 
 public class QuantumBoard3D {
 
@@ -8,9 +9,9 @@ public class QuantumBoard3D {
     private int result = 0;
     private int moveCount = 1;
     private ArrayList<Integer> skippedList;
-    private ArrayList<QuantumMove> quantumList;
     private ArrayList<QuantumMove>[] quantumCacheList;
     private ArrayList<QuantumMove> quantumSkipList;
+    private ArrayList<Integer> list;
 
     //stores the availability of each tile as a byte
     private int available = Integer.MAX_VALUE;
@@ -19,8 +20,8 @@ public class QuantumBoard3D {
     public QuantumBoard3D(){
         boardArray = new QuantumTile[3][3][3];
         skippedList = new ArrayList<>();
-        quantumList = new ArrayList<>();
         quantumSkipList = new ArrayList<>();
+        list = new ArrayList<>();
         quantumCacheList = new ArrayList[27];
         for(int i = 0; i < 27; i++){
             quantumCacheList[i] = new ArrayList<>();
@@ -570,6 +571,10 @@ public class QuantumBoard3D {
         int x = loc % 3;
         int y = (loc - (z * 9)) / 3;
 
+        if(boardArray[x][y][z].getState() != State.Blank){
+            return;
+        }
+
         if(turn % 2 != 0){
             boardArray[x][y][z].setState(State.Player1);
         }else{
@@ -577,23 +582,63 @@ public class QuantumBoard3D {
         }
 
         boardArray[x][y][z].setTurn(turn);
-        //availableSet.remove(loc);
+        boardArray[x][y][z].getMovesList().clear();
         available -= (Math.pow(2, loc));
 
-        ArrayList<Integer> list = new ArrayList<>(boardArray[x][y][z].getMovesList());
-
-        boardArray[x][y][z].getMovesList().clear();
-
-        //System.out.println(list.size());
-
-        for(int i = 0; i < list.size(); i++){
-            int link = getLink(list.get(i), loc);
-            if(link == -1){
-                continue;
+        //doesn't work currently
+        for(int i = 0; i < quantumCacheList[loc].size(); i++){
+            int m1 = quantumCacheList[loc].get(i).getMove1();
+            int m2 = quantumCacheList[loc].get(i).getMove2();
+            int t = quantumCacheList[loc].get(i).getTurn();
+            quantumCacheList[loc].remove(i);
+            i--;
+            if(m1 == loc){
+                collapseTile(m2, t);
+            }else{
+                collapseTile(m1, t);
             }
-            collapseTile(link, list.get(i));
         }
+        // list.clear();
+        // for(int i = 0; i < boardArray[x][y][z].getMovesList().size(); i++){
+        //     list.add(boardArray[x][y][z].getMovesList().get(i));
+        // }
 
+        // boardArray[x][y][z].getMovesList().clear();
+
+        // //System.out.println(list.size());
+
+        // for(int i = 0; i < list.size(); i++){
+        //     int link = getLink(list.get(i), loc);
+        //     if(link == -1){
+        //         continue;
+        //     }
+        //     collapseTile(link, list.get(i));
+        // }
+
+    }
+
+    public int checkAndCollapse(QuantumMove move){
+        int result = checkLoopsUsingQuantumDoohickery(move);
+        if(result != 0){
+            SplittableRandom r = new SplittableRandom();
+            if(r.nextBoolean()){
+                collapseTile(move.getMove1(), getMoveCount());
+            }else{
+                collapseTile(move.getMove2(), getMoveCount());
+            }
+            //System.out.println("Found loop when checking " + move.getMove1() + " " + move.getMove2());
+        }
+        result = checkEntireBoard();
+        if(result == 1){
+            move.addWin(-1);
+            move.addTotal(1);
+            //System.out.println("Starting enemy move has win " + move.getMove1() + " " + move.getMove2());
+        }else if(result == 2){
+            move.addWin(1);
+            move.addTotal(1);
+            //System.out.println("Starting enemy move has win " + move.getMove1() + " " + move.getMove2());
+        }
+        return result;
     }
     
     public QuantumBoard getQuantumBoard(int slice){
@@ -621,7 +666,6 @@ public class QuantumBoard3D {
         //this might work (idk)
         long t0 = System.nanoTime();
         moveCount = board.getMoveCount();
-        this.quantumList = board.getQuantumList();
         //availableSet.clear();
         available = board.getAvailable();
         long t1 = System.nanoTime();
@@ -649,10 +693,6 @@ public class QuantumBoard3D {
         return available;
     }
 
-    public ArrayList<QuantumMove> getQuantumList(){
-        return quantumList;
-    }
-
     public ArrayList<QuantumMove>[] getQuantumCacheList(){
         return quantumCacheList;
     }
@@ -672,7 +712,7 @@ public class QuantumBoard3D {
 
         getBoardTile(x1, y1, z1).addMove(moveCount);
         getBoardTile(x2, y2, z2).addMove(moveCount);
-        quantumList.add(move);
+        move.setTurn(moveCount);
         quantumCacheList[move.getMove1()].add(move);
         quantumCacheList[move.getMove2()].add(move);
         incrementMoveCount();

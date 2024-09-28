@@ -8,6 +8,10 @@ public class QuantumMove {
     int wins = 0;
     int total = 0;
 
+    double winsd = 0;
+
+    int turn = 0;
+
     public QuantumMove(int one, int two){
         move1 = one;
         move2 = two;
@@ -39,6 +43,14 @@ public class QuantumMove {
         wins += x;
     }
 
+    public void addWin(double x){
+        winsd += x;
+    }
+
+    public double getWinsd(){
+        return winsd;
+    }
+
     public void addTotal(int x){
         total += x;
     }
@@ -53,6 +65,14 @@ public class QuantumMove {
 
     public int getLoc(){
         return move1 + (move2 * 3);
+    }
+
+    public int getTurn(){
+        return turn;
+    }
+
+    public void setTurn(int x){
+        turn = x;
     }
 
 }
