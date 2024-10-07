@@ -43,7 +43,7 @@ public class QuantumMove {
         wins += x;
     }
 
-    public void addWin(double x){
+    public void addWind(double x){
         winsd += x;
     }
 
@@ -73,6 +73,10 @@ public class QuantumMove {
 
     public void setTurn(int x){
         turn = x;
+    }
+
+    public double getScore(){
+        return (double) wins / (double) total;
     }
 
 }

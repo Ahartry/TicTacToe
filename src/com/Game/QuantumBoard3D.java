@@ -1,44 +1,37 @@
 package com.Game;
 
 import java.util.ArrayList;
-import java.util.SplittableRandom;
 
 public class QuantumBoard3D {
 
-    private QuantumTile[][][] boardArray;
     private int result = 0;
     private int moveCount = 1;
-    private ArrayList<Integer> skippedList;
     private ArrayList<QuantumMove>[] quantumCacheList;
+    private State[] boardState;
+    private int[] boardTurn;
     private ArrayList<QuantumMove> quantumSkipList;
-    private ArrayList<Integer> list;
 
     //stores the availability of each tile as a byte
     private int available = Integer.MAX_VALUE;
 
     @SuppressWarnings("unchecked")
     public QuantumBoard3D(){
-        boardArray = new QuantumTile[3][3][3];
-        skippedList = new ArrayList<>();
+        boardState = new State[27];
+        boardTurn = new int[27];
         quantumSkipList = new ArrayList<>();
-        list = new ArrayList<>();
         quantumCacheList = new ArrayList[27];
         for(int i = 0; i < 27; i++){
             quantumCacheList[i] = new ArrayList<>();
-        }
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                for(int k = 0; k < 3; k++){
-                    boardArray[i][j][k] = new QuantumTile();
-                    boardArray[i][j][k].setState(State.Blank);
-                }
-            }
+            boardTurn[i] = 0;
+            boardState[i] = State.Blank;
         }
 
         state = State.Blank;
     }
 
     public int checkLoopsUsingQuantumDoohickery(QuantumMove move){
+        result = 0;
+
         quantumSkipList.clear();
         quantumSkipList.add(move);
 
@@ -78,132 +71,6 @@ public class QuantumBoard3D {
         return;
     }
 
-    public int checkLoops(int turn){
-
-        int start = getBoardWithMove(turn);
-        int next = getLink(turn, start);
-
-        result = 0;
-
-        skippedList.add(turn);
-        iterativeSearch(start, next);
-
-        skippedList.clear();
-
-        return result;
-    }
-
-    public void iterativeSearch(int start, int loc){
-
-        int z = loc / 9;
-
-        int x = loc % 3;
-        int y = ((loc - (z * 9)) / 3);
-
-        if(loc == start){
-            result = 1;
-            //System.out.println("Loop found");
-        }
-
-        if(result == 1){
-            return;
-        }
-
-        mainLoop:
-        for(int i = 0; i < boardArray[x][y][z].getMovesList().size(); i++){
-
-            int move = boardArray[x][y][z].getMovesList().get(i);
-            int link = getLink(move, (x + (y * 3) + (z * 9)));
-
-            //checks for skip list
-            for(int j = 0; j < skippedList.size(); j++){
-                if(skippedList.get(j) == boardArray[x][y][z].getMovesList().get(i)){
-                    //System.out.println("Skipping move " + skippedList.get(j));
-                    continue mainLoop;
-                }
-            }
-
-            //does the stuff otherwise
-            skippedList.add(move);
-            iterativeSearch(start, link);
-        }
-
-    }
-
-    public int getLink(int turn, int start){
-        int boardResult = -1;
-
-        mainLoop:
-        for(int i = 0; i < 27; i++){
-
-            int z = i / 9;
-            int x = i % 3;
-            int y = ((i - (z * 9)) / 3);
-
-            if(i != start){
-                for(int j = 0; j < boardArray[x][y][z].getMovesList().size(); j++){
-                    if(boardArray[x][y][z].getMovesList().get(j) == turn){
-                        boardResult = i;
-                        break mainLoop;
-                    }
-                }
-            }
-
-        }
-
-        if(boardResult == -1){
-            //System.out.println("ERROR: Move " + turn + " in square " + start + " has no link");
-        }
-
-        return boardResult;
-    }
-
-    public int getBoardWithMove(int turn){
-
-        int boardResult = 0;
-        mainLoop:
-        for(int i = 0; i < 27; i++){
-
-            int z = i / 9;
-            int x = i % 3;
-            int y = ((i - (z * 9)) / 3);
-
-            for(int j = 0; j < boardArray[x][y][z].getMovesList().size(); j++){
-                if(boardArray[x][y][z].getMovesList().get(j) == turn){
-                    boardResult = i;
-                    break mainLoop;
-                }
-            }
-        }
-
-        return boardResult;
-    }
-
-    public int getOtherBoardWithMove(int turn){
-
-        int boardResult = 0;
-        boolean first = false;
-        mainLoop:
-        for(int i = 0; i < 27; i++){
-
-            int z = (int) Math.floor(i / 9);
-            int x = i % 3;
-            int y = (int) Math.floor((i - (z * 9)) / 3);
-
-            for(int j = 0; j < boardArray[x][y][z].getMovesList().size(); j++){
-                if(first && boardArray[x][y][z].getMovesList().get(j) == turn){
-                    boardResult = i;
-                    break mainLoop;
-                }
-                if(boardArray[x][y][z].getMovesList().get(j) == turn){
-                    first = true;
-                }
-            }
-        }
-
-        return boardResult;
-    }
-
     private State state;
     
     public void setState(State input){
@@ -214,51 +81,18 @@ public class QuantumBoard3D {
         return state;
     }
 
-    public void setBoardTile(int x, int y, int z, boolean player){
-        if(player){
-            boardArray[x][y][z].setState(State.Player2);
-        }else{
-            boardArray[x][y][z].setState(State.Player1);
-        }
-        
+    public void setBoardTurn(int x, int turn){
+        boardTurn[x] = turn;
     }
 
-    public QuantumTile getBoardTile(int x, int y, int z){
-        return boardArray[x][y][z];
+    public State[] getBoardStatelist(){
+        return boardState;
     }
 
-    //not used
-    public int checkBoard(int x, int y, int z){
-        int result = 0;
-        int player = 0; 
-
-        if(boardArray[x][y][z].getState() == State.Player1){
-            player = 1;
-        }else if(boardArray[x][y][z].getState() == State.Player2){
-            player = 2;
-        }
-
-        //verticals
-        if(boardArray[x][y][0].getState().equals(boardArray[x][y][1].getState()) && boardArray[x][y][0].getState().equals(boardArray[x][y][2].getState())){
-            result = player;
-        }
-
-        //horizontal
-        if(boardArray[x][0][z].getState().equals(boardArray[x][1][z].getState()) && boardArray[x][0][z].getState().equals(boardArray[x][2][z].getState())){
-            result = player;
-        }
-
-        //the other
-        if(boardArray[0][y][z].getState().equals(boardArray[1][y][z].getState()) && boardArray[0][y][z].getState().equals(boardArray[2][y][z].getState())){
-            result = player;
-        }
-
-        //I HAVE NOT DONE DIAGONAlS
-        //AND I DO NOT WANT TO DO THEM
-        //FREE ME FROM THIS
-
-        return result;
+    public int[] getBoardTurnlist(){
+        return boardTurn;
     }
+
 
     public int checkEntireBoard(){
         int result = 0;
@@ -267,67 +101,103 @@ public class QuantumBoard3D {
         int highestp1 = 0;
         int highestp2 = 0;
 
-        //horizontals z
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                if(boardArray[i][j][0].getState().equals(boardArray[i][j][1].getState()) && (boardArray[i][j][0].getState().equals(boardArray[i][j][2].getState()))){
-                    if(boardArray[i][j][0].getState().equals(State.Player1)){
-                        player1++;
-                        int highest = getHighestMove(boardArray[i][j][0], boardArray[i][j][1], boardArray[i][j][0]);
-                        if(highest > highestp1){
-                            highestp1 = highest;
-                        }
-    
-                    }else if(boardArray[i][j][0].getState().equals(State.Player2)){
-                        player2++;
-                        int highest = getHighestMove(boardArray[i][j][0], boardArray[i][j][1], boardArray[i][j][0]);
-                        if(highest > highestp2){
-                            highestp2 = highest;
-                        }
+        for(int i = 0; i < 9; i++){
+            //horizontal x
+            if(boardState[i * 3].equals(boardState[i * 3 + 1]) && boardState[i * 3].equals(boardState[i * 3 + 2])){
+                if(boardState[i * 3].equals(State.Player1)){
+                    //System.out.println("Line 107");
+                    player1++;
+                    int highest = Math.max(boardTurn[i * 3],  Math.max(boardTurn[i * 3 + 1], boardTurn[i * 3 + 2]));
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }
+
+                }else if(boardState[i * 3].equals(State.Player2)){
+                    //System.out.println("Line 115");
+                    player2++;
+                    int highest = Math.max(boardTurn[i * 3],  Math.max(boardTurn[i * 3 + 1], boardTurn[i * 3 + 2]));
+                    if(highest > highestp2){
+                        highestp2 = highest;
                     }
                 }
             }
         }
 
-        //horizontals x
         for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                if(boardArray[0][j][i].getState().equals(boardArray[1][j][i].getState()) && (boardArray[0][j][i].getState().equals(boardArray[2][j][i].getState()))){
-                    if(boardArray[0][j][i].getState().equals(State.Player1)){
-                        player1++;
-                        int highest = getHighestMove(boardArray[0][j][i], boardArray[1][j][i], boardArray[2][j][i]);
-                        if(highest > highestp1){
-                            highestp1 = highest;
-                        }
-    
-                    }else if(boardArray[0][j][i].getState().equals(State.Player2)){
-                        player2++;
-                        int highest = getHighestMove(boardArray[0][j][i], boardArray[1][j][i], boardArray[2][j][i]);
-                        if(highest > highestp2){
-                            highestp2 = highest;
-                        }
+            //horizontal y
+            if(boardState[i].equals(boardState[i + 3]) && boardState[i].equals(boardState[i + 6])){
+                if(boardState[i].equals(State.Player1)){
+                    //System.out.println("Line 129");
+                    player1++;
+                    int highest = Math.max(boardTurn[i],  Math.max(boardTurn[i + 3], boardTurn[i + 6]));
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }
+
+                }else if(boardState[i].equals(State.Player2)){
+                    //System.out.println("Line 137");
+                    player2++;
+                    int highest = Math.max(boardTurn[i],  Math.max(boardTurn[i + 3], boardTurn[i + 6]));
+                    if(highest > highestp2){
+                        highestp2 = highest;
+                    }
+                }
+            }
+            if(boardState[i + 9].equals(boardState[i + 12]) && boardState[i + 9].equals(boardState[i + 15])){
+                if(boardState[i + 9].equals(State.Player1)){
+                    //System.out.println("Line 147");
+                    player1++;
+                    int highest = Math.max(boardTurn[i + 9],  Math.max(boardTurn[i + 12], boardTurn[i + 15]));
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }
+
+                }else if(boardState[i + 9].equals(State.Player2)){
+                    //System.out.println("Line 155");
+                    player2++;
+                    int highest = Math.max(boardTurn[i + 9],  Math.max(boardTurn[i + 12], boardTurn[i + 15]));
+                    if(highest > highestp2){
+                        highestp2 = highest;
+                    }
+                }
+            }
+            if(boardState[i + 18].equals(boardState[i + 21]) && boardState[i + 18].equals(boardState[i + 24])){
+                if(boardState[i + 18].equals(State.Player1)){
+                    //System.out.println("Line 165");
+                    player1++;
+                    int highest = Math.max(boardTurn[i + 18],  Math.max(boardTurn[i + 21], boardTurn[i + 24]));
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }
+
+                }else if(boardState[i + 18].equals(State.Player2)){
+                    //System.out.println("Line 173");
+                    player2++;
+                    int highest = Math.max(boardTurn[i + 18],  Math.max(boardTurn[i + 21], boardTurn[i + 24]));
+                    if(highest > highestp2){
+                        highestp2 = highest;
                     }
                 }
             }
         }
 
-        //horizontals y
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                if(boardArray[j][0][i].getState().equals(boardArray[j][1][i].getState()) && (boardArray[j][0][i].getState().equals(boardArray[j][2][i].getState()))){
-                    if(boardArray[j][0][i].getState().equals(State.Player1)){
-                        player1++;
-                        int highest = getHighestMove(boardArray[j][0][i], boardArray[j][1][i], boardArray[j][2][i]);
-                        if(highest > highestp1){
-                            highestp1 = highest;
-                        }
-    
-                    }else if(boardArray[j][0][i].getState().equals(State.Player2)){
-                        player2++;
-                        int highest = getHighestMove(boardArray[j][0][i], boardArray[j][1][i], boardArray[j][2][i]);
-                        if(highest > highestp2){
-                            highestp2 = highest;
-                        }
+        for(int i = 0; i < 9; i++){
+            //horizontal z
+            if(boardState[i].equals(boardState[i + 9]) && boardState[i].equals(boardState[i + 18])){
+                if(boardState[i].equals(State.Player1)){
+                    //System.out.println("Line 187");
+                    player1++;
+                    int highest = Math.max(boardTurn[i],  Math.max(boardTurn[i + 9], boardTurn[i + 18]));
+                    if(highest > highestp2){
+                        highestp2 = highest;
+                    }
+
+                }else if(boardState[i].equals(State.Player2)){
+                    //System.out.println("Line 195");
+                    player2++;
+                    int highest = Math.max(boardTurn[i],  Math.max(boardTurn[i + 9], boardTurn[i + 18]));
+                    if(highest > highestp2){
+                        highestp2 = highest;
                     }
                 }
             }
@@ -335,163 +205,198 @@ public class QuantumBoard3D {
 
         //diagonals
         for(int i = 0; i < 3; i++){
+            //x ascending
+            if(boardState[i * 3].equals(boardState[(i * 3) + 10]) && boardState[i * 3].equals(boardState[(i * 3) + 20])){
+                if(boardState[i * 3].equals(State.Player1)){
+                    //System.out.println("Line 210");
+                    player1++;
+                    int highest = Math.max(boardTurn[i * 3],  Math.max(boardTurn[(i * 3) + 10], boardTurn[(i * 3) + 20]));
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }
 
-            //x slices vertically, makes x from side
-            if(boardArray[i][0][0].getState().equals(boardArray[i][1][1].getState()) && boardArray[i][0][0].getState().equals(boardArray[i][2][2].getState())){
-                if(boardArray[i][1][1].getState().equals(State.Player1)){
-                    player1++;
-                    int highest = getHighestMove(boardArray[i][0][0], boardArray[i][1][1], boardArray[i][2][2]);
-                    if(highest > highestp1){
-                        highestp1 = highest;
-                    }  
-                }else if(boardArray[i][1][1].getState().equals(State.Player2)){
+                }else if(boardState[i * 3].equals(State.Player2)){
+                    //System.out.println("Line 218");
                     player2++;
-                    int highest = getHighestMove(boardArray[i][0][0], boardArray[i][1][1], boardArray[i][2][2]);
+                    int highest = Math.max(boardTurn[i * 3],  Math.max(boardTurn[(i * 3) + 10], boardTurn[(i * 3) + 20]));
                     if(highest > highestp2){
                         highestp2 = highest;
-                    }  
-                }
-            }
-            if(boardArray[i][2][0].getState().equals(boardArray[i][1][1].getState()) && boardArray[i][2][0].getState().equals(boardArray[i][0][2].getState())){
-                if(boardArray[i][1][1].getState().equals(State.Player1)){
-                    player1++;
-                    int highest = getHighestMove(boardArray[i][2][0], boardArray[i][1][1], boardArray[i][0][2]);
-                    if(highest > highestp1){
-                        highestp1 = highest;
-                    }  
-                }else if(boardArray[i][1][1].getState().equals(State.Player2)){
-                    player2++;
-                    int highest = getHighestMove(boardArray[i][2][0], boardArray[i][1][1], boardArray[i][0][2]);
-                    if(highest > highestp2){
-                        highestp2 = highest;
-                    }  
+                    }
                 }
             }
 
-            //y slices vertically, makes x from other side
-            if(boardArray[0][i][0].getState().equals(boardArray[1][i][1].getState()) && boardArray[0][i][0].getState().equals(boardArray[2][i][2].getState())){
-                if(boardArray[1][i][1].getState().equals(State.Player1)){
+            //x descending
+            if(boardState[(i * 3) + 2].equals(boardState[(i * 3) + 10]) && boardState[(i * 3) + 2].equals(boardState[(i * 3) + 18])){
+                if(boardState[(i * 3) + 2].equals(State.Player1)){
+                    //System.out.println("Line 230");
                     player1++;
-                    int highest = getHighestMove(boardArray[0][i][0], boardArray[1][i][1], boardArray[2][i][2]);
+                    int highest = Math.max(boardTurn[(i * 3) + 2],  Math.max(boardTurn[(i * 3) + 10], boardTurn[(i * 3) + 18]));
                     if(highest > highestp1){
                         highestp1 = highest;
-                    }  
-                }else if(boardArray[1][i][1].getState().equals(State.Player2)){
+                    }
+
+                }else if(boardState[(i * 3) + 2].equals(State.Player2)){
+                    //System.out.println("Line 238");
                     player2++;
-                    int highest = getHighestMove(boardArray[0][i][0], boardArray[1][i][1], boardArray[2][i][2]);
+                    int highest = Math.max(boardTurn[(i * 3) + 2],  Math.max(boardTurn[(i * 3) + 10], boardTurn[(i * 3) + 18]));
                     if(highest > highestp2){
                         highestp2 = highest;
-                    }  
+                    }
                 }
             }
-            if(boardArray[2][i][0].getState().equals(boardArray[1][i][1].getState()) && boardArray[2][i][0].getState().equals(boardArray[0][i][2].getState())){
-                if(boardArray[1][i][1].getState().equals(State.Player1)){
+            
+            //z ascending
+            if(boardState[(i * 9) + 6].equals(boardState[(i * 9) + 4]) && boardState[(i * 9) + 6].equals(boardState[(i * 9) + 2])){
+                if(boardState[(i * 9) + 6].equals(State.Player1)){
+                    //System.out.println("Line 250");
                     player1++;
-                    int highest = getHighestMove(boardArray[2][i][0], boardArray[1][i][1], boardArray[0][i][2]);
+                    int highest = Math.max(boardTurn[(i * 9) + 6],  Math.max(boardTurn[(i * 9) + 4], boardTurn[(i * 9) + 2]));
                     if(highest > highestp1){
                         highestp1 = highest;
-                    }  
-                }else if(boardArray[1][i][1].getState().equals(State.Player2)){
+                    }
+
+                }else if(boardState[(i * 9) + 6].equals(State.Player2)){
+                    //System.out.println("Line 258");
                     player2++;
-                    int highest = getHighestMove(boardArray[2][i][0], boardArray[1][i][1], boardArray[0][i][2]);
+                    int highest = Math.max(boardTurn[(i * 9) + 6],  Math.max(boardTurn[(i * 9) + 4], boardTurn[(i * 9) + 2]));
                     if(highest > highestp2){
                         highestp2 = highest;
-                    }  
+                    }
                 }
             }
 
-            //z crisscross, makes x from top down
-            if(boardArray[0][0][i].getState().equals(boardArray[1][1][i].getState()) && boardArray[0][0][i].getState().equals(boardArray[2][2][i].getState())){
-                if(boardArray[1][1][i].getState().equals(State.Player1)){
+            //z descending
+            if(boardState[(i * 9)].equals(boardState[(i * 9) + 4]) && boardState[(i * 9)].equals(boardState[(i * 9) + 8])){
+                if(boardState[(i * 9)].equals(State.Player1)){
+                    //System.out.println("Line 270");
                     player1++;
-                    int highest = getHighestMove(boardArray[0][0][i], boardArray[1][1][i], boardArray[2][2][i]);
+                    int highest = Math.max(boardTurn[(i * 9)],  Math.max(boardTurn[(i * 9) + 4], boardTurn[(i * 9) + 8]));
                     if(highest > highestp1){
                         highestp1 = highest;
-                    }  
-                }else if(boardArray[1][1][i].getState().equals(State.Player2)){
+                    }
+
+                }else if(boardState[(i * 9)].equals(State.Player2)){
+                    //System.out.println("Line 278");
                     player2++;
-                    int highest = getHighestMove(boardArray[0][0][i], boardArray[1][1][i], boardArray[2][2][i]);
+                    int highest = Math.max(boardTurn[(i * 9)],  Math.max(boardTurn[(i * 9) + 4], boardTurn[(i * 9) + 8]));
                     if(highest > highestp2){
                         highestp2 = highest;
-                    }  
+                    }
                 }
             }
-            if(boardArray[2][0][i].getState().equals(boardArray[1][1][i].getState()) && boardArray[2][0][i].getState().equals(boardArray[0][2][i].getState())){
-                if(boardArray[1][1][i].getState().equals(State.Player1)){
+
+            //y ascending
+            if(boardState[(i) + 6].equals(boardState[(i) + 12]) && boardState[i + 6].equals(boardState[(i) + 18])){
+                if(boardState[(i) + 6].equals(State.Player1)){
+                    //System.out.println("Line 290");
                     player1++;
-                    int highest = getHighestMove(boardArray[2][0][i], boardArray[1][1][i], boardArray[0][2][i]);
+                    int highest = Math.max(boardTurn[(i) + 6],  Math.max(boardTurn[(i) + 12], boardTurn[(i) + 18]));
                     if(highest > highestp1){
                         highestp1 = highest;
-                    }  
-                }else if(boardArray[1][1][i].getState().equals(State.Player2)){
+                    }
+
+                }else if(boardState[(i) + 6].equals(State.Player2)){
+                    //System.out.println("Line 298");
                     player2++;
-                    int highest = getHighestMove(boardArray[2][0][i], boardArray[1][1][i], boardArray[0][2][i]);
+                    int highest = Math.max(boardTurn[(i) + 6],  Math.max(boardTurn[(i) + 12], boardTurn[(i) + 18]));
                     if(highest > highestp2){
                         highestp2 = highest;
-                    }  
+                    }
+                }
+            }
+            
+            //y descending
+            if(boardState[(i)].equals(boardState[(i) + 12]) && boardState[i].equals(boardState[(i) + 24])){
+                if(boardState[(i)].equals(State.Player1)){
+                    //System.out.println("Line 310");
+                    player1++;
+                    int highest = Math.max(boardTurn[(i)],  Math.max(boardTurn[(i) + 12], boardTurn[(i) + 24]));
+                    if(highest > highestp1){
+                        highestp1 = highest;
+                    }
+
+                }else if(boardState[(i)].equals(State.Player2)){
+                    //System.out.println("Line 318");
+                    player2++;
+                    int highest = Math.max(boardTurn[(i)],  Math.max(boardTurn[(i) + 12], boardTurn[(i) + 24]));
+                    if(highest > highestp2){
+                        highestp2 = highest;
+                    }
                 }
             }
         }
-        
+
         //true diagonals
-        if(boardArray[0][0][0].getState().equals(boardArray[1][1][1].getState()) && boardArray[0][0][0].getState().equals(boardArray[2][2][2].getState())){
-            if(boardArray[1][1][1].getState().equals(State.Player1)){
+        if(boardState[0].equals(boardState[13]) && boardState[0].equals(boardState[26])){
+            if(boardState[(13)].equals(State.Player1)){
+                //System.out.println("Line 331");
                 player1++;
-                int highest = getHighestMove(boardArray[0][0][0], boardArray[1][1][1], boardArray[2][2][2]);
+                int highest = Math.max(boardTurn[(0)],  Math.max(boardTurn[13], boardTurn[26]));
                 if(highest > highestp1){
                     highestp1 = highest;
-                }  
-            }else if(boardArray[1][1][1].getState().equals(State.Player2)){
+                }
+
+            }else if(boardState[(13)].equals(State.Player2)){
+                //System.out.println("Line 339");
                 player2++;
-                int highest = getHighestMove(boardArray[0][0][0], boardArray[1][1][1], boardArray[2][2][2]);
+                int highest = Math.max(boardTurn[(0)],  Math.max(boardTurn[13], boardTurn[26]));
                 if(highest > highestp2){
                     highestp2 = highest;
-                }  
+                }
             }
         }
-        if(boardArray[0][0][2].getState().equals(boardArray[1][1][1].getState()) && boardArray[0][0][2].getState().equals(boardArray[2][2][0].getState())){
-            if(boardArray[1][1][1].getState().equals(State.Player1)){
+        if(boardState[18].equals(boardState[13]) && boardState[18].equals(boardState[8])){
+            if(boardState[(13)].equals(State.Player1)){
+                //System.out.println("Line 349");
                 player1++;
-                int highest = getHighestMove(boardArray[0][0][2], boardArray[1][1][1], boardArray[2][2][0]);
+                int highest = Math.max(boardTurn[(18)],  Math.max(boardTurn[13], boardTurn[8]));
                 if(highest > highestp1){
                     highestp1 = highest;
-                }  
-            }else if(boardArray[1][1][1].getState().equals(State.Player2)){
+                }
+
+            }else if(boardState[(13)].equals(State.Player2)){
+                //System.out.println("Line 357");
                 player2++;
-                int highest = getHighestMove(boardArray[0][0][2], boardArray[1][1][1], boardArray[2][2][0]);
+                int highest = Math.max(boardTurn[(18)],  Math.max(boardTurn[13], boardTurn[8]));
                 if(highest > highestp2){
                     highestp2 = highest;
-                }  
+                }
             }
         }
-        if(boardArray[0][2][0].getState().equals(boardArray[1][1][1].getState()) && boardArray[0][2][0].getState().equals(boardArray[2][0][2].getState())){
-            if(boardArray[1][1][1].getState().equals(State.Player1)){
+        if(boardState[6].equals(boardState[13]) && boardState[6].equals(boardState[20])){
+            if(boardState[(13)].equals(State.Player1)){
+                //System.out.println("Line 367");
                 player1++;
-                int highest = getHighestMove(boardArray[0][2][0], boardArray[1][1][1], boardArray[2][0][2]);
+                int highest = Math.max(boardTurn[(6)],  Math.max(boardTurn[13], boardTurn[20]));
                 if(highest > highestp1){
                     highestp1 = highest;
-                }  
-            }else if(boardArray[1][1][1].getState().equals(State.Player2)){
+                }
+
+            }else if(boardState[(13)].equals(State.Player2)){
+                //System.out.println("Line 375");
                 player2++;
-                int highest = getHighestMove(boardArray[0][2][0], boardArray[1][1][1], boardArray[2][0][2]);
+                int highest = Math.max(boardTurn[(6)],  Math.max(boardTurn[13], boardTurn[20]));
                 if(highest > highestp2){
                     highestp2 = highest;
-                }  
+                }
             }
         }
-        if(boardArray[2][0][0].getState().equals(boardArray[1][1][1].getState()) && boardArray[2][0][0].getState().equals(boardArray[0][2][2].getState())){
-            if(boardArray[1][1][1].getState().equals(State.Player1)){
+        if(boardState[2].equals(boardState[13]) && boardState[2].equals(boardState[24])){
+            if(boardState[2].equals(State.Player1)){
+                //System.out.println("Line 385");
                 player1++;
-                int highest = getHighestMove(boardArray[2][0][0], boardArray[1][1][1], boardArray[0][2][2]);
+                int highest = Math.max(boardTurn[(2)],  Math.max(boardTurn[13], boardTurn[24]));
                 if(highest > highestp1){
                     highestp1 = highest;
-                }  
-            }else if(boardArray[1][1][1].getState().equals(State.Player2)){
+                }
+
+            }else if(boardState[2].equals(State.Player2)){
+                //System.out.println("Line 393");
                 player2++;
-                int highest = getHighestMove(boardArray[2][0][0], boardArray[1][1][1], boardArray[0][2][2]);
+                int highest = Math.max(boardTurn[(2)],  Math.max(boardTurn[13], boardTurn[24]));
                 if(highest > highestp2){
                     highestp2 = highest;
-                }  
+                }
             }
         }
 
@@ -510,15 +415,7 @@ public class QuantumBoard3D {
         return result;
     }
 
-    public int getHighestMove(int first, int second, int third){
-        int move1 = boardArray[first % 3][(first - ((first / 9) * 9)) / 3][first / 9].getTurn();
-        int move2 = boardArray[second % 3][(second - ((second / 9) * 9)) / 3][second / 9].getTurn();
-        int move3 = boardArray[third % 3][(third - ((third / 9) * 9)) / 3][third / 9].getTurn();
-
-        return Math.max(move1, Math.max(move2, move3));
-    }
-
-    public int getHighestMove(QuantumTile first, QuantumTile second, QuantumTile third){
+    public int getHighestMove(QuantumMove first, QuantumMove second, QuantumMove third){
         int move1 = first.getTurn();
         int move2 = second.getTurn();
         int move3 = third.getTurn();
@@ -526,135 +423,39 @@ public class QuantumBoard3D {
         return Math.max(move1, Math.max(move2, move3));
     }
 
-    public void printBoard(){
-        System.out.println();
-
-        for(int i = 0; i < 9; i++){
-            int z = (int) Math.floor(i / 9);
-            int x = i % 3;
-            int y = (int) Math.floor((i - (z * 9)) / 3);
-
-            for(int j = 0; j < boardArray[x][y][z].getMovesList().size(); j++){
-                System.out.print(boardArray[x][y][z].getMovesList().get(j));
-            }
-            if(boardArray[x][y][z].getMovesList().size() < 3){
-                for(int j = 0; j < (3 - boardArray[x][y][z].getMovesList().size()); j++){
-                    System.out.print("0");
-                }
-            }
-            System.out.print(" ");
-        }
-    }
-
-    public void printTile(int x, int y, int z){
-        System.out.println("\nMoves at " + x + ", " + y);
-        for(int i = 0; i < boardArray[x][y][z].getMovesList().size(); i++){
-            System.out.print(boardArray[x][y][z].getMovesList().get(i) + " ");
-        }
-    }
-
-    public int getMoveLocationInArray(int tile, int turn){
-        int result = 0;
-
-        for(int i = 0; i < boardArray[tile % 3][(tile % 9) / 3][tile / 9].getMovesList().size(); i++){
-            if(boardArray[tile % 3][(tile % 9) / 3][tile / 9].getMovesList().get(i) == turn){
-                result = i;
-            }
-        }
-
-        return result;
-    }
-
     public void collapseTile(int loc, int turn){
 
-        int z = loc / 9;
-        int x = loc % 3;
-        int y = (loc - (z * 9)) / 3;
-
-        if(boardArray[x][y][z].getState() != State.Blank){
+        if(boardState[loc] != State.Blank){
             return;
         }
 
+        boardTurn[loc] = turn;
+
         if(turn % 2 != 0){
-            boardArray[x][y][z].setState(State.Player1);
+            boardState[loc] =  State.Player1;
         }else{
-            boardArray[x][y][z].setState(State.Player2);
+            boardState[loc] =  State.Player2;
         }
 
-        boardArray[x][y][z].setTurn(turn);
-        boardArray[x][y][z].getMovesList().clear();
         available -= (Math.pow(2, loc));
 
-        //doesn't work currently
-        for(int i = 0; i < quantumCacheList[loc].size(); i++){
-            int m1 = quantumCacheList[loc].get(i).getMove1();
-            int m2 = quantumCacheList[loc].get(i).getMove2();
-            int t = quantumCacheList[loc].get(i).getTurn();
-            quantumCacheList[loc].remove(i);
-            i--;
+        while(quantumCacheList[loc].size() != 0){
+            int m1 = quantumCacheList[loc].get(0).getMove1();
+            int m2 = quantumCacheList[loc].get(0).getMove2();
+            int t = quantumCacheList[loc].get(0).getTurn();
+            quantumCacheList[loc].remove(0);
             if(m1 == loc){
                 collapseTile(m2, t);
             }else{
                 collapseTile(m1, t);
             }
         }
-        // list.clear();
-        // for(int i = 0; i < boardArray[x][y][z].getMovesList().size(); i++){
-        //     list.add(boardArray[x][y][z].getMovesList().get(i));
-        // }
-
-        // boardArray[x][y][z].getMovesList().clear();
-
-        // //System.out.println(list.size());
-
-        // for(int i = 0; i < list.size(); i++){
-        //     int link = getLink(list.get(i), loc);
-        //     if(link == -1){
-        //         continue;
-        //     }
-        //     collapseTile(link, list.get(i));
-        // }
 
     }
 
-    public int checkAndCollapse(QuantumMove move){
-        int result = checkLoopsUsingQuantumDoohickery(move);
-        if(result != 0){
-            SplittableRandom r = new SplittableRandom();
-            if(r.nextBoolean()){
-                collapseTile(move.getMove1(), getMoveCount());
-            }else{
-                collapseTile(move.getMove2(), getMoveCount());
-            }
-            //System.out.println("Found loop when checking " + move.getMove1() + " " + move.getMove2());
-        }
-        result = checkEntireBoard();
-        if(result == 1){
-            move.addWin(-1);
-            move.addTotal(1);
-            //System.out.println("Starting enemy move has win " + move.getMove1() + " " + move.getMove2());
-        }else if(result == 2){
-            move.addWin(1);
-            move.addTotal(1);
-            //System.out.println("Starting enemy move has win " + move.getMove1() + " " + move.getMove2());
-        }
-        return result;
-    }
-    
     public QuantumBoard getQuantumBoard(int slice){
         QuantumBoard board = new QuantumBoard(this, slice);
         return board;
-    }
-
-    public void clear(){
-        for(int i = 0; i < 9; i++){
-            for(int j = 0; j < 3; j++){
-                if(boardArray[i % 3][i / 3][j].getState() != State.Blank){
-                    boardArray[i % 3][i / 3][j].getMovesList().clear();
-                }
-            }
-
-        }
     }
 
     public void incrementMoveCount(){
@@ -663,28 +464,24 @@ public class QuantumBoard3D {
 
     @SuppressWarnings("unused")
     public void copy(QuantumBoard3D board){
-        //this might work (idk)
         long t0 = System.nanoTime();
+
+        //copies the simple variables
         moveCount = board.getMoveCount();
-        //availableSet.clear();
         available = board.getAvailable();
-        long t1 = System.nanoTime();
-        for(int i = 0; i < 27; i++){
-            this.quantumCacheList[i].clear();
-            if(board.getQuantumCacheList()[i].size() != 0){
-                this.quantumCacheList[i] = board.getQuantumCacheList()[i];
-            }
-        }
-        long t2 = System.nanoTime();
         result = 0;
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                for(int k = 0; k < 3; k++){
-                    boardArray[i][j][k].getMovesList().clear();
-                    boardArray[i][j][k].copy(board.getBoardTile(i, j, k));
-                }
+        long t1 = System.nanoTime();
+
+        //copies the quantum cache for each tile. This cache consists of quantumMove objects
+        for(int i = 0; i < 27; i++){
+            quantumCacheList[i].clear();
+            for(int j = 0; j < quantumCacheList[i].size(); j++){
+                quantumCacheList[i].add(board.getQuantumCacheList()[i].get(j));
             }
+            boardState[i] = board.getBoardStatelist()[i];
+            boardTurn[i] = board.getBoardTurnlist()[i];
         }
+
         long t3 = System.nanoTime();
         //System.out.println("copying quantum took: " + (t1 - t0) + " ns, copying cache took " + (t2 - t1) + ", and copying tiles took " + (t3 - t2));
     }
@@ -702,33 +499,18 @@ public class QuantumBoard3D {
     }
 
     public void move(QuantumMove move){
-        int z1 = move.getMove1() / 9;
-        int x1 = move.getMove1() % 3;
-        int y1 = (move.getMove1() % 9) / 3;
-
-        int z2 = move.getMove2() / 9;
-        int x2 = move.getMove2() % 3;
-        int y2 = (move.getMove2() % 9) / 3;
-
-        getBoardTile(x1, y1, z1).addMove(moveCount);
-        getBoardTile(x2, y2, z2).addMove(moveCount);
-        move.setTurn(moveCount);
+        //move.setTurn(moveCount);
         quantumCacheList[move.getMove1()].add(move);
         quantumCacheList[move.getMove2()].add(move);
-        incrementMoveCount();
+        moveCount++;
     }
 
     public ArrayList<Integer> listActiveTiles(){
         ArrayList<Integer> list = new ArrayList<>();
 
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                for(int k = 0; k < 3; k++){
-                    if(boardArray[i][j][k].getState() == State.Blank){
-                        list.add(i + (j * 3) + (k * 9));
-                    }
-                }
-
+        for(int i = 0; i < 27; i++){
+            if(boardState[i] == State.Blank){
+                list.add(i);
             }
         }
 
@@ -736,5 +518,3 @@ public class QuantumBoard3D {
     }
 
 }
-
-

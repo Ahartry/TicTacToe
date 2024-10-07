@@ -8,6 +8,7 @@ public class QuantumBoard {
     private int result = 0;
     private int moveCount = 1;
     private ArrayList<Integer> skippedList;
+    private ArrayList<QuantumMove>[] quantumCacheList;
 
     public QuantumBoard(){
         boardArray = new QuantumTile[3][3];
@@ -22,15 +23,19 @@ public class QuantumBoard {
         state = State.Blank;
     }
 
+    @SuppressWarnings("unchecked")
     public QuantumBoard(QuantumBoard3D board, int slice){
         boardArray = new QuantumTile[3][3];
         skippedList = new ArrayList<>();
+        quantumCacheList = new ArrayList[27];
+
+        for(int i = 0; i < 27; i++){
+            quantumCacheList[i] = new ArrayList<>(board.getQuantumCacheList()[i]);
+        }
         
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
-                boardArray[i][j] = new QuantumTile();
-                boardArray[i][j].setState(board.getBoardTile(i, j, slice).getState());
-                boardArray[i][j].setMovesList(board.getBoardTile(i, j, slice).getMovesList());
+                boardArray[i][j].setState(board.getBoardStatelist()[i + (3 * j) + (9 * slice)]);
             }
         }
     }
