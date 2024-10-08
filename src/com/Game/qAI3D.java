@@ -110,13 +110,14 @@ public class qAI3D {
 
         int empty = board.listActiveTiles().size();
         //number of combinations (moves)
-        int timeThing = heuristicTileCount;
+        // int timeThing = heuristicTileCount;
         int timeThing2 = (empty - 1) * (empty) / 2;
-        System.out.println("First move has " + timeThing + " options, second has " + timeThing2);
+        // System.out.println("First move has " + timeThing + " options, second has " + timeThing2);
         //System.out.println(heuristicTileCount);
         //System.exit(0);
         
-        long timePerBranch = time / (timeThing * timeThing2);
+        long timePerBranch = time / (startList.size() * timeThing2);
+        System.out.println("First move has " + startList.size() + " options");
         //timePerBranch *= 10;
         long start = System.nanoTime() + timePerBranch;
 
@@ -134,11 +135,11 @@ public class qAI3D {
             //this checks to see if the initial move is a win
             int prelimresult = checkAndCollapse(board, startList.get(i), startList.get(i));
             if(prelimresult == 1){
-                System.out.println("boo1");
+                //System.out.println("boo1");
                 bestEnemyScore = -100;
                 continue;
             }else if(prelimresult == 2){
-                System.out.println("boo1");
+                //System.out.println("boo1");
                 break;
             }
             //iterates through the ply 2 list
@@ -149,18 +150,22 @@ public class qAI3D {
                 //repeatedly searches from this point
                 while(System.nanoTime() < (start + timePerBranch)){
                     long t0 = System.nanoTime();
+                    //RealBoard.print2();
+                    //backup.print2();
                     board.copy(backup);
                     long t1 = System.nanoTime();
+                    //board.print2();
                     board.move(nextList.get(j));
+                    //board.print2();
 
                     //this checks to see if the initial move is a win
                     int prelimresult2 = checkAndCollapse(board, nextList.get(j), nextList.get(j));
                     if(prelimresult2 == 1){
-                        System.out.println("boo2");
+                        //System.out.println("boo2");
                         bestEnemyScore = -100;
                         break loop2;
                     }else if(prelimresult2 == 2){
-                        System.out.println("boo2");
+                        //System.out.println("boo2");
                         continue;
                     }
                     
@@ -377,7 +382,7 @@ public class qAI3D {
         int loop = board.checkLoopsUsingQuantumDoohickery(move);
         if(loop != 0){
             if(move == statmove){
-                System.out.println("Loop found on second move");
+                //System.out.println("Loop found on second move");
             }
             SplittableRandom r = new SplittableRandom();
             if(r.nextBoolean()){

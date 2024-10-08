@@ -670,6 +670,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                                     quantumBoard3D.move(move);
 
+                                    //quantumBoard3D.print();
+
                                     recentSquare1 = xcell + (ycell * 3) + (boardZ * 9);
                                     recentSquare2 = recentCell;
                                     //quantumBoard3D.printBoard();

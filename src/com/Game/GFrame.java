@@ -437,7 +437,7 @@ public class GFrame extends JFrame{
                     if(gameType == 2 || gameType == 3 || gameType == 4 || gameType == 5){
                         askDifficulty(gameType, font);
                     }else{
-                        setupGame(gameType, true);
+                        //setupGame(gameType, true);
                         setupGame(gameType, true);
                         repaint();
                         //setupWindow();
@@ -457,7 +457,7 @@ public class GFrame extends JFrame{
                     if(gameType == 3){
                         new SFrame(GFrame.this, false, 4, gameType, sound);
                     }else{
-                        setupGame(gameType, false);
+                        //setupGame(gameType, false);
                         setupGame(gameType, false);
                         repaint();
                     }
@@ -769,7 +769,7 @@ public class GFrame extends JFrame{
     public void botStart(int gameType, int depth) throws Exception{
         if(gameType != 3){
             setupGame(gameType, true);
-            setupGame(gameType, true);
+            //setupGame(gameType, true);
             bottomPanel.setDepth(depth);
         }else{
             new SFrame(GFrame.this, true, depth, gameType, sound);

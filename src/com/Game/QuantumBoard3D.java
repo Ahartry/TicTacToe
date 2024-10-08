@@ -472,15 +472,20 @@ public class QuantumBoard3D {
         result = 0;
         long t1 = System.nanoTime();
 
+        //board.print2();
+
         //copies the quantum cache for each tile. This cache consists of quantumMove objects
         for(int i = 0; i < 27; i++){
             quantumCacheList[i].clear();
-            for(int j = 0; j < quantumCacheList[i].size(); j++){
-                quantumCacheList[i].add(board.getQuantumCacheList()[i].get(j));
+            for(int j = 0; j < board.getQuantumCacheList()[i].size(); j++){
+                QuantumMove loadMove = board.getQuantumCacheList()[i].get(j);
+                quantumCacheList[i].add(loadMove);
             }
             boardState[i] = board.getBoardStatelist()[i];
             boardTurn[i] = board.getBoardTurnlist()[i];
         }
+
+        //print2();
 
         long t3 = System.nanoTime();
         //System.out.println("copying quantum took: " + (t1 - t0) + " ns, copying cache took " + (t2 - t1) + ", and copying tiles took " + (t3 - t2));
@@ -515,6 +520,41 @@ public class QuantumBoard3D {
         }
 
         return list;
+    }
+
+    public void print(){
+        System.out.println("--------------");
+        for(int z = 0; z < 3; z++){
+            for(int y = 0; y < 3; y++){
+                for(int x = 0; x < 3; x++){
+                    System.out.print(quantumCacheList[x + (y * 3) + (z * 9)].size() + " ");
+                }
+                System.out.println();
+            }
+            System.out.println("\n");
+        }
+        System.out.println("End of board data");
+    }
+
+    public void print2(){
+        System.out.println("--------------");
+        System.out.print(quantumCacheList[0].size() + " " + quantumCacheList[1].size() + " " + quantumCacheList[2].size() + "   ");
+        System.out.print(quantumCacheList[9].size() + " " + quantumCacheList[10].size() + " " + quantumCacheList[11].size() + "   ");
+        System.out.print(quantumCacheList[18].size() + " " + quantumCacheList[19].size() + " " + quantumCacheList[20].size() + "   ");
+
+        System.out.println();
+
+        System.out.print(quantumCacheList[3].size() + " " + quantumCacheList[4].size() + " " + quantumCacheList[5].size() + "   ");
+        System.out.print(quantumCacheList[12].size() + " " + quantumCacheList[13].size() + " " + quantumCacheList[14].size() + "   ");
+        System.out.print(quantumCacheList[21].size() + " " + quantumCacheList[22].size() + " " + quantumCacheList[23].size() + "   ");
+
+        System.out.println();
+
+        System.out.print(quantumCacheList[6].size() + " " + quantumCacheList[7].size() + " " + quantumCacheList[8].size() + "   ");
+        System.out.print(quantumCacheList[15].size() + " " + quantumCacheList[16].size() + " " + quantumCacheList[17].size() + "   ");
+        System.out.print(quantumCacheList[24].size() + " " + quantumCacheList[25].size() + " " + quantumCacheList[26].size() + "   ");
+
+        System.out.println("\n");
     }
 
 }
