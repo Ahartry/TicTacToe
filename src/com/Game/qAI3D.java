@@ -73,20 +73,20 @@ public class qAI3D {
 
         }
 
-        int otherScore = 0;
+        double otherScore = 0;
         //System.out.println("Ended at " + System.nanoTime());
 
         if(one.getWins() > two.getWins()){
-            bestScore = one.getWins();
-            otherScore = two.getWins();
+            bestScore = (double) one.getWins() / (double) one.getTotal();
+            otherScore = (double) two.getWins() / (double) two.getTotal();
             bestMove1 = option1;
         }else{
-            bestScore = two.getWins();
-            otherScore = one.getWins();
+            bestScore = (double) two.getWins() / (double) two.getTotal();
+            otherScore = (double) one.getWins() / (double) one.getTotal();
             bestMove1 = option2;
         }
 
-        System.out.println("Best collapse is " + bestMove1 + " with a score of " + bestScore + " out of " + total / 2 + " (" + total + " branches checked). Other choice was " + otherScore);
+        System.out.println("Best collapse is " + bestMove1 + " with a score of " + bestScore + " (" + total + " branches checked). Other choice was " + otherScore);
         //board.collapseTile(bestMove1, board.getMoveCount() - 1);
         //System.exit(0);
 
@@ -109,15 +109,10 @@ public class qAI3D {
         startList = listAvailableMoves2(RealBoard);
 
         int empty = board.listActiveTiles().size();
-        //number of combinations (moves)
-        // int timeThing = heuristicTileCount;
         int timeThing2 = (empty - 1) * (empty) / 2;
-        // System.out.println("First move has " + timeThing + " options, second has " + timeThing2);
-        //System.out.println(heuristicTileCount);
-        //System.exit(0);
         
         long timePerBranch = time / (startList.size() * timeThing2);
-        System.out.println("First move has " + startList.size() + " options");
+        //System.out.println("First move has " + startList.size() + " options");
         //timePerBranch *= 10;
         long start = System.nanoTime() + timePerBranch;
 
@@ -163,6 +158,7 @@ public class qAI3D {
                     if(prelimresult2 == 1){
                         //System.out.println("boo2");
                         bestEnemyScore = -100;
+                        thistotal = nextList.get(j).getTotal();
                         break loop2;
                     }else if(prelimresult2 == 2){
                         //System.out.println("boo2");
@@ -225,7 +221,7 @@ public class qAI3D {
     public void exploreRandom(QuantumBoard3D board, QuantumMove start){
         while(true){
             long t0 = System.nanoTime();
-            int available = board.getAvailable();
+            int available = board.getAvailableInt();
             int moveoptions = 0;
             long t1 = System.nanoTime();
             for(int i = 0; i < 27; i++){
@@ -283,32 +279,6 @@ public class qAI3D {
             long t4 = System.nanoTime();
             //System.out.println("getting options took " + (t1 - t0) + " ns, loading them took " + (t2 - t1) + ", moving took " + (t3 - t2) + ", checking loop took " + (t4 - t3));
         }
-    }
-
-    public ArrayList<QuantumMove> listAvailableMoves(){
-        ArrayList<QuantumMove> list = new ArrayList<>();
-
-        for(int i = 0; i < 27; i++){
-            if(board.getBoardStatelist()[i] != State.Blank){
-                continue;
-            }
-            for(int j = i + 1; j < 27; j++){
-                if(board.getBoardStatelist()[j] != State.Blank){
-                    continue;
-                }
-
-                //This should NOT be needed, be here we are
-                if(i == j){
-                    continue;
-                }
-                QuantumMove move = new QuantumMove(i, j);
-                move.setTurn(board.getMoveCount());
-                list.add(move);
-
-            }
-        }
-
-        return list;
     }
 
     public ArrayList<QuantumMove> listAvailableMoves(QuantumBoard3D board){

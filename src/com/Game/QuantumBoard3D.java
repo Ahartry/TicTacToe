@@ -2,7 +2,7 @@ package com.Game;
 
 import java.util.ArrayList;
 
-public class QuantumBoard3D {
+public class QuantumBoard3D extends Board{
 
     private int result = 0;
     private int moveCount = 1;
@@ -468,7 +468,7 @@ public class QuantumBoard3D {
 
         //copies the simple variables
         moveCount = board.getMoveCount();
-        available = board.getAvailable();
+        available = board.getAvailableInt();
         result = 0;
         long t1 = System.nanoTime();
 
@@ -491,7 +491,7 @@ public class QuantumBoard3D {
         //System.out.println("copying quantum took: " + (t1 - t0) + " ns, copying cache took " + (t2 - t1) + ", and copying tiles took " + (t3 - t2));
     }
 
-    public int getAvailable(){
+    public int getAvailableInt(){
         return available;
     }
 

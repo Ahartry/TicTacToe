@@ -1,6 +1,6 @@
 package com.Game;
 
-public class QuantumMove {
+public class QuantumMove extends Move{
 
     int move1;
     int move2;

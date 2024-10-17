@@ -765,6 +765,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                     QuantumMove move = null;
                                                     if(quantumBoard3D.getState() == State.Blank){
                                                         move = qAI3D.checkQuantumBoard3D(quantumBoard3D);
+                                                        //move = new qAI3D().checkQuantumBoard3D(quantumBoard3D);
                                                     }
                                                     recentSquare1 = move.getMove1();
                                                     recentSquare2 = move.getMove2();
