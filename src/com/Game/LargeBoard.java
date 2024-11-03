@@ -182,12 +182,12 @@ public class LargeBoard extends Board{
 
         for(int i = 0; i < 9; i++){
             int x1 = i % 3;
-            int y1 = (int) Math.floor(i / 3);
+            int y1 = i / 3;
 
             if(getBoardArray(x1, y1).getActive()){
                 for(int j = 0; j < 9; j++){
                     int x2 = j % 3;
-                    int y2 = (int) Math.floor(j / 3);
+                    int y2 = j / 3;
                     if(getBoardArray(x1, y1).getBoardTile(x2, y2).getState() == State.Blank){
                         activeList.add((i * 10) + j);
                         //System.out.println("Adding active tile: " + ((i * 10) + j));
@@ -200,9 +200,43 @@ public class LargeBoard extends Board{
         return activeList;
     }
 
-    public void move(int move, boolean player){
+    public ArrayList<Move> getAvailable(){
+        ArrayList<Move> activeList = new ArrayList<>();
+
+        for(int i = 0; i < 9; i++){
+            int x1 = i % 3;
+            int y1 = i / 3;
+
+            if(getBoardArray(x1, y1).getActive()){
+                for(int j = 0; j < 9; j++){
+                    int x2 = j % 3;
+                    int y2 = j / 3;
+                    if(getBoardArray(x1, y1).getBoardTile(x2, y2).getState() == State.Blank){
+                        //bad practice, but this is only getting called for player two
+                        Move m = new Move((i * 10) + j);
+                        m.setTurn(true);
+                        activeList.add(m);
+                        //System.out.println("Adding active tile: " + ((i * 10) + j));
+                    }
+                }
+                
+            }
+        }
+
+        return activeList;
+    }
+
+    public void move(Move m){
         //player true is player two
         //huh wait that rhymes, good mnemonic
+
+        int move = m.loc;
+
+        int turn = m.turn;
+        boolean player = false;
+        if(turn % 2 == 0){
+            player = true;
+        }
 
         //silly preamble
         int board = (int) Math.floor(move / 10);
@@ -238,7 +272,9 @@ public class LargeBoard extends Board{
         calculateActive(move);
     }
 
-    public void unmove(int move){
+    public void unmove(Move m){
+
+        int move = m.loc;
         //player true is player two
         //huh wait that rhymes, good mnemonic
 
@@ -337,7 +373,7 @@ public class LargeBoard extends Board{
         return locationList.size();
     }
 
-    public int score(int depth){
+    public int score(){
         //player two is positive
         int score = 0;
 
@@ -350,10 +386,8 @@ public class LargeBoard extends Board{
         //makes it not care about moves if victory, prioritize sooner victories
         if(score > 50000){
             score = 100000;
-            score *= (1 / depth);
         }else if(score < -50000){
             score = -100000;
-            score *= (1 / depth);
         }
 
         return score;

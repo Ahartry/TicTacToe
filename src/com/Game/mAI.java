@@ -17,11 +17,17 @@ public class mAI {
         this.difficulty = difficulty;
     }
 
-    public void check(Board board, int minimax, boolean randomsearch){
+    public Move check(Board board, int minimax, boolean randomsearch){
         this.board = board;
         this.backup = board;
         this.minimax = minimax;
         this.randomsearch = randomsearch;
+
+        iterativeSearch(1, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+        board.move(bestMove);
+
+        return bestMove;
     }
 
     public int iterativeSearch(int depth, boolean turn, int alpha, int beta){
@@ -49,14 +55,15 @@ public class mAI {
             move.setTurn(turn);
             board.move(move);
 
-            int score;
+            int score = 0;
 
             if(depth == minimax){
                 if(randomsearch){
 
                 }else{
                     score = board.score();
-                    score /= depth;
+                    //not sure if this is really necessary
+                    //score /= depth;
                 }
             }else{
                 score = iterativeSearch(depth + 1, !turn, alpha, beta);
@@ -90,6 +97,10 @@ public class mAI {
         }
 
         return bestScore;
+    }
+
+    public void randomSearch(Move move){
+
     }
 
 }

@@ -439,15 +439,48 @@ public class QuantumBoard3D extends Board{
 
         available -= (Math.pow(2, loc));
 
-        while(quantumCacheList[loc].size() != 0){
-            int m1 = quantumCacheList[loc].get(0).getMove1();
-            int m2 = quantumCacheList[loc].get(0).getMove2();
-            int t = quantumCacheList[loc].get(0).getTurn();
-            quantumCacheList[loc].remove(0);
+        for(int i = 0; i < quantumCacheList[loc].size(); i++){
+            int m1 = quantumCacheList[loc].get(i).getMove1();
+            int m2 = quantumCacheList[loc].get(i).getMove2();
+            int t = quantumCacheList[loc].get(i).getTurn();
+
             if(m1 == loc){
-                collapseTile(m2, t);
+                if(boardState[m2].equals(State.Blank)){
+                    collapseTile(m2, t);
+                }
             }else{
-                collapseTile(m1, t);
+                if(boardState[m1].equals(State.Blank)){
+                    collapseTile(m1, t);
+                }
+            }
+        }
+
+    }
+
+    public void uncollapseTile(int loc){
+
+        if(boardState[loc] == State.Blank){
+            return;
+        }
+
+        boardTurn[loc] = 0;
+
+        boardState[loc] = State.Blank;
+
+        available += (Math.pow(2, loc));
+
+        for(int i = 0; i < quantumCacheList[loc].size(); i++){
+            int m1 = quantumCacheList[loc].get(i).getMove1();
+            int m2 = quantumCacheList[loc].get(i).getMove2();
+
+            if(m1 == loc){
+                if(!boardState[m2].equals(State.Blank)){
+                    uncollapseTile(m2);
+                }
+            }else{
+                if(!boardState[m1].equals(State.Blank)){
+                    uncollapseTile(m1);
+                }
             }
         }
 
@@ -508,6 +541,14 @@ public class QuantumBoard3D extends Board{
         quantumCacheList[move.getMove1()].add(move);
         quantumCacheList[move.getMove2()].add(move);
         moveCount++;
+    }
+
+    public void unmove(QuantumMove move){
+        quantumCacheList[move.getMove1()].remove(move);
+        quantumCacheList[move.getMove2()].remove(move);
+        moveCount--;
+
+        uncollapseTile(move.getMove1());
     }
 
     public ArrayList<Integer> listActiveTiles(){

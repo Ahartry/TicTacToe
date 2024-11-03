@@ -75,6 +75,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     qAI qAI;
     qAI3D qAI3D;
     oAI oAI;
+    mAI mAI;
 
     Sound sound;
 
@@ -163,6 +164,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         qAI = new qAI();
         qAI3D = new qAI3D();
         oAI = new oAI();
+        mAI = new mAI(gameType, depth);
 
         //replay button stuff
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -279,9 +281,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                         @Override
                                         public void run() {
                                             // Perform the long-running task
-                                            int move = AI.checkLargeBoard(largeBoard, (((xboard + (yboard * 3)) * 10) + (xcell + (ycell * 3))));
-                                            largeBoard.move(move, turn);
-                                            System.out.println("Moving to " + move);
+                                            // int move = AI.checkLargeBoard(largeBoard, (((xboard + (yboard * 3)) * 10) + (xcell + (ycell * 3))));
+                                            // largeBoard.move(move, turn);
+                                            Move choice = mAI.check(largeBoard, depth, false);
+                                            int move = choice.loc;
+                                            //System.out.println("Moving to " + move);
                                             int board = (int) Math.floor(move / 10);
                                             int xboard2 = board % 3;
                                             int yboard2 = (int) Math.floor(board / 3);
@@ -1682,6 +1686,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
         //draws the quantum moves
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
+                if(quantumBoard.getBoardTile(i, j).getState() != State.Blank){
+                    continue;
+                }
                 for(int k = 0; k < quantumBoard.getBoardTile(i, j).getMovesList().size(); k++){
                     int xoffset = k % 3;
                     int yoffset = (int) Math.floor(k / 3);
@@ -1894,6 +1901,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
         //draws the quantum moves
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
+                if(!board.getBoardStatelist()[i + (j * 3) + (slice * 9)].equals(State.Blank)){
+                    continue;
+                }
                 for(int k = 0; k < board.getQuantumCacheList()[i + (j * 3) + (slice * 9)].size(); k++){
                     int xoffset = k % 3;
                     int yoffset = k / 3;
@@ -1971,6 +1981,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
         //draws links
         if(quantumLineMode){
             for(int i = 0; i < 27; i++){
+                if(!board.getBoardStatelist()[i].equals(State.Blank)){
+                    continue;
+                }
                 for(int j = 0; j < board.getQuantumCacheList()[i].size(); j++){
                     if(board.getQuantumCacheList()[i].get(j).getTurn() % 2 != 0){
                         g.setColor(red);
