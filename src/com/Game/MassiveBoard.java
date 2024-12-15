@@ -2,7 +2,7 @@ package com.Game;
 
 import java.util.ArrayList;
 
-public class MassiveBoard {
+public class MassiveBoard extends Board{
 
     private LargeBoard[][] boardArray;
     private boolean active = false;
@@ -140,11 +140,11 @@ public class MassiveBoard {
                 }
             }else if(((boardArray[0][0].getState().equals(boardArray[1][1].getState()) && boardArray[0][0].getState().equals(boardArray[2][2].getState()))
                  || (boardArray[2][0].getState().equals(boardArray[1][1].getState()) && boardArray[2][0].getState().equals(boardArray[0][2].getState()))) && boardArray[1][1].getState() != State.Blank){
-                    if(boardArray[1][1].getState().equals(State.Player1)){
-                        player = 1;
-                    }else if(boardArray[1][1].getState().equals(State.Player2)){
-                        player = 2;
-                    }
+                if(boardArray[1][1].getState().equals(State.Player1)){
+                    player = 1;
+                }else if(boardArray[1][1].getState().equals(State.Player2)){
+                    player = 2;
+                }
                 
             }
         }
@@ -214,8 +214,8 @@ public class MassiveBoard {
         setActive(activel);
     }
 
-    public ArrayList<MassiveMove> listActive(State turn){
-        ArrayList<MassiveMove> list = new ArrayList<>();
+    public ArrayList<Move> getAvailable(){
+        ArrayList<Move> list = new ArrayList<>();
         for(int i = 0; i < 9; i++){
             int xl = i % 3;
             int yl = i / 3;
@@ -232,53 +232,63 @@ public class MassiveBoard {
                     int xc = k % 3;
                     int yc = k / 3;
                     if(boardArray[xl][yl].getBoardArray(xb, yb).getBoardArray(xc, yc).getState() == State.Blank){
-                        list.add(new MassiveMove(i, j, k, turn));
+                        list.add(new Move(i, j, k));
+                        // System.out.println("Tile " + i + " " + j + " " + k); seems to be working fine
                     }
                 }
             }
         }
-
         return list;
 
     }
     
-    public int move(MassiveMove move){
-        int result = 0;
-        boardArray[move.getLarge() % 3][move.getLarge() / 3].getBoardArray(move.getBoard() % 3, move.getBoard() / 3).
-        getBoardArray(move.getCell() % 3, move.getCell() / 3).setState(move.getTurn());
+    public void move(Move move){
+        int t3 = move.loc / 100;
+        int t2 = (move.loc - (t3 * 100)) / 10;
+        int t1 = (move.loc - (t3 * 100) - (t2 * 10));
 
-        boardArray[move.getLarge() % 3][move.getLarge() / 3].getBoardArray(move.getCell() % 3, move.getCell() / 3).setActive(true);
+        int turn = move.turn;
+        State s = State.Player1;
+        if(turn % 2 == 0){
+            s = State.Player2;
+        }
 
-        if(boardArray[move.getLarge() % 3][move.getLarge() / 3].getBoardArray(move.getBoard() % 3, move.getBoard() / 3).checkBoard(move.getCell() % 3, move.getCell() / 3) != 0){
-            result = 1;
-            boardArray[move.getBoard() % 3][move.getBoard() / 3].setActive(true);
-            boardArray[move.getLarge() % 3][move.getLarge() / 3].getBoardArray(move.getBoard() % 3, move.getBoard() / 3).setState(move.getTurn());
-            if(boardArray[move.getLarge() % 3][move.getLarge() / 3].checkBoard(move.getBoard() % 3, move.getBoard() / 3) != 0){
-                result = 2;
-                boardArray[move.getLarge() % 3][move.getLarge() / 3].setState(move.getTurn());
-                if(checkBoard(move.getLarge() % 3, move.getLarge() / 3) == 1){
-                    result = 3;
-                }else if(checkBoard(move.getLarge() % 3, move.getLarge() / 3) == 2){
-                    result = 4;
-                }
+        boardArray[t3 % 3][t3 / 3].getBoardArray(t2 % 3, t2 / 3).
+        getBoardArray(t1 % 3, t1 / 3).setState(s);
+
+        boardArray[t3 % 3][t3 / 3].getBoardArray(t1 % 3, t1 / 3).setActive(true);
+
+        if(boardArray[t3 % 3][t3 / 3].getBoardArray(t2 % 3, t2 / 3).checkBoard(t1 % 3, t1 / 3) != 0){
+            boardArray[t2 % 3][t2 / 3].setActive(true);
+            boardArray[t3 % 3][t3 / 3].getBoardArray(t2 % 3, t2 / 3).setState(s);
+            if(boardArray[t3 % 3][t3 / 3].checkBoard(t2 % 3, t2 / 3) != 0){
+                boardArray[t3 % 3][t3 / 3].setState(s);
+                // if(checkBoard(t3 % 3, t3 / 3) == 1){
+                // }else if(checkBoard(t3 % 3, t3 / 3) == 2){
+                // }
             }
         }
 
-        return result;
+        calculateActive(t3 % 3, t3 / 3, t2 % 3, t2 / 3, t1 % 3, t1 / 3);
     }
 
-    public void backTrack(ArrayList<MassiveMove> list){
-        for(int i = 0; i < list.size(); i++){
-            if(list.get(i).getCell() == -1){
-                if(list.get(i).getBoard() == -1){
-                    boardArray[list.get(i).getLarge() % 3][list.get(i).getLarge() / 3].setState(State.Blank);
-                }else{
-                    boardArray[list.get(i).getLarge() % 3][list.get(i).getLarge() / 3].getBoardArray(list.get(i).getBoard() % 3, list.get(i).getBoard() / 3).setState(State.Blank);
-                }
-            }else{
-                boardArray[list.get(i).getLarge() % 3][list.get(i).getLarge() / 3].getBoardArray(list.get(i).getBoard() % 3, list.get(i).getBoard() / 3).getBoardArray(list.get(i).getCell() % 3, list.get(i).getCell() / 3).setState(State.Blank);
-            }
+    public void unmove(Move move){
+        int t3 = move.loc / 100;
+        int t2 = (move.loc - (t3 * 100)) / 10;
+        int t1 = (move.loc - (t3 * 100) - (t2 * 10));
+
+        State s = State.Blank;
+
+        if(boardArray[t3 % 3][t3 / 3].checkBoard(t2 % 3, t2 / 3) != 0){
+            boardArray[t3 % 3][t3 / 3].setState(s);
+        }
+        if(boardArray[t3 % 3][t3 / 3].getBoardArray(t2 % 3, t2 / 3).checkBoard(t1 % 3, t1 / 3) != 0){
+            boardArray[t3 % 3][t3 / 3].getBoardArray(t2 % 3, t2 / 3).setState(s);
         }
 
+        boardArray[t3 % 3][t3 / 3].getBoardArray(t2 % 3, t2 / 3).
+        getBoardArray(t1 % 3, t1 / 3).setState(s);
+
     }
+
 }

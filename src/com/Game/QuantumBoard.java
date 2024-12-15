@@ -8,7 +8,7 @@ public class QuantumBoard {
     private int result = 0;
     private int moveCount = 1;
     private ArrayList<Integer> skippedList;
-    private ArrayList<QuantumMove>[] quantumCacheList;
+    private ArrayList<Move>[] quantumCacheList;
 
     public QuantumBoard(){
         boardArray = new QuantumTile[3][3];
@@ -418,6 +418,10 @@ public class QuantumBoard {
     }
     
     public int getMoveCount(){
+        return moveCount;
+    }
+
+    public int getTurn(){
         return moveCount;
     }
 

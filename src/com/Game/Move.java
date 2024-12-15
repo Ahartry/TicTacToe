@@ -7,6 +7,9 @@ public class Move {
     //loc two is only for quantum, but I want the functions for it to be available at the highest level
     int loc = 0;
     int loc2 = 0;
+
+    double wins = 0d;
+    double total = 0d;
     
     public Move(){
 
@@ -16,6 +19,11 @@ public class Move {
         this.loc = loc;
     }
 
+    public Move(int t1, int t2, int t3){
+        loc = t3 + (10 * t2) + (100 * t1);
+    }
+
+    //for quantum
     public Move(int loc, int loc2){
         this.loc = loc;
         this.loc2 = loc2;
@@ -31,5 +39,17 @@ public class Move {
         }else{
             this.turn = 1;
         }
+    }
+
+    public void incrementWins(){
+        wins++;
+    }
+
+    public void decrementWins(){
+        wins--;
+    }
+
+    public void incrementTotal(){
+        total++;
     }
 }

@@ -22,16 +22,26 @@ public class Board {
         return 0;
     }
 
-    public int checkLoops(){
+    public int checkLoops(Move move){
         System.out.println("Operation not supported");
         return 0;
     }
 
-    public void collapseTile(){
+    public void collapseTile(int location, int turn){
         System.out.println("Operation not supported");
     }
 
     public int score(){
+        System.out.println("Operation not supported");
+        return 0;
+    }
+
+    public int getTurn(){
+        System.out.println("Operation not supported");
+        return 0;
+    }
+
+    public int getMoveCount(){
         System.out.println("Operation not supported");
         return 0;
     }

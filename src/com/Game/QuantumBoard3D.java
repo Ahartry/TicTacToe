@@ -6,12 +6,15 @@ public class QuantumBoard3D extends Board{
 
     private int result = 0;
     private int moveCount = 1;
-    private ArrayList<QuantumMove>[] quantumCacheList;
+
+    //I'm trusting past self that splitting these up is useful
+    private ArrayList<Move>[] quantumCacheList;
     private State[] boardState;
     private int[] boardTurn;
-    private ArrayList<QuantumMove> quantumSkipList;
+    private ArrayList<Move> quantumSkipList;
 
     //stores the availability of each tile as a byte
+    //probably will be deprecated for compatibility
     private int available = Integer.MAX_VALUE;
 
     @SuppressWarnings("unchecked")
@@ -29,14 +32,19 @@ public class QuantumBoard3D extends Board{
         state = State.Blank;
     }
 
-    public int checkLoopsUsingQuantumDoohickery(QuantumMove move){
+    //because naming has not been fixed yet
+    public int checkLoops(Move move){
+        return checkLoopsUsingQuantumDoohickery((QuantumMove) move);
+    }
+
+    public int checkLoopsUsingQuantumDoohickery(Move move){
         result = 0;
 
         quantumSkipList.clear();
         quantumSkipList.add(move);
 
-        int start = move.getMove1();
-        int next = move.getMove2();
+        int start = move.loc;
+        int next = move.loc2;
 
         doohickeryIterativeSearch(start, next);
 
@@ -61,10 +69,10 @@ public class QuantumBoard3D extends Board{
                 }
             }
             quantumSkipList.add(quantumCacheList[next].get(i));
-            if(quantumCacheList[next].get(i).getMove1() == next){
-                doohickeryIterativeSearch(start, quantumCacheList[next].get(i).getMove2());
+            if(quantumCacheList[next].get(i).loc == next){
+                doohickeryIterativeSearch(start, quantumCacheList[next].get(i).loc2);
             }else{
-                doohickeryIterativeSearch(start, quantumCacheList[next].get(i).getMove1());
+                doohickeryIterativeSearch(start, quantumCacheList[next].get(i).loc);
             }
         }
 
@@ -426,6 +434,7 @@ public class QuantumBoard3D extends Board{
     public void collapseTile(int loc, int turn){
 
         if(boardState[loc] != State.Blank){
+            System.out.println("Cannot collape tile " + loc + ", already occupied");
             return;
         }
 
@@ -439,11 +448,13 @@ public class QuantumBoard3D extends Board{
 
         available -= (Math.pow(2, loc));
 
+        //does the chain reaction to collapse tiles
         for(int i = 0; i < quantumCacheList[loc].size(); i++){
-            int m1 = quantumCacheList[loc].get(i).getMove1();
-            int m2 = quantumCacheList[loc].get(i).getMove2();
-            int t = quantumCacheList[loc].get(i).getTurn();
+            int m1 = quantumCacheList[loc].get(i).loc;
+            int m2 = quantumCacheList[loc].get(i).loc2;
+            int t = quantumCacheList[loc].get(i).turn;
 
+            //I believe the blank check is to stop the chain reaction from going on forever
             if(m1 == loc){
                 if(boardState[m2].equals(State.Blank)){
                     collapseTile(m2, t);
@@ -470,8 +481,8 @@ public class QuantumBoard3D extends Board{
         available += (Math.pow(2, loc));
 
         for(int i = 0; i < quantumCacheList[loc].size(); i++){
-            int m1 = quantumCacheList[loc].get(i).getMove1();
-            int m2 = quantumCacheList[loc].get(i).getMove2();
+            int m1 = quantumCacheList[loc].get(i).loc;
+            int m2 = quantumCacheList[loc].get(i).loc2;
 
             if(m1 == loc){
                 if(!boardState[m2].equals(State.Blank)){
@@ -511,7 +522,7 @@ public class QuantumBoard3D extends Board{
         for(int i = 0; i < 27; i++){
             quantumCacheList[i].clear();
             for(int j = 0; j < board.getQuantumCacheList()[i].size(); j++){
-                QuantumMove loadMove = board.getQuantumCacheList()[i].get(j);
+                Move loadMove = board.getQuantumCacheList()[i].get(j);
                 quantumCacheList[i].add(loadMove);
             }
             boardState[i] = board.getBoardStatelist()[i];
@@ -524,11 +535,36 @@ public class QuantumBoard3D extends Board{
         //System.out.println("copying quantum took: " + (t1 - t0) + " ns, copying cache took " + (t2 - t1) + ", and copying tiles took " + (t3 - t2));
     }
 
+    public ArrayList<Move> getAvailable(){
+        ArrayList<Move> list = new ArrayList<>();
+
+        for(int i = 0; i < 27; i++){
+            if(getBoardStatelist()[i] != State.Blank){
+                continue;
+            }
+            for(int j = i + 1; j < 27; j++){
+                if(getBoardStatelist()[j] != State.Blank){
+                    continue;
+                }
+
+                //This should NOT be needed, be here we are
+                if(i == j){
+                    continue;
+                }
+                Move move = new Move(i, j);
+                move.setTurn(getMoveCount());
+                list.add(move);
+            }
+        }
+
+        return list;
+    }
+
     public int getAvailableInt(){
         return available;
     }
 
-    public ArrayList<QuantumMove>[] getQuantumCacheList(){
+    public ArrayList<Move>[] getQuantumCacheList(){
         return quantumCacheList;
     }
 
@@ -536,19 +572,23 @@ public class QuantumBoard3D extends Board{
         return moveCount;
     }
 
-    public void move(QuantumMove move){
+    public int getTurn(){
+        return moveCount;
+    }
+
+    public void move(Move move){
         //move.setTurn(moveCount);
-        quantumCacheList[move.getMove1()].add(move);
-        quantumCacheList[move.getMove2()].add(move);
+        quantumCacheList[move.loc].add(move);
+        quantumCacheList[move.loc2].add(move);
         moveCount++;
     }
 
-    public void unmove(QuantumMove move){
-        quantumCacheList[move.getMove1()].remove(move);
-        quantumCacheList[move.getMove2()].remove(move);
+    public void unmove(Move move){
+        quantumCacheList[move.loc].remove(move);
+        quantumCacheList[move.loc2].remove(move);
         moveCount--;
 
-        uncollapseTile(move.getMove1());
+        uncollapseTile(move.loc);
     }
 
     public ArrayList<Integer> listActiveTiles(){

@@ -1,6 +1,7 @@
 package com.Game;
 
 import java.util.ArrayList;
+import java.util.SplittableRandom;
 
 public class mAI {
 
@@ -8,6 +9,7 @@ public class mAI {
     int difficulty = 0;
     int minimax = 0;
     boolean randomsearch = false;
+    long time = 200000000; //200 million nanoseconds, or 200 milliseconds
     Board board;
     Board backup;
     Move bestMove;
@@ -15,6 +17,7 @@ public class mAI {
     public mAI(int gameType, int difficulty){
         this.gameType = gameType;
         this.difficulty = difficulty;
+        time *= difficulty;
     }
 
     public Move check(Board board, int minimax, boolean randomsearch){
@@ -30,9 +33,10 @@ public class mAI {
         return bestMove;
     }
 
-    public int iterativeSearch(int depth, boolean turn, int alpha, int beta){
-        int bestScore;
+    public double iterativeSearch(int depth, boolean turn, double alpha, double beta){
+        double bestScore;
 
+        //value for alpha beta pruning to check against
         if(turn){
             bestScore = Integer.MIN_VALUE;
         }else{
@@ -41,7 +45,8 @@ public class mAI {
 
         int state = board.checkEntireBoard();
 
-        //make it do less
+        //make it stop if it hits immediate win
+        //TODO figure out if the /depth is needed. If it is, make usage consistent
         if(state == 1){
             return (-100000 / depth);
         }else if(state == 2){
@@ -55,18 +60,54 @@ public class mAI {
             move.setTurn(turn);
             board.move(move);
 
-            int score = 0;
+            double score = 0;
 
-            if(depth == minimax){
-                if(randomsearch){
-
-                }else{
-                    score = board.score();
-                    //not sure if this is really necessary
-                    //score /= depth;
+            if(gameType == 4 || gameType == 5){
+                int result = board.checkLoops(move);
+                if(result == 1){
+                    SplittableRandom r = new SplittableRandom();
+                    if(r.nextBoolean()){
+                        board.collapseTile(move.loc, board.getMoveCount());
+                    }else{
+                        board.collapseTile(move.loc2, board.getMoveCount());
+                    }
+                    result = board.checkEntireBoard();
+                    if(result == 1){
+                        move.decrementWins();
+                        move.incrementTotal();
+                        score = -1;
+                    }else if(result == 2){
+                        move.incrementWins();
+                        move.incrementTotal();
+                        score = 1;
+                    }
                 }
             }else{
-                score = iterativeSearch(depth + 1, !turn, alpha, beta);
+                int result = board.checkEntireBoard();
+                if(result == 1){
+                    move.decrementWins();
+                    move.incrementTotal();
+                    score = -1;
+                }else if(result == 2){
+                    move.incrementWins();
+                    move.incrementTotal();
+                    score = 1;
+                }
+            }
+
+            //skip the stuff if already victory
+            if(score == 0){
+                if(depth == minimax){
+                    if(randomsearch){
+                        score = randomSearchManager(move);
+                    }else{
+                        score = board.score();
+                        //not sure if this is really necessary
+                        //score /= depth;
+                    }
+                }else{
+                    score = iterativeSearch(depth + 1, !turn, alpha, beta);
+                }
             }
 
             //System.out.println("Move " + move + " has score of " + score);
@@ -99,8 +140,112 @@ public class mAI {
         return bestScore;
     }
 
-    public void randomSearch(Move move){
+    public double randomSearchManager(Move move){
+        long start = System.nanoTime();
+        long end = start + time;
+        while(System.nanoTime() < end){
+            randomSearch(move);
+        }
+        return move.wins / move.total;
+    }
 
+    public void randomSearch(Move move){
+        while(true){
+            long t0 = System.nanoTime();
+            ArrayList<Move> available = board.getAvailable();
+            long t1 = System.nanoTime();
+            if(available.size() == 1 && gameType > 3){
+                move.incrementTotal();
+                //System.out.println("Added stalemate");
+                break;
+            }else if(available.size() == 0){
+                int result = board.checkEntireBoard();
+                if(result == 1){
+                    move.decrementWins();
+                    move.incrementTotal();
+                    //System.out.println("Added p1 victory");
+                    break;
+                }else if(result == 2){
+                    move.incrementWins();
+                    move.incrementTotal();
+                    //System.out.println("Added p2 victory");
+                    break;
+                }else{
+                    move.incrementTotal();
+                    break;
+                }
+            }
+            SplittableRandom r = new SplittableRandom();
+            int move1 = r.nextInt(0, available.size());
+            int move2;
+
+            //gets two different random numbers
+            while(true){
+                move2 = r.nextInt(0, available.size());
+                if(move2 != move1){
+                    break;
+                }
+            }
+
+            Move choice;
+            if(gameType > 3){
+                choice = new Move(move1, move2);
+                choice.setTurn(board.getMoveCount());
+            }else{
+                choice = new Move(move1);
+            }
+
+            long t2 = System.nanoTime();
+            board.move(choice);
+            long t3 = System.nanoTime();
+            if(gameType > 3){
+                int result = checkAndCollapse(board, choice, move);
+                if(result > 0){
+                    break;
+                }
+            }else{
+                int result = board.checkEntireBoard();
+                if(result == 1){
+                    move.decrementWins();
+                    move.incrementTotal();
+                    break;
+                }else if(result == 2){
+                    move.incrementWins();
+                    move.incrementTotal();
+                    break;
+                }
+            }
+
+            long t4 = System.nanoTime();
+            System.out.println("getting options took " + (t1 - t0) + " ns, checking stuff took " + (t2 - t1) + ", moving took " + (t3 - t2) + ", evaluating board took " + (t4 - t3));
+        }
+    }
+
+    public int checkAndCollapse(Board board, Move move, Move statmove){
+        int bresult = 0;
+        int loop = board.checkLoops(move);
+        if(loop != 0){
+            if(move == statmove){
+                //System.out.println("Loop found on second move");
+            }
+            SplittableRandom r = new SplittableRandom();
+            if(r.nextBoolean()){
+                board.collapseTile(move.loc, board.getMoveCount());
+            }else{
+                board.collapseTile(move.loc2, board.getMoveCount());
+            }
+            bresult = board.checkEntireBoard();
+            if(bresult == 1){
+                statmove.decrementWins();
+                statmove.incrementTotal();
+                //System.out.println("Starting enemy move has win " + move.getMove1() + " " + move.getMove2());
+            }else if(bresult == 2){
+                statmove.incrementWins();
+                statmove.incrementTotal();
+                //System.out.println("Starting enemy move has win " + move.getMove1() + " " + move.getMove2());
+            }
+        }
+        return bresult;
     }
 
 }

@@ -216,7 +216,6 @@ public class LargeBoard extends Board{
                         Move m = new Move((i * 10) + j);
                         m.setTurn(true);
                         activeList.add(m);
-                        //System.out.println("Adding active tile: " + ((i * 10) + j));
                     }
                 }
                 
@@ -239,12 +238,12 @@ public class LargeBoard extends Board{
         }
 
         //silly preamble
-        int board = (int) Math.floor(move / 10);
+        int board = move / 10;
         int boardX = board % 3;
-        int boardY = (int) Math.floor(board / 3);
+        int boardY = board / 3;
         int cell = move - (board * 10);
         int cellX = cell % 3;
-        int cellY = (int) Math.floor(cell / 3);
+        int cellY = cell / 3;
 
         //System.out.println("Move " + move + ", board: " + boardX + ", " + boardY + ", cell: " + cellX + ", " + cellY + " (Cell: " + cell + ")");
 
@@ -279,12 +278,12 @@ public class LargeBoard extends Board{
         //huh wait that rhymes, good mnemonic
 
         //silly preamble
-        int board = (int) Math.floor(move / 10);
+        int board = move / 10;
         int boardX = board % 3;
-        int boardY = (int) Math.floor(board / 3);
+        int boardY = board / 3;
         int cell = move - (board * 10);
         int cellX = cell % 3;
-        int cellY = (int) Math.floor(cell / 3);
+        int cellY =cell / 3;
 
         int result = checkBoard(boardX, boardY);
         if(result != 0){
@@ -302,16 +301,6 @@ public class LargeBoard extends Board{
         getBoardArray(boardX, boardY).getBoardTile(cellX, cellY).setState(State.Blank);
         //remove(boardX, boardY, cellX, cellY);
         removeLast();
-
-        //silly preamble
-        // board = (int) Math.floor(previous / 10);
-        // boardX = board % 3;
-        // boardY = (int) Math.floor(board / 3);
-        // cell = previous - (board * 10);
-        // cellX = cell % 3;
-        // cellY = (int) Math.floor(cell / 3);
-
-        // calculateActive(cellX, cellY);
     }
 
     public void calculateActive(int xc, int yc){

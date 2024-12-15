@@ -26,6 +26,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -70,11 +72,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
     JPanel replayPanel;
 
     GButton replayButton;
+    GFrame frameobject;
 
-    AI AI;
     qAI qAI;
     qAI3D qAI3D;
-    oAI oAI;
+    //oAI oAI;
     mAI mAI;
 
     Sound sound;
@@ -126,6 +128,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
         this.bot = bot;
         this.sound = sound;
 
+        frameobject = frame;
+
         //instantiates boards and sets default zooms
         if(game == 1){
             simpleBoard = new SimpleBoard();
@@ -160,10 +164,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         repaint();
 
-        AI = new AI(gameType);
         qAI = new qAI();
         qAI3D = new qAI3D();
-        oAI = new oAI();
+        //oAI = new oAI();
         mAI = new mAI(gameType, depth);
 
         //replay button stuff
@@ -338,8 +341,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                         @Override
                                         public void run() {
                                             //maybe temporary, create new one
-                                            MassiveMove move = new oAI(depth).checkMassiveBoard(massiveBoard);
-                                            massiveMoveAftermath(move.getLarge() % 3, move.getLarge() / 3, move.getBoard() % 3, move.getBoard() / 3, move.getCell() % 3, move.getCell() / 3);
+                                            Move move = mAI.check(massiveBoard, 2, true);
+                                            int t3 = move.loc / 100;
+                                            int t2 = (move.loc - (t3 * 100)) / 10;
+                                            int t1 = (move.loc - (t3 * 100) - (t2 * 10));
+                                            massiveMoveAftermath(t3 % 3, t3 / 3, t2 % 3, t2 / 3, t1 % 3,t1 / 3);
                                         }
                                     });
                                 }
@@ -766,14 +772,18 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                     if(result == 1){
                                                         return;
                                                     }
-                                                    QuantumMove move = null;
+                                                    Move move = null;
+                                                    // if(quantumBoard3D.getState() == State.Blank){
+                                                    //     move = qAI3D.checkQuantumBoard3D(quantumBoard3D);
+                                                    //     //move = new qAI3D().checkQuantumBoard3D(quantumBoard3D);
+                                                    // }
                                                     if(quantumBoard3D.getState() == State.Blank){
-                                                        move = qAI3D.checkQuantumBoard3D(quantumBoard3D);
+                                                        move = mAI.check((Board) quantumBoard3D, depth, true);
                                                         //move = new qAI3D().checkQuantumBoard3D(quantumBoard3D);
                                                     }
-                                                    recentSquare1 = move.getMove1();
-                                                    recentSquare2 = move.getMove2();
-                                                    result = quantumBoard3D.checkLoopsUsingQuantumDoohickery(move);
+                                                    recentSquare1 = move.loc;
+                                                    recentSquare2 = move.loc2;
+                                                    result = quantumBoard3D.checkLoops(move);
                                                     turnCount++;
                                                     turn = !turn;
                                                     if(quantumBoard3D.getState() == State.Blank){
@@ -1271,12 +1281,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     @Override
     public void paintComponent(Graphics g1) {
+        frameobject.revalidate();
         super.paintComponent(g1);
         Graphics2D g = (Graphics2D) g1;
 
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        
-        //drawSimpleBoard(g, simpleBoard, true, 1);
 
         if(game == 1){
             drawSimpleBoard(g, simpleBoard, true, 0, 0);
@@ -1295,8 +1304,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 drawMouseLine3D(g, quantumBoard3D);
             }
         }
-
-
+        
+        frameobject.revalidate();
+        Toolkit.getDefaultToolkit().sync();
     }
 
     public void closeWindow(){
@@ -1911,7 +1921,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                     int xNetOffset = (xbound + (xoffset * quantumCellSize) + quantumPadding + (i * cellSize));
                     int yNetOffset = (ybound + (yoffset * quantumCellSize) + quantumPadding + (j * cellSize));
 
-                    int move = board.getQuantumCacheList()[i + (j * 3) + (slice * 9)].get(k).getTurn();
+                    int move = board.getQuantumCacheList()[i + (j * 3) + (slice * 9)].get(k).turn;
 
                     //adjusts how close the numbers are to the mark, larger is closer
                     //int imageDivisor = 4;
@@ -1985,15 +1995,15 @@ public class GPanel extends JPanel implements MouseWheelListener{
                     continue;
                 }
                 for(int j = 0; j < board.getQuantumCacheList()[i].size(); j++){
-                    if(board.getQuantumCacheList()[i].get(j).getTurn() % 2 != 0){
+                    if(board.getQuantumCacheList()[i].get(j).turn % 2 != 0){
                         g.setColor(red);
                     }else{
                         g.setColor(blue);
                     }
         
                     //gets first one
-                    int first = board.getQuantumCacheList()[i].get(j).getMove1();
-                    int second = board.getQuantumCacheList()[i].get(j).getMove2();
+                    int first = board.getQuantumCacheList()[i].get(j).loc;
+                    int second = board.getQuantumCacheList()[i].get(j).loc2;
         
                     int qoffset1 = 0;
                     int qoffset2 = 0;
@@ -2442,7 +2452,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     public void setDepth(int x){
         depth = x;
         if(game == 2){
-            AI.setDepth(x);
+            //mAI.setDepth(x);
         }else if(game == 4){
             qAI.setDifficulty(x);
         }else if(game == 5){
