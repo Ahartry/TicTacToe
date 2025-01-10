@@ -675,7 +675,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     //don't really need this here I think
                                     //quantumBoard3D.incrementMoveCount();
 
-                                    QuantumMove move = new QuantumMove(recentCell, (xcell + (ycell * 3) + (boardZ * 9)));
+                                    Move move = new Move(recentCell, (xcell + (ycell * 3) + (boardZ * 9)));
+                                    //System.out.println(move.loc + " " + move.loc2);
                                     move.setTurn(turnCount);
 
                                     quantumBoard3D.move(move);
@@ -705,6 +706,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                             SwingUtilities.invokeLater(new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    //if the previous move was a loop
                                                     if(result != 0){
                                                         //System.out.println(quantumBoard3D.getMoveCount());
                                                         int choice = qAI3D.checkCollapse(quantumBoard3D, recentSquare1, recentSquare2);
@@ -769,6 +771,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                         }
                                                         repaint();
                                                     }
+                                                    //this uses the same variable, but is actually for the game ending
                                                     if(result == 1){
                                                         return;
                                                     }
@@ -778,7 +781,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                     //     //move = new qAI3D().checkQuantumBoard3D(quantumBoard3D);
                                                     // }
                                                     if(quantumBoard3D.getState() == State.Blank){
-                                                        move = mAI.check((Board) quantumBoard3D, depth, true);
+                                                        move = mAI.check((Board) quantumBoard3D, 2, true);
                                                         //move = new qAI3D().checkQuantumBoard3D(quantumBoard3D);
                                                     }
                                                     recentSquare1 = move.loc;
@@ -1990,6 +1993,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         //draws links
         if(quantumLineMode){
+            //i is the board tile that it is looking at, j is move position on that tile
             for(int i = 0; i < 27; i++){
                 if(!board.getBoardStatelist()[i].equals(State.Blank)){
                     continue;
@@ -2009,6 +2013,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                     int qoffset2 = 0;
                     if(first == i){
                         qoffset1 = j;
+                        //TODO error is at this line
                         qoffset2 = board.getQuantumCacheList()[second].indexOf(board.getQuantumCacheList()[i].get(j));
                         //System.out.println("First is " + j + ", second is " + qoffset2 + " for move " + board.getQuantumCacheList()[i].get(j).getTurn());
                     }else{

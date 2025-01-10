@@ -45,4 +45,8 @@ public class Board {
         System.out.println("Operation not supported");
         return 0;
     }
+
+    public void print(){
+        System.out.println("Operation not supported");
+    }
 }

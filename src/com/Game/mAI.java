@@ -60,11 +60,18 @@ public class mAI {
             move.setTurn(turn);
             board.move(move);
 
+            // try {
+            //     Thread.sleep(100);
+            // } catch (InterruptedException e) {
+            //     e.printStackTrace();
+            // }
+
             double score = 0;
 
             if(gameType == 4 || gameType == 5){
                 int result = board.checkLoops(move);
                 if(result == 1){
+                    System.out.println("Loop found");
                     SplittableRandom r = new SplittableRandom();
                     if(r.nextBoolean()){
                         board.collapseTile(move.loc, board.getMoveCount());
@@ -99,7 +106,8 @@ public class mAI {
             if(score == 0){
                 if(depth == minimax){
                     if(randomsearch){
-                        score = randomSearchManager(move);
+                        //TODO this is for working on
+                        //score = randomSearchManager();
                     }else{
                         score = board.score();
                         //not sure if this is really necessary
@@ -108,6 +116,8 @@ public class mAI {
                 }else{
                     score = iterativeSearch(depth + 1, !turn, alpha, beta);
                 }
+            }else{
+                System.out.println("Victory of sorts detected");
             }
 
             //System.out.println("Move " + move + " has score of " + score);
@@ -140,19 +150,32 @@ public class mAI {
         return bestScore;
     }
 
-    public double randomSearchManager(Move move){
+    public double randomSearchManager(){
         long start = System.nanoTime();
         long end = start + time;
+        ArrayList<Move> available = board.getAvailable();
         while(System.nanoTime() < end){
-            randomSearch(move);
+            for(int i = 0; i < available.size(); i++){
+                board.move(available.get(i));
+                randomSearch(available.get(i));
+                board.unmove(available.get(i));
+            }
         }
-        return move.wins / move.total;
+
+        double wins = -1;
+        for(int i = 0; i < available.size(); i++){
+            if(available.get(i).wins / available.get(i).total > wins){
+                wins = available.get(i).wins / available.get(i).total;
+            }
+        }
+        return wins;
     }
 
     public void randomSearch(Move move){
         while(true){
             long t0 = System.nanoTime();
             ArrayList<Move> available = board.getAvailable();
+            System.out.println(available.size());
             long t1 = System.nanoTime();
             if(available.size() == 1 && gameType > 3){
                 move.incrementTotal();

@@ -34,7 +34,7 @@ public class QuantumBoard3D extends Board{
 
     //because naming has not been fixed yet
     public int checkLoops(Move move){
-        return checkLoopsUsingQuantumDoohickery((QuantumMove) move);
+        return checkLoopsUsingQuantumDoohickery(move);
     }
 
     public int checkLoopsUsingQuantumDoohickery(Move move){
@@ -547,7 +547,7 @@ public class QuantumBoard3D extends Board{
                     continue;
                 }
 
-                //This should NOT be needed, be here we are
+                //This should NOT be needed, but here we are
                 if(i == j){
                     continue;
                 }
@@ -581,6 +581,11 @@ public class QuantumBoard3D extends Board{
         quantumCacheList[move.loc].add(move);
         quantumCacheList[move.loc2].add(move);
         moveCount++;
+
+        // System.out.println("Move being added: ");
+        // move.print();
+        // System.out.println("New board state: ");
+        // print();
     }
 
     public void unmove(Move move){
@@ -589,6 +594,11 @@ public class QuantumBoard3D extends Board{
         moveCount--;
 
         uncollapseTile(move.loc);
+
+        // System.out.println("Move being removed: ");
+        // move.print();
+        // System.out.println("New board state: ");
+        // print();
     }
 
     public ArrayList<Integer> listActiveTiles(){
@@ -604,20 +614,6 @@ public class QuantumBoard3D extends Board{
     }
 
     public void print(){
-        System.out.println("--------------");
-        for(int z = 0; z < 3; z++){
-            for(int y = 0; y < 3; y++){
-                for(int x = 0; x < 3; x++){
-                    System.out.print(quantumCacheList[x + (y * 3) + (z * 9)].size() + " ");
-                }
-                System.out.println();
-            }
-            System.out.println("\n");
-        }
-        System.out.println("End of board data");
-    }
-
-    public void print2(){
         System.out.println("--------------");
         System.out.print(quantumCacheList[0].size() + " " + quantumCacheList[1].size() + " " + quantumCacheList[2].size() + "   ");
         System.out.print(quantumCacheList[9].size() + " " + quantumCacheList[10].size() + " " + quantumCacheList[11].size() + "   ");

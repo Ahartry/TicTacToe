@@ -52,4 +52,12 @@ public class Move {
     public void incrementTotal(){
         total++;
     }
+
+    public void print(){
+        if(loc2 == 0){
+            System.out.println(loc);
+        }else{
+            System.out.println(loc + " " + loc2);
+        }
+    }
 }
