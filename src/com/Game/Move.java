@@ -60,4 +60,5 @@ public class Move {
             System.out.println(loc + " " + loc2);
         }
     }
+    
 }

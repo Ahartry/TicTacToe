@@ -107,7 +107,7 @@ public class mAI {
                 if(depth == minimax){
                     if(randomsearch){
                         //TODO this is for working on
-                        //score = randomSearchManager();
+                        score = randomSearchManager(!turn);
                     }else{
                         score = board.score();
                         //not sure if this is really necessary
@@ -117,7 +117,7 @@ public class mAI {
                     score = iterativeSearch(depth + 1, !turn, alpha, beta);
                 }
             }else{
-                System.out.println("Victory of sorts detected");
+                //System.out.println("Victory of sorts detected");
             }
 
             //System.out.println("Move " + move + " has score of " + score);
@@ -150,15 +150,26 @@ public class mAI {
         return bestScore;
     }
 
-    public double randomSearchManager(){
+    public double randomSearchManager(boolean turn){
+        System.out.println("Starting random search manager");
         long start = System.nanoTime();
         long end = start + time;
         ArrayList<Move> available = board.getAvailable();
         while(System.nanoTime() < end){
             for(int i = 0; i < available.size(); i++){
-                board.move(available.get(i));
-                randomSearch(available.get(i));
-                board.unmove(available.get(i));
+                Move move = available.get(i);
+                if(gameType > 3){
+                    turnMoves(available, board.getTurn());
+                }else{
+                    int turnNum = 1;
+                    if(turn){
+                        turnNum = 2;
+                    }
+                    turnMoves(available, turnNum);
+                }
+                board.move(move);
+                randomSearch(move, !turn);
+                board.unmove(move);
             }
         }
 
@@ -171,12 +182,16 @@ public class mAI {
         return wins;
     }
 
-    public void randomSearch(Move move){
+    public void randomSearch(Move move, boolean turn){
+        //stores all moves so that the board state can be reverted at the end of a search
+        ArrayList<Move> pastMoveList = new ArrayList<>();
         while(true){
             long t0 = System.nanoTime();
             ArrayList<Move> available = board.getAvailable();
-            System.out.println(available.size());
+            //System.out.println(available.size());
             long t1 = System.nanoTime();
+
+            //does some preliminary checks based on number of available moves
             if(available.size() == 1 && gameType > 3){
                 move.incrementTotal();
                 //System.out.println("Added stalemate");
@@ -200,26 +215,32 @@ public class mAI {
             }
             SplittableRandom r = new SplittableRandom();
             int move1 = r.nextInt(0, available.size());
-            int move2;
+            // int move2;
 
-            //gets two different random numbers
-            while(true){
-                move2 = r.nextInt(0, available.size());
-                if(move2 != move1){
-                    break;
-                }
-            }
+            // //gets two different random numbers
+            // while(true){
+            //     move2 = r.nextInt(0, available.size());
+            //     if(move2 != move1){
+            //         break;
+            //     }
+            // }
 
-            Move choice;
+            Move choice = available.get(move1);
             if(gameType > 3){
-                choice = new Move(move1, move2);
+                // choice = new Move(move1, move2);
                 choice.setTurn(board.getMoveCount());
             }else{
-                choice = new Move(move1);
+                // choice = new Move(move1);
+                int moveTurn = 1;
+                if(turn){
+                    moveTurn = 2;
+                }
+                choice.setTurn(moveTurn);
             }
 
             long t2 = System.nanoTime();
             board.move(choice);
+            pastMoveList.add(choice);
             long t3 = System.nanoTime();
             if(gameType > 3){
                 int result = checkAndCollapse(board, choice, move);
@@ -240,7 +261,13 @@ public class mAI {
             }
 
             long t4 = System.nanoTime();
-            System.out.println("getting options took " + (t1 - t0) + " ns, checking stuff took " + (t2 - t1) + ", moving took " + (t3 - t2) + ", evaluating board took " + (t4 - t3));
+            //System.out.println("getting options took " + (t1 - t0) + " ns, checking stuff took " + (t2 - t1) + ", moving took " + (t3 - t2) + ", evaluating board took " + (t4 - t3));
+        
+            turn = !turn;
+        }
+        //System.out.println(pastMoveList.size() + " moves till the end");
+        for(int i = 0; i < pastMoveList.size(); i++){
+            board.unmove(pastMoveList.get(i));
         }
     }
 
@@ -248,6 +275,7 @@ public class mAI {
         int bresult = 0;
         int loop = board.checkLoops(move);
         if(loop != 0){
+            //tf is this doing? Not removing it yet because I don't know why it exists
             if(move == statmove){
                 //System.out.println("Loop found on second move");
             }
@@ -269,6 +297,13 @@ public class mAI {
             }
         }
         return bresult;
+    }
+
+    public ArrayList<Move> turnMoves(ArrayList<Move> list, int turn){
+        for(int i = 0; i < list.size(); i++){
+            list.get(i).setTurn(turn);
+        }
+        return list;
     }
 
 }

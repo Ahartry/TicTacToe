@@ -341,7 +341,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                         @Override
                                         public void run() {
                                             //maybe temporary, create new one
-                                            Move move = mAI.check(massiveBoard, 2, true);
+                                            Move move = mAI.check(massiveBoard, 1, true);
                                             int t3 = move.loc / 100;
                                             int t2 = (move.loc - (t3 * 100)) / 10;
                                             int t1 = (move.loc - (t3 * 100) - (t2 * 10));
@@ -1075,7 +1075,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                         
                         }
                     }else{
-                        new SFrame(frame, bot, depth, 3, sound);
+                        new SFrame(frame, bot, depth, 3, sound, buttonColor);
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();

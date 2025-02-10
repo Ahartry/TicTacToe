@@ -457,6 +457,32 @@ public class QuantumBoard {
         return list;
     }
 
+    public ArrayList<Move> getAvailable(){
+        ArrayList<Move> list = new ArrayList<>();
+
+        for(int i = 0; i < 9; i++){
+            if(boardArray[i % 3][i / 3].getState() != State.Blank){
+                continue;
+            }
+            for(int j = i + 1; j < 9; j++){
+                if(boardArray[j % 3][j / 3].getState() != State.Blank){
+                    continue;
+                }
+
+                //This should NOT be needed, but here we are
+                if(i == j){
+                    continue;
+                }
+
+                Move move = new Move(i, j);
+                move.setTurn(getMoveCount());
+                list.add(move);
+            }
+        }
+
+        return list;
+    }
+
     public void clear(){
         for(int i = 0; i < 9; i++){
             if(boardArray[i % 3][i / 3].getState() != State.Blank){
@@ -465,6 +491,7 @@ public class QuantumBoard {
         }
     }
 
+    //What is this
     public QuantumMove checkRows(boolean turn){
         QuantumMove move = new QuantumMove(-1, -1);
 

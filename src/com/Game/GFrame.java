@@ -455,7 +455,7 @@ public class GFrame extends JFrame{
 
                 try {
                     if(gameType == 3){
-                        new SFrame(GFrame.this, false, 4, gameType, sound);
+                        new SFrame(GFrame.this, false, 4, gameType, sound, color);
                     }else{
                         //setupGame(gameType, false);
                         setupGame(gameType, false);
@@ -772,7 +772,7 @@ public class GFrame extends JFrame{
             //setupGame(gameType, true);
             bottomPanel.setDepth(depth);
         }else{
-            new SFrame(GFrame.this, true, depth, gameType, sound);
+            new SFrame(GFrame.this, true, depth, gameType, sound, color);
         }
 
     }

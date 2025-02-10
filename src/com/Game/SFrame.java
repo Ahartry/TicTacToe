@@ -28,7 +28,7 @@ public class SFrame extends JFrame{
     boolean clicked = false;
     Sound sound;
     
-    public SFrame(GFrame frame, boolean bot, int depth, int game, Sound sound){
+    public SFrame(GFrame frame, boolean bot, int depth, int game, Sound sound, Color color){
         this.sound = sound;
 
         Font font = new Font(null);
@@ -71,6 +71,7 @@ public class SFrame extends JFrame{
         GButton okButton = new GButton("Start");
         okButton.setFont(font);
         okButton.setSound(sound);
+        okButton.setColor(color);
 
         nameField.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e){

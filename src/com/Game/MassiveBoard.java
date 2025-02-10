@@ -238,8 +238,8 @@ public class MassiveBoard extends Board{
                 }
             }
         }
+        //System.out.println("Board has " + list.size() + " move options");
         return list;
-
     }
     
     public void move(Move move){
