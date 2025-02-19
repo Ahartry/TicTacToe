@@ -20,7 +20,7 @@ public class mAI {
         this.gameType = gameType;
         this.difficulty = difficulty;
         time *= difficulty;
-        System.out.println("Time var: " + time);
+        //System.out.println("Time var: " + time);
 
         //I don't think I actually use the branching factor, but it could come up in theory
         if(gameType == 4){
@@ -32,7 +32,6 @@ public class mAI {
 
     public Move check(Board board, int minimax, boolean randomsearch){
         this.board = board;
-        //this.backup = board;
         this.minimax = minimax;
         this.randomsearch = randomsearch;
 
@@ -63,19 +62,11 @@ public class mAI {
             return (100000 / depth);
         }
 
-        ArrayList<Move> moveList = board.getAvailable();
-        turnMoves(moveList, turn);
+        ArrayList<Move> moveList = turnMoves(board.getAvailable(), turn);
 
         for(int i = 0; i < moveList.size(); i++){
             Move move = moveList.get(i);
-            //move.setTurn(turn);
             board.move(move);
-
-            // try {
-            //     Thread.sleep(100);
-            // } catch (InterruptedException e) {
-            //     e.printStackTrace();
-            // }
 
             double score = 0;
 
@@ -120,8 +111,6 @@ public class mAI {
                         score = randomSearchManager(turn + 1, depth);
                     }else{
                         score = board.score();
-                        //not sure if this is really necessary
-                        //score /= depth;
                     }
                 }else{
                     score = iterativeSearch(depth + 1, turn + 1, alpha, beta);
@@ -160,9 +149,10 @@ public class mAI {
         long start = System.nanoTime();
         //divides the time per search by how many branches there are (approximately)
         long timeperthing = (long)(time / (Math.pow(branchingFactor, depth)));
-        System.out.println("Time per branch: " + timeperthing);
+        //System.out.println("Time per branch: " + timeperthing);
         long end = start + timeperthing;
         ArrayList<Move> available = turnMoves(board.getAvailable(), turn);
+        //int searches = 0;
         while(System.nanoTime() < end){
             for(int i = 0; i < available.size(); i++){
                 Move move = available.get(i);
@@ -170,28 +160,30 @@ public class mAI {
                 randomSearch(move, turn + 1);
                 board.unmove(move);
             }
+            //searches++; 
         }
+
+        //System.out.println(available.size() + " moves were each searched " + searches + " times");
 
         //provides the score (between -1 and 1)
-        double wins = -1;
-        for(int i = 0; i < available.size(); i++){
-            if(available.get(i).wins / available.get(i).total > wins){
-                wins = available.get(i).wins / available.get(i).total;
+        //maximizes based on which player is looking
+        double wins;
+        if(turn % 2 == 0){
+            wins = -1;
+            for(int i = 0; i < available.size(); i++){
+                if(available.get(i).wins / available.get(i).total > wins){
+                    wins = available.get(i).wins / available.get(i).total;
+                }
+            }
+        }else{
+            wins = 1;
+            for(int i = 0; i < available.size(); i++){
+                if(available.get(i).wins / available.get(i).total < wins){
+                    wins = available.get(i).wins / available.get(i).total;
+                }
             }
         }
-        return wins;
-    }
 
-    public double randomSearchManager2(int turn, int depth){
-
-        ArrayList<Move> available = board.getAvailable();
-        turnMoves(available, turn);
-        Move move = available.get(5);
-        board.move(move);
-        randomSearch(move, turn + 1);
-        board.unmove(move);
-        double wins = -1;
-        System.exit(0);
         return wins;
     }
 
@@ -200,9 +192,9 @@ public class mAI {
         ArrayList<Move> pastMoveList = new ArrayList<>();
         //int totalOptions = 0;
         while(true){
-            long t0 = System.nanoTime();
+            //long t0 = System.nanoTime();
             ArrayList<Move> available = turnMoves(board.getAvailable(), turn);
-            long t1 = System.nanoTime();
+            //long t1 = System.nanoTime();
 
             //does some preliminary checks based on number of available moves
             if(available.size() == 1 && gameType > 3){
@@ -231,10 +223,10 @@ public class mAI {
             Move choice = available.get(move1);
             turn += 1;
 
-            long t2 = System.nanoTime();
+            //long t2 = System.nanoTime();
             board.move(choice);
             pastMoveList.add(choice);
-            long t3 = System.nanoTime();
+            //long t3 = System.nanoTime();
             if(gameType > 3){
                 int result = checkAndCollapse(board, choice, move);
                 if(result > 0){
@@ -253,17 +245,18 @@ public class mAI {
                 }
             }
 
-            long t4 = System.nanoTime();
+            //long t4 = System.nanoTime();
             //System.out.println("getting options took " + (t1 - t0) + " ns, checking stuff took " + (t2 - t1) + ", moving took " + (t3 - t2) + ", evaluating board took " + (t4 - t3));
         }
         //System.out.println(pastMoveList.size() + " moves till the end, " + totalOptions / pastMoveList.size() + "options per move");
+        //I'm not quite sure if making this go in reverse fixed the problems, but probably this is good
         for(int i = pastMoveList.size() - 1; i >= 0 ; i--){
             board.unmove(pastMoveList.get(i));
         }
     }
 
     public int checkAndCollapse(Board board, Move move, Move statmove){
-        int bresult = 0;
+        int result = 0;
         int loop = board.checkLoops(move);
         if(loop != 0){
             //tf is this doing? Not removing it yet because I don't know why it exists
@@ -277,18 +270,18 @@ public class mAI {
                 board.collapseTile(move.loc2, board.getMoveCount());
                 //System.out.println("Collapse on " + move.loc2);
             }
-            bresult = board.checkEntireBoard();
-            if(bresult == 1){
+            result = board.checkEntireBoard();
+            if(result == 1){
                 statmove.decrementWins();
                 statmove.incrementTotal();
                 //System.out.println("Starting enemy move has win " + move.getMove1() + " " + move.getMove2());
-            }else if(bresult == 2){
+            }else if(result == 2){
                 statmove.incrementWins();
                 statmove.incrementTotal();
                 //System.out.println("Starting enemy move has win " + move.getMove1() + " " + move.getMove2());
             }
         }
-        return bresult;
+        return result;
     }
 
     public ArrayList<Move> turnMoves(ArrayList<Move> list, int turn){

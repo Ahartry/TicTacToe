@@ -468,7 +468,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                         return;
                                                     }
                                                     Move move;
-                                                    //move = qAI.checkQuantumBoard(quantumBoard);
                                                     move = mAI.check(quantumBoard, 1, true);
 
                                                     recentSquare1 = move.loc;
@@ -694,7 +693,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                     recentSquare2 = recentCell;
                                     //quantumBoard3D.printBoard();
 
-                                    result = quantumBoard3D.checkLoopsUsingQuantumDoohickery(move);
+                                    result = quantumBoard3D.checkLoops(move);
 
                                     turnCount++;
                                     quantumMove = !quantumMove;
@@ -719,7 +718,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                         //int choice = qAI3D.checkCollapse(quantumBoard3D, recentSquare1, recentSquare2);
                                                         //quantumBoard3D.collapseTile(choice, turnCount - 1);
                                                         //TODO collapse
-                                                        
+                                                        mAI.chooseCollapse(quantumBoard3D, recentSquare1, recentSquare2);
                                                         result = 0;
                                                         if(turn){
                                                             displayLabel.setText("Player 2's turn");
@@ -783,15 +782,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                     if(result == 1){
                                                         return;
                                                     }
-                                                    Move move = null;
-                                                    // if(quantumBoard3D.getState() == State.Blank){
-                                                    //     move = qAI3D.checkQuantumBoard3D(quantumBoard3D);
-                                                    //     //move = new qAI3D().checkQuantumBoard3D(quantumBoard3D);
-                                                    // }
-                                                    if(quantumBoard3D.getState() == State.Blank){
-                                                        move = mAI.check(quantumBoard3D, 1, true);
-                                                        //move = new qAI3D().checkQuantumBoard3D(quantumBoard3D);
-                                                    }
+                                                    Move move;
+                                                    move = mAI.check(quantumBoard3D, 1, true);
+
                                                     recentSquare1 = move.loc;
                                                     recentSquare2 = move.loc2;
                                                     result = quantumBoard3D.checkLoops(move);

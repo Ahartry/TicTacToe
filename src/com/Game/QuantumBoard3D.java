@@ -33,11 +33,8 @@ public class QuantumBoard3D extends Board{
     }
 
     //because naming has not been fixed yet
-    public int checkLoops(Move move){
-        return checkLoopsUsingQuantumDoohickery(move);
-    }
 
-    public int checkLoopsUsingQuantumDoohickery(Move move){
+    public int checkLoops(Move move){
         result = 0;
 
         quantumSkipList.clear();
@@ -46,14 +43,14 @@ public class QuantumBoard3D extends Board{
         int start = move.loc;
         int next = move.loc2;
 
-        doohickeryIterativeSearch(start, next);
+        iterativeSearch(start, next);
 
         quantumSkipList.clear();
 
         return result;
     }
 
-    public void doohickeryIterativeSearch(int start, int next){
+    public void iterativeSearch(int start, int next){
         if(next == start){
             result = 1;
         }
@@ -70,9 +67,9 @@ public class QuantumBoard3D extends Board{
             }
             quantumSkipList.add(quantumCacheList[next].get(i));
             if(quantumCacheList[next].get(i).loc == next){
-                doohickeryIterativeSearch(start, quantumCacheList[next].get(i).loc2);
+                iterativeSearch(start, quantumCacheList[next].get(i).loc2);
             }else{
-                doohickeryIterativeSearch(start, quantumCacheList[next].get(i).loc);
+                iterativeSearch(start, quantumCacheList[next].get(i).loc);
             }
         }
 
@@ -506,35 +503,6 @@ public class QuantumBoard3D extends Board{
         moveCount++;
     }
 
-    @SuppressWarnings("unused")
-    public void copy(QuantumBoard3D board){
-        long t0 = System.nanoTime();
-
-        //copies the simple variables
-        moveCount = board.getMoveCount();
-        available = board.getAvailableInt();
-        result = 0;
-        long t1 = System.nanoTime();
-
-        //board.print2();
-
-        //copies the quantum cache for each tile. This cache consists of quantumMove objects
-        for(int i = 0; i < 27; i++){
-            quantumCacheList[i].clear();
-            for(int j = 0; j < board.getQuantumCacheList()[i].size(); j++){
-                Move loadMove = board.getQuantumCacheList()[i].get(j);
-                quantumCacheList[i].add(loadMove);
-            }
-            boardState[i] = board.getBoardStatelist()[i];
-            boardTurn[i] = board.getBoardTurnlist()[i];
-        }
-
-        //print2();
-
-        long t3 = System.nanoTime();
-        //System.out.println("copying quantum took: " + (t1 - t0) + " ns, copying cache took " + (t2 - t1) + ", and copying tiles took " + (t3 - t2));
-    }
-
     public ArrayList<Move> getAvailable(){
         ArrayList<Move> list = new ArrayList<>();
 
@@ -590,18 +558,6 @@ public class QuantumBoard3D extends Board{
         moveCount--;
 
         uncollapseTile(move.loc);
-    }
-
-    public ArrayList<Integer> listActiveTiles(){
-        ArrayList<Integer> list = new ArrayList<>();
-
-        for(int i = 0; i < 27; i++){
-            if(boardState[i] == State.Blank){
-                list.add(i);
-            }
-        }
-
-        return list;
     }
 
     public void print(){
