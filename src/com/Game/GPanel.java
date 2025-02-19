@@ -804,9 +804,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                             displayLabel.setText("Stalemate");
                                                             displayLabel.setForeground(Color.BLACK);
                                                             //quantumBoard3D.clear();
-                                                            
-                                                            //thing
-                                                            quantumBoard3D.setState(State.Player1);
                             
                                                             //replay button stuff
                                                             replay();
@@ -2457,8 +2454,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 @Override
                 public void run() {
                     //maybe temporary, create new one
-                    MassiveMove move = new oAI(depth).checkMassiveBoard(massiveBoard);
-                    massiveMoveAftermath(move.getLarge() % 3, move.getLarge() / 3, move.getBoard() % 3, move.getBoard() / 3, move.getCell() % 3, move.getCell() / 3);
+                    Move move = new mAI(3, depth).check(massiveBoard, depth, false);
+                    int large = move.loc / 100;
+                    int boardnum = (move.loc - (large * 100)) / 10;
+                    int cell = (move.loc - (large * 100) - (boardnum * 10));
+                    massiveMoveAftermath(large % 3, large / 3, boardnum % 3, boardnum / 3, cell % 3, cell / 3);
                 }
             });
         }
