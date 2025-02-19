@@ -291,4 +291,101 @@ public class MassiveBoard extends Board{
 
     }
 
+    public int score(){
+        //player two is positive
+        int score = 0;
+
+        //values the location of each move
+        score += checkAllMoves();
+
+        //checks the two in a rows
+        score += checkTwos();
+
+        return score;
+    }
+
+    public int checkAllMoves(){
+        int score = 0;
+        State state;
+
+        for(int i = 0; i < 9; i++){
+            state = boardArray[i % 3][i / 3].getState();
+            if(state == State.Player1){
+                if(i % 2 != 0){
+                    score += -300;
+                }else if(i == 4){
+                    score += -500;
+                }else{
+                    score += -400;
+                }
+            }else if(state == State.Player2){
+                if(i % 2 != 0){
+                    score += 300;
+                }else if(i == 4){
+                    score += 500;
+                }else{
+                    score += 400;
+                }
+            }
+
+            //does the board a size smaller
+            score += boardArray[i % 3][i / 3].score();
+
+        }
+
+        if(getState() == State.Player1){
+            score += - 1000000;
+        }else if(getState() == State.Player2){
+            score += 1000000;
+        }
+
+        return score;
+    }
+
+    public int checkTwos(){
+        int score = 0;
+        int lineScore = 0;
+    
+        // check for larger twos
+        lineScore = boardArray[0][0].toNum() + boardArray[1][0].toNum() + boardArray[2][0].toNum();
+        score += scoreLine(lineScore, 100);
+        lineScore = boardArray[0][1].toNum() + boardArray[1][1].toNum() + boardArray[2][1].toNum();
+        score += scoreLine(lineScore, 100);
+        lineScore = boardArray[0][2].toNum() + boardArray[1][2].toNum() + boardArray[2][2].toNum();
+        score += scoreLine(lineScore, 100);
+        lineScore = boardArray[0][0].toNum() + boardArray[0][1].toNum() + boardArray[0][2].toNum();
+        score += scoreLine(lineScore, 100);
+        lineScore = boardArray[1][0].toNum() + boardArray[1][1].toNum() + boardArray[1][2].toNum();
+        score += scoreLine(lineScore, 100);
+        lineScore = boardArray[2][0].toNum() + boardArray[2][1].toNum() + boardArray[2][2].toNum();
+        score += scoreLine(lineScore, 100);
+        lineScore = boardArray[0][0].toNum() + boardArray[1][1].toNum() + boardArray[2][2].toNum();
+        score += scoreLine(lineScore, 100);
+        lineScore = boardArray[2][0].toNum() + boardArray[1][1].toNum() + boardArray[0][2].toNum();
+        score += scoreLine(lineScore, 100);
+    
+        return score;
+    }
+
+    public int scoreLine(int line, int mult){
+        int score = 0;
+
+        if(line == -6){
+            score = -5;
+        }else if(line == 4){
+            score = 5;
+        }
+
+        score *= mult;
+
+        return score;
+    }
+
+    public int getTurn(){
+        //this requires some explanation. This gets called once by the AI, and so this returns that it is turn two (so player two's move). The reason this gets
+        //used at all is because quantum requires turn moves
+        return 2;
+    }
+
+
 }

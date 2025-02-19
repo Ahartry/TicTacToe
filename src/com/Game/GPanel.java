@@ -74,8 +74,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
     GButton replayButton;
     GFrame frameobject;
 
-    qAI qAI;
-    qAI3D qAI3D;
+    //qAI qAI;
+    //qAI3D qAI3D;
     //oAI oAI;
     mAI mAI;
 
@@ -164,8 +164,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         repaint();
 
-        qAI = new qAI();
-        qAI3D = new qAI3D();
+        // qAI = new qAI();
+        // qAI3D = new qAI3D();
         //oAI = new oAI();
         mAI = new mAI(gameType, depth);
 
@@ -341,7 +341,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                         @Override
                                         public void run() {
                                             //maybe temporary, create new one
-                                            Move move = mAI.check(massiveBoard, 1, true);
+                                            Move move = mAI.check(massiveBoard, depth, false);
                                             int t3 = move.loc / 100;
                                             int t2 = (move.loc - (t3 * 100)) / 10;
                                             int t1 = (move.loc - (t3 * 100) - (t2 * 10));
@@ -362,21 +362,25 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                             theSquare = xcell + (ycell * 3);
     
-                            if(quantumBoard.getState() == State.Blank && quantumBoard.getBoardTile(xcell, ycell).getState() == State.Blank && e.getButton() == MouseEvent.BUTTON1){
+                            if(quantumBoard.getState() == State.Blank && quantumBoard.getBoardStatelist()[theSquare] == State.Blank && e.getButton() == MouseEvent.BUTTON1){
 
                                 if(quantumMove && (xcell + (ycell * 3)) != recentCell){
-                                    quantumBoard.getBoardTile(xcell, ycell).addMove(turnCount);
+                                    Move move = new Move(xcell + (ycell * 3), recentCell);
+                                    move.setTurn(turnCount);
+                                    // quantumBoard.getBoardTile(xcell, ycell).addMove(turnCount);
 
-                                    quantumBoard.getBoardTile(recentCell % 3, recentCell / 3).addMove(turnCount);
+                                    // quantumBoard.getBoardTile(recentCell % 3, recentCell / 3).addMove(turnCount);
 
                                     //don't really need this here I think
-                                    quantumBoard.incrementMoveCount();
+                                    //quantumBoard.incrementMoveCount();
+
+                                    quantumBoard.move(move);
 
                                     recentSquare1 = xcell + (ycell * 3);
                                     recentSquare2 = recentCell;
                                     //quantumBoard.printBoard();
 
-                                    result = quantumBoard.checkLoops(turnCount);
+                                    result = quantumBoard.checkLoops(move);
 
                                     turnCount++;
                                     quantumMove = !quantumMove;
@@ -397,7 +401,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                 public void run() {
                                                     if(result != 0){
                                                         //System.out.println(quantumBoard.getMoveCount());
-                                                        qAI.checkCollapse(quantumBoard, recentSquare1, recentSquare2);
+                                                        //qAI.checkCollapse(quantumBoard, recentSquare1, recentSquare2);
+                                                        //TODO mAI collapse code
+                                                        mAI.chooseCollapse(quantumBoard, recentSquare1, recentSquare2);
                                                         result = 0;
                                                         if(turn){
                                                             displayLabel.setText("Player 2's turn");
@@ -415,14 +421,14 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                                                         int blankCount = 0;
                                                         for(int i = 0; i < 9; i++){
-                                                            if(quantumBoard.getBoardTile(i % 3, (int) Math.floor(i /3)).getState().equals(State.Blank)){
+                                                            if(quantumBoard.getBoardStatelist()[i].equals(State.Blank)){
                                                                 blankCount++;
                                                             }
                                                         }
                                                         if(blankCount < 2){
                                                             displayLabel.setText("Stalemate");
                                                             displayLabel.setForeground(Color.BLACK);
-                                                            quantumBoard.clear();
+                                                            //quantumBoard.clear();
 
                                                             //so that it can't be played on again
                                                             quantumBoard.setState(State.Player1);
@@ -457,16 +463,17 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                         }
                                                         repaint();
                                                     }
+                                                    //these are actually using result completely differently. First is if there is a loop, second is game end
                                                     if(result == 1){
                                                         return;
                                                     }
-                                                    int move = 0;
-                                                    if(quantumBoard.getState() == State.Blank){
-                                                        move = qAI.checkQuantumBoard(quantumBoard);
-                                                    }
-                                                    recentSquare1 = move / 9;
-                                                    recentSquare2 = move % 9;
-                                                    result = quantumBoard.checkLoops(turnCount);
+                                                    Move move;
+                                                    //move = qAI.checkQuantumBoard(quantumBoard);
+                                                    move = mAI.check(quantumBoard, 1, true);
+
+                                                    recentSquare1 = move.loc;
+                                                    recentSquare2 = move.loc2;
+                                                    result = quantumBoard.checkLoops(move);
                                                     turnCount++;
                                                     turn = !turn;
                                                     if(quantumBoard.getState() == State.Blank){
@@ -474,20 +481,20 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                         displayLabel.setForeground(red);
                                                         int blankCount = 0;
                                                         for(int i = 0; i < 9; i++){
-                                                            if(quantumBoard.getBoardTile(i % 3, (int) Math.floor(i /3)).getState().equals(State.Blank)){
+                                                            if(quantumBoard.getBoardStatelist()[i].equals(State.Blank)){
                                                                 blankCount++;
                                                             }
                                                         }
                                                         if(blankCount < 2){
                                                             displayLabel.setText("Stalemate");
                                                             displayLabel.setForeground(Color.BLACK);
-                                                            quantumBoard.clear();
+                                                            //quantumBoard.clear();
                             
                                                             //replay button stuff
                                                             replay();
                                                         }
                                                     }else{
-                                                        quantumBoard.clear();
+                                                        //quantumBoard.clear();
                                                     }
                                                     //does stuff if a loop is found
                                                     if(result == 0){
@@ -554,7 +561,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                                 repaint();
                             }else if(e.getButton() == MouseEvent.BUTTON3){
-                                quantumBoard.printTile(xcell, ycell);
+                                //quantumBoard.printTile(xcell, ycell);
                             }
 
                             
@@ -588,7 +595,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     
                                 int blankCount = 0;
                                 for(int i = 0; i < 9; i++){
-                                    if(quantumBoard.getBoardTile(i % 3, (int) Math.floor(i /3)).getState().equals(State.Blank)){
+                                    if(quantumBoard.getBoardStatelist()[i].equals(State.Blank)){
                                         blankCount++;
                                     }
                                 }
@@ -709,8 +716,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                     //if the previous move was a loop
                                                     if(result != 0){
                                                         //System.out.println(quantumBoard3D.getMoveCount());
-                                                        int choice = qAI3D.checkCollapse(quantumBoard3D, recentSquare1, recentSquare2);
-                                                        quantumBoard3D.collapseTile(choice, turnCount - 1);
+                                                        //int choice = qAI3D.checkCollapse(quantumBoard3D, recentSquare1, recentSquare2);
+                                                        //quantumBoard3D.collapseTile(choice, turnCount - 1);
+                                                        //TODO collapse
                                                         
                                                         result = 0;
                                                         if(turn){
@@ -781,7 +789,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                     //     //move = new qAI3D().checkQuantumBoard3D(quantumBoard3D);
                                                     // }
                                                     if(quantumBoard3D.getState() == State.Blank){
-                                                        move = mAI.check((Board) quantumBoard3D, 2, true);
+                                                        move = mAI.check(quantumBoard3D, 1, true);
                                                         //move = new qAI3D().checkQuantumBoard3D(quantumBoard3D);
                                                     }
                                                     recentSquare1 = move.loc;
@@ -1664,12 +1672,12 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 int xNetOffset = (int) (xbound + (i * cellSize) + ((cellSize - imageSize) / 2));
                 int yNetOffset = (int) (ybound + (j * cellSize) + ((cellSize - imageSize) / 2));
 
-                if(board.getBoardTile(i, j).getState() == State.Player1){
+                if(board.getBoardStatelist()[i + (3 * j)] == State.Player1){
                     g.drawImage(xImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
-                    g.drawString(Integer.toString(board.getBoardTile(i, j).getTurn()), xNetOffset + (int) (cellSize / 1.4), yNetOffset + (int) (cellSize * 0.85));
-                }else if(board.getBoardTile(i, j).getState() == State.Player2){
+                    g.drawString(Integer.toString(board.getBoardTurnlist()[i + (3 * j)]), xNetOffset + (int) (cellSize / 1.4), yNetOffset + (int) (cellSize * 0.85));
+                }else if(board.getBoardStatelist()[i + (3 * j)] == State.Player2){
                     g.drawImage(oImage, xNetOffset, yNetOffset, (int) imageSize, (int) imageSize, null);
-                    g.drawString(Integer.toString(board.getBoardTile(i, j).getTurn()), xNetOffset + (int) (cellSize / 1.4), yNetOffset + (int) (cellSize * 0.85));
+                    g.drawString(Integer.toString(board.getBoardTurnlist()[i + (3 * j)]), xNetOffset + (int) (cellSize / 1.4), yNetOffset + (int) (cellSize * 0.85));
                 }
             }
         }
@@ -1677,12 +1685,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
         double quantumCellSize = cellSize / 3;
         double quantumImageSize = quantumCellSize * iconScale;
         double quantumPadding = ((quantumCellSize - quantumImageSize) / 2);
-
-        // numSizeX = (quantumImageSize * 3) / 16;
-        // numSizeY = quantumImageSize / 4;
-
-        // numSizeX *=2;
-        // numSizeY *=2;
 
         stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
         font = null;
@@ -1699,17 +1701,17 @@ public class GPanel extends JPanel implements MouseWheelListener{
         //draws the quantum moves
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
-                if(quantumBoard.getBoardTile(i, j).getState() != State.Blank){
+                if(board.getBoardStatelist()[i + (3 * j)] != State.Blank){
                     continue;
                 }
-                for(int k = 0; k < quantumBoard.getBoardTile(i, j).getMovesList().size(); k++){
+                for(int k = 0; k < board.getQuantumCacheList()[i + (3 * j)].size(); k++){
                     int xoffset = k % 3;
-                    int yoffset = (int) Math.floor(k / 3);
+                    int yoffset = k / 3;
 
                     int xNetOffset = (int) (xbound + (xoffset * quantumCellSize) + quantumPadding + (i * cellSize));
                     int yNetOffset = (int) (ybound + (yoffset * quantumCellSize) + quantumPadding + (j * cellSize));
 
-                    int move = quantumBoard.getBoardTile(i, j).getMovesList().get(k);
+                    int turn = board.getQuantumCacheList()[i + (3 * j)].get(k).turn;
                     
                     //these need to stay in
                     @SuppressWarnings("unused")
@@ -1720,7 +1722,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                     offsetx *= zoom;
                     offsety *= zoom;
 
-                    if(move % 2 != 0){
+                    if(turn % 2 != 0){
                         g.drawImage(xImage, xNetOffset, yNetOffset, (int) quantumImageSize, (int) quantumImageSize, null);
                         //g.drawString(Integer.toString(move), xNetOffset + (int) (quantumCellSize / 1.25) - offsetx, yNetOffset + (int) (quantumCellSize * 1.25) - offsety);
                         //g.drawImage(getTurnImage(move), (int) (xNetOffset + quantumImageSize - numSizeX + (quantumImageSize / imageDivisor)), (int) (yNetOffset + quantumImageSize - numSizeY + (quantumImageSize / imageDivisor)), (int) numSizeX, (int) numSizeY, null);
@@ -1730,7 +1732,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
                         //g.drawImage(getTurnImage(move), (int) (xNetOffset + quantumImageSize - numSizeX + (quantumImageSize / imageDivisor)), (int) (yNetOffset + quantumImageSize - numSizeY + (quantumImageSize / imageDivisor)), (int) numSizeX, (int) numSizeY, null);
                     }
 
-                    String number = Integer.toString(move);
+                    String number = Integer.toString(turn);
 
                     g.setColor(Color.WHITE);
                     for(int m = -1; m < 2; m++){
@@ -1742,41 +1744,76 @@ public class GPanel extends JPanel implements MouseWheelListener{
                     //the actual text
                     g.setColor(Color.BLACK);
                     g.drawString(number, xNetOffset + (int) (quantumImageSize / 1.25), yNetOffset + (int) (quantumImageSize * 1.25));
+
+                    if(turn % 2 != 0){
+                    g.setColor(red);
+                    }else{
+                        g.setColor(blue);
+                    }
+        
+                    //gets first one
+                    int first = board.getQuantumCacheList()[i + (3 * j)].get(k).loc;
+                    int second = board.getQuantumCacheList()[i + (3 * j)].get(k).loc2;
+
+                    int qoffset1 = k;
+                    int qoffset2 = k;
+
+                    if(first == i + (3 * j)){
+                        qoffset2 = board.getQuantumCacheList()[second].indexOf(board.getQuantumCacheList()[i + (3 * j)].get(k));
+                    }else{
+                        qoffset1 = board.getQuantumCacheList()[first].indexOf(board.getQuantumCacheList()[i + (3 * j)].get(k));
+                    }
+        
+                    //System.out.println(first + " " + second);
+        
+                    int x1 = first % 3;
+                    int y1 = first / 3;
+                    int x2 = second % 3;
+                    int y2 = second / 3;
+        
+                    int qx1 = (qoffset1 % 3) - 1;
+                    int qy1 = (int) Math.floor(qoffset1 / 3) - 1;
+                    int qx2 = (qoffset2 % 3) - 1;
+                    int qy2 = (int) Math.floor(qoffset2 / 3) - 1;
+        
+                    g.drawLine(xbound + (x1 * cellSize) + (cellSize / 2) + (int) (qx1 * quantumCellSize) -1, ybound + (y1 * cellSize) + (cellSize / 2) + (int) (qy1 * quantumCellSize) -1, xbound + (x2 * cellSize) + (cellSize / 2) + (int) (qx2 * quantumCellSize) -1, ybound + (y2 * cellSize) + (cellSize / 2) + (int) (qy2 * quantumCellSize) -1);
                 }
             }
         }
 
-        //draws links
-        if(quantumLineMode){
-            for(int i = 1; i < turnCount; i++){
-                if(i % 2 != 0){
-                    g.setColor(red);
-                }else{
-                    g.setColor(blue);
-                }
+        // //draws links
+        // if(quantumLineMode){
+        //     for(int i = 1; i < turnCount; i++){
+        //         if(i % 2 != 0){
+        //             g.setColor(red);
+        //         }else{
+        //             g.setColor(blue);
+        //         }
+
+        //         Move move = board.getQuantumCacheList()[i];
     
-                //gets first one
-                int first = quantumBoard.getBoardWithMove(i);
-                int second = quantumBoard.getOtherBoardWithMove(i);
+        //         //gets first one
+        //         int first = board.getBoardWithMove(i);
+        //         int second = board.getOtherBoardWithMove(i);
     
-                int qoffset1 = quantumBoard.getMoveLocationInArray(first, i);
-                int qoffset2 = quantumBoard.getMoveLocationInArray(second, i);
+        //         int qoffset1 = board.getMoveLocationInArray(first, i);
+        //         int qoffset2 = board.getMoveLocationInArray(second, i);
     
-                //System.out.println(first + " " + second);
+        //         //System.out.println(first + " " + second);
     
-                int x1 = first % 3;
-                int y1 = (int) Math.floor(first / 3);
-                int x2 = second % 3;
-                int y2 = (int) Math.floor(second / 3);
+        //         int x1 = first % 3;
+        //         int y1 = first / 3;
+        //         int x2 = second % 3;
+        //         int y2 = second / 3;
     
-                int qx1 = (qoffset1 % 3) - 1;
-                int qy1 = (int) Math.floor(qoffset1 / 3) - 1;
-                int qx2 = (qoffset2 % 3) - 1;
-                int qy2 = (int) Math.floor(qoffset2 / 3) - 1;
+        //         int qx1 = (qoffset1 % 3) - 1;
+        //         int qy1 = (int) Math.floor(qoffset1 / 3) - 1;
+        //         int qx2 = (qoffset2 % 3) - 1;
+        //         int qy2 = (int) Math.floor(qoffset2 / 3) - 1;
     
-                g.drawLine(xbound + (x1 * cellSize) + (cellSize / 2) + (int) (qx1 * quantumCellSize) -1, ybound + (y1 * cellSize) + (cellSize / 2) + (int) (qy1 * quantumCellSize) -1, xbound + (x2 * cellSize) + (cellSize / 2) + (int) (qx2 * quantumCellSize) -1, ybound + (y2 * cellSize) + (cellSize / 2) + (int) (qy2 * quantumCellSize) -1);
-            }
-        }
+        //         g.drawLine(xbound + (x1 * cellSize) + (cellSize / 2) + (int) (qx1 * quantumCellSize) -1, ybound + (y1 * cellSize) + (cellSize / 2) + (int) (qy1 * quantumCellSize) -1, xbound + (x2 * cellSize) + (cellSize / 2) + (int) (qx2 * quantumCellSize) -1, ybound + (y2 * cellSize) + (cellSize / 2) + (int) (qy2 * quantumCellSize) -1);
+        //     }
+        // }
 
         if(result == 1){
             if(moveDrawLoc != -1 && quantumBoard.getState() == State.Blank){
@@ -2074,7 +2111,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
         int x1 = theSquare % 3;
         int y1 = (int) Math.floor(theSquare / 3);
 
-        int cell = board.getBoardTile(x1, y1).getMovesList().size();
+        // int cell = board.getBoardTile(x1, y1).getMovesList().size();
+        int cell = board.getQuantumCacheList()[theSquare].size();
         int xcell = cell % 3;
         int ycell = (int) Math.floor(cell / 3);
 
@@ -2456,13 +2494,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     public void setDepth(int x){
         depth = x;
-        if(game == 2){
-            //mAI.setDepth(x);
-        }else if(game == 4){
-            qAI.setDifficulty(x);
-        }else if(game == 5){
-            qAI3D.setDifficulty(x);
-        }
     }
 
     public void replay(){

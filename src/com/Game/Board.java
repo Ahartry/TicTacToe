@@ -31,6 +31,10 @@ public class Board {
         System.out.println("Operation not supported (collapseTile)");
     }
 
+    public void uncollapseTile(int location){
+        System.out.println("Operation not supported (uncollapseTile)");
+    }
+
     public int score(){
         System.out.println("Operation not supported (score)");
         return 0;

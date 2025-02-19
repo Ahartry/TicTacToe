@@ -582,10 +582,6 @@ public class QuantumBoard3D extends Board{
         quantumCacheList[move.loc2].add(move);
         moveCount++;
 
-        // System.out.println("Move being added: ");
-        // move.print();
-        // System.out.println("New board state: ");
-        // print();
     }
 
     public void unmove(Move move){
@@ -594,11 +590,6 @@ public class QuantumBoard3D extends Board{
         moveCount--;
 
         uncollapseTile(move.loc);
-
-        // System.out.println("Move being removed: ");
-        // move.print();
-        // System.out.println("New board state: ");
-        // print();
     }
 
     public ArrayList<Integer> listActiveTiles(){

@@ -136,5 +136,92 @@ public class SimpleBoard {
     public int toNum(){
         return state.toNum();
     }
+
+    public int score(){
+        //player two is positive
+        int score = 0;
+
+        //values the location of each move
+        score += checkAllMoves();
+
+        //checks the two in a rows
+        score += checkTwos();
+
+        return score;
+    }
+
+    public int checkAllMoves(){
+        int score = 0;
+        State state;
+
+        for(int i = 0; i < 9; i++){
+            state = boardArray[i % 3][i / 3].getState();
+            if(state == State.Player1){
+                if(i % 2 != 0){
+                    score += -3;
+                }else if(i == 4){
+                    score += -5;
+                }else{
+                    score += -4;
+                }
+            }else if(state == State.Player2){
+                if(i % 2 != 0){
+                    score += 3;
+                }else if(i == 4){
+                    score += 5;
+                }else{
+                    score += 4;
+                }
+            }
+
+        }
+
+        if(getState() == State.Player1){
+            score += - 100;
+        }else if(getState() == State.Player2){
+            score += 100;
+        }
+
+        return score;
+    }
+
+    public int checkTwos(){
+        int score = 0;
+        int lineScore = 0;
+    
+        // check for larger twos
+        lineScore = boardArray[0][0].toNum() + boardArray[1][0].toNum() + boardArray[2][0].toNum();
+        score += scoreLine(lineScore, 1);
+        lineScore = boardArray[0][1].toNum() + boardArray[1][1].toNum() + boardArray[2][1].toNum();
+        score += scoreLine(lineScore, 1);
+        lineScore = boardArray[0][2].toNum() + boardArray[1][2].toNum() + boardArray[2][2].toNum();
+        score += scoreLine(lineScore, 1);
+        lineScore = boardArray[0][0].toNum() + boardArray[0][1].toNum() + boardArray[0][2].toNum();
+        score += scoreLine(lineScore, 1);
+        lineScore = boardArray[1][0].toNum() + boardArray[1][1].toNum() + boardArray[1][2].toNum();
+        score += scoreLine(lineScore, 1);
+        lineScore = boardArray[2][0].toNum() + boardArray[2][1].toNum() + boardArray[2][2].toNum();
+        score += scoreLine(lineScore, 1);
+        lineScore = boardArray[0][0].toNum() + boardArray[1][1].toNum() + boardArray[2][2].toNum();
+        score += scoreLine(lineScore, 1);
+        lineScore = boardArray[2][0].toNum() + boardArray[1][1].toNum() + boardArray[0][2].toNum();
+        score += scoreLine(lineScore, 1);
+    
+        return score;
+    }
+
+    public int scoreLine(int line, int mult){
+        int score = 0;
+
+        if(line == -6){
+            score = -5;
+        }else if(line == 4){
+            score = 5;
+        }
+
+        score *= mult;
+
+        return score;
+    }
     
 }

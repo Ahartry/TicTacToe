@@ -372,13 +372,6 @@ public class LargeBoard extends Board{
         //checks the two in a rows
         score += checkTwos();
 
-        //makes it not care about moves if victory, prioritize sooner victories
-        if(score > 50000){
-            score = 100000;
-        }else if(score < -50000){
-            score = -100000;
-        }
-
         return score;
     }
 
@@ -406,19 +399,15 @@ public class LargeBoard extends Board{
                 }
             }
 
-        }
+            //does the board a size smaller
+            score += boardArray[i % 3][i / 3].score();
 
-        for(int i = 0; i < getLocSize(); i++){
-
-            if(boardArray[get(i).getBX()][get(i).getBY()].getState() == State.Blank)
-
-            score += get(i).getMoveScore();
         }
 
         if(getState() == State.Player1){
-            score += - 100000;
+            score += - 10000;
         }else if(getState() == State.Player2){
-            score += 100000;
+            score += 10000;
         }
 
         return score;
@@ -446,28 +435,6 @@ public class LargeBoard extends Board{
         lineScore = boardArray[2][0].toNum() + boardArray[1][1].toNum() + boardArray[0][2].toNum();
         score += scoreLine(lineScore, 10);
     
-        // checks for inside each board
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                lineScore = boardArray[i][j].getBoardArray(0, 0).toNum() + boardArray[i][j].getBoardArray(1, 0).toNum() + boardArray[i][j].getBoardArray(2, 0).toNum();
-                score += scoreLine(lineScore, 1);
-                lineScore = boardArray[i][j].getBoardArray(0, 1).toNum() + boardArray[i][j].getBoardArray(1, 1).toNum() + boardArray[i][j].getBoardArray(2, 1).toNum();
-                score += scoreLine(lineScore, 1);
-                lineScore = boardArray[i][j].getBoardArray(0, 2).toNum() + boardArray[i][j].getBoardArray(1, 2).toNum() + boardArray[i][j].getBoardArray(2, 2).toNum();
-                score += scoreLine(lineScore, 1);
-                lineScore = boardArray[i][j].getBoardArray(0, 0).toNum() + boardArray[i][j].getBoardArray(0, 1).toNum() + boardArray[i][j].getBoardArray(0, 2).toNum();
-                score += scoreLine(lineScore, 1);
-                lineScore = boardArray[i][j].getBoardArray(1, 0).toNum() + boardArray[i][j].getBoardArray(1, 1).toNum() + boardArray[i][j].getBoardArray(1, 2).toNum();
-                score += scoreLine(lineScore, 1);
-                lineScore = boardArray[i][j].getBoardArray(2, 0).toNum() + boardArray[i][j].getBoardArray(2, 1).toNum() + boardArray[i][j].getBoardArray(2, 2).toNum();
-                score += scoreLine(lineScore, 1);
-                lineScore = boardArray[i][j].getBoardArray(0, 0).toNum() + boardArray[i][j].getBoardArray(1, 1).toNum() + boardArray[i][j].getBoardArray(2, 2).toNum();
-                score += scoreLine(lineScore, 1);
-                lineScore = boardArray[i][j].getBoardArray(2, 0).toNum() + boardArray[i][j].getBoardArray(1, 1).toNum() + boardArray[i][j].getBoardArray(0, 2).toNum();
-                score += scoreLine(lineScore, 1);
-            }
-        }
-    
         return score;
     }
 
@@ -483,6 +450,16 @@ public class LargeBoard extends Board{
         score *= mult;
 
         return score;
+    }
+
+    public int toNum(){
+        return state.toNum();
+    }
+
+    public int getTurn(){
+        //this requires some explanation. This gets called once by the AI, and so this returns that it is turn two (so player two's move). The reason this gets
+        //used at all is because quantum requires turn moves
+        return 2;
     }
 
 }

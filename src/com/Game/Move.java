@@ -6,7 +6,7 @@ public class Move {
 
     //loc two is only for quantum, but I want the functions for it to be available at the highest level
     int loc = 0;
-    int loc2 = 0;
+    int loc2 = -1;
 
     double wins = 0d;
     double total = 0d;
@@ -54,10 +54,10 @@ public class Move {
     }
 
     public void print(){
-        if(loc2 == 0){
-            System.out.println(loc);
+        if(loc2 == -1){
+            System.out.println(loc + ", " + turn);
         }else{
-            System.out.println(loc + " " + loc2);
+            System.out.println(loc + " " + loc2 + ", " + turn);
         }
     }
     
