@@ -167,7 +167,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         // qAI = new qAI();
         // qAI3D = new qAI3D();
         //oAI = new oAI();
-        mAI = new mAI(gameType, depth);
+        //mAI = new mAI(gameType, depth);
 
         //replay button stuff
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -2494,6 +2494,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     public void setDepth(int x){
         depth = x;
+        mAI = new mAI(game, x);
     }
 
     public void replay(){

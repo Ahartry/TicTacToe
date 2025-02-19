@@ -205,18 +205,6 @@ public class QuantumBoard extends Board{
         return Math.max(move1, Math.max(move2, move3));
     }
 
-    // public int getMoveLocationInArray(int tile, int turn){
-    //     int result = 0;
-
-    //     for(int i = 0; i < boardArray[tile % 3][(int) Math.floor(tile / 3)].getMovesList().size(); i++){
-    //         if(boardArray[tile % 3][(int) Math.floor(tile / 3)].getMovesList().get(i) == turn){
-    //             result = i;
-    //         }
-    //     }
-
-    //     return result;
-    // }
-
     public void collapseTile(int loc, int turn){
 
         if(boardState[loc] != State.Blank){
@@ -282,34 +270,6 @@ public class QuantumBoard extends Board{
         }
 
     }
-
-    // public void checkBrokenLinks(){
-    //     int linksResolved = 0;
-
-    //     for(int i = 0; i < 3; i++){
-    //         for(int j = 0; j < 3; j++){
-
-    //             //iterates through moves on each square
-    //             for(int k = 0; k < boardArray[i][j].getMovesList().size(); k++){
-
-    //                 int loc = (i + (3 * j));
-
-    //                 int move = boardArray[i][j].getMovesList().get(k);
-
-    //                 int link = getLink(move, loc);
-                    
-    //                 if(link == -1){
-    //                     //System.out.println("No link for tile " + loc + ", move " + move);
-    //                     collapseTile(loc, move);
-    //                     linksResolved++;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     if(linksResolved > 0){
-    //         checkBrokenLinks();
-    //     }
-    // }
     
     public int getMoveCount(){
         return moveCount;
@@ -323,7 +283,7 @@ public class QuantumBoard extends Board{
         quantumCacheList[move.loc].add(move);
         quantumCacheList[move.loc2].add(move);
         moveCount++;
-        move.print();
+        //move.print();
         //incrementMoveCount();
     }
 
@@ -339,26 +299,6 @@ public class QuantumBoard extends Board{
         uncollapseTile(move.loc);
     }
 
-    // @SuppressWarnings("unused")
-    // public void copy(QuantumBoard board){
-
-    //     //copies the simple variables
-    //     moveCount = board.getMoveCount();
-    //     //available = board.getAvailableInt();
-    //     result = 0;
-
-    //     //copies the quantum cache for each tile. This cache consists of quantumMove objects
-    //     for(int i = 0; i < 9; i++){
-    //         quantumCacheList[i].clear();
-    //         for(int j = 0; j < board.getQuantumCacheList()[i].size(); j++){
-    //             Move loadMove = board.getQuantumCacheList()[i].get(j);
-    //             quantumCacheList[i].add(loadMove);
-    //         }
-    //         boardState[i] = board.getBoardStatelist()[i];
-    //         boardTurn[i] = board.getBoardTurnlist()[i];
-    //     }
-    // }
-
     public State[] getBoardStatelist(){
         return boardState;
     }
@@ -366,20 +306,6 @@ public class QuantumBoard extends Board{
     public int[] getBoardTurnlist(){
         return boardTurn;
     }
-
-    // public ArrayList<Integer> listActiveTiles(){
-    //     ArrayList<Integer> list = new ArrayList<>();
-
-    //     for(int i = 0; i < 3; i++){
-    //         for(int j = 0; j < 3; j++){
-    //             if(boardArray[i][j].getState() == State.Blank){
-    //                 list.add(i + (j * 3));
-    //             }
-    //         }
-    //     }
-
-    //     return list;
-    // }
 
     public ArrayList<Move> getAvailable(){
         ArrayList<Move> list = new ArrayList<>();
@@ -406,14 +332,6 @@ public class QuantumBoard extends Board{
 
         return list;
     }
-
-    // public void clear(){
-    //     for(int i = 0; i < 9; i++){
-    //         if(boardArray[i % 3][i / 3].getState() != State.Blank){
-    //             boardArray[i % 3][i / 3].getMovesList().clear();
-    //         }
-    //     }
-    // }
 
     //What is this
     public QuantumMove checkRows(boolean turn){

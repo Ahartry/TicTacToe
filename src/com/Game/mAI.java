@@ -20,6 +20,7 @@ public class mAI {
         this.gameType = gameType;
         this.difficulty = difficulty;
         time *= difficulty;
+        System.out.println("Time var: " + time);
 
         //I don't think I actually use the branching factor, but it could come up in theory
         if(gameType == 4){
@@ -116,7 +117,7 @@ public class mAI {
                 if(depth == minimax){
                     if(randomsearch){
                         //TODO this is for working on
-                        score = randomSearchManager2(turn + 1, depth);
+                        score = randomSearchManager(turn + 1, depth);
                     }else{
                         score = board.score();
                         //not sure if this is really necessary
@@ -156,21 +157,22 @@ public class mAI {
     }
 
     public double randomSearchManager(int turn, int depth){
-        //System.out.println("Starting random search manager");
         long start = System.nanoTime();
         //divides the time per search by how many branches there are (approximately)
-        long end = start + (int)(time / (Math.pow(branchingFactor, depth)));
-        ArrayList<Move> available = board.getAvailable();
+        long timeperthing = (long)(time / (Math.pow(branchingFactor, depth)));
+        System.out.println("Time per branch: " + timeperthing);
+        long end = start + timeperthing;
+        ArrayList<Move> available = turnMoves(board.getAvailable(), turn);
         while(System.nanoTime() < end){
             for(int i = 0; i < available.size(); i++){
                 Move move = available.get(i);
-                turnMoves(available, turn);
                 board.move(move);
                 randomSearch(move, turn + 1);
                 board.unmove(move);
             }
         }
 
+        //provides the score (between -1 and 1)
         double wins = -1;
         for(int i = 0; i < available.size(); i++){
             if(available.get(i).wins / available.get(i).total > wins){
@@ -199,9 +201,7 @@ public class mAI {
         //int totalOptions = 0;
         while(true){
             long t0 = System.nanoTime();
-            ArrayList<Move> available = board.getAvailable();
-            //totalOptions += available.size();
-            //System.out.println(available.size());
+            ArrayList<Move> available = turnMoves(board.getAvailable(), turn);
             long t1 = System.nanoTime();
 
             //does some preliminary checks based on number of available moves
@@ -229,7 +229,6 @@ public class mAI {
 
             int move1 = r.nextInt(0, available.size());
             Move choice = available.get(move1);
-            choice.setTurn(turn);
             turn += 1;
 
             long t2 = System.nanoTime();
@@ -258,7 +257,7 @@ public class mAI {
             //System.out.println("getting options took " + (t1 - t0) + " ns, checking stuff took " + (t2 - t1) + ", moving took " + (t3 - t2) + ", evaluating board took " + (t4 - t3));
         }
         //System.out.println(pastMoveList.size() + " moves till the end, " + totalOptions / pastMoveList.size() + "options per move");
-        for(int i = 0; i < pastMoveList.size(); i++){
+        for(int i = pastMoveList.size() - 1; i >= 0 ; i--){
             board.unmove(pastMoveList.get(i));
         }
     }
@@ -267,15 +266,16 @@ public class mAI {
         int bresult = 0;
         int loop = board.checkLoops(move);
         if(loop != 0){
-            System.out.println("Collapse");
             //tf is this doing? Not removing it yet because I don't know why it exists
             if(move == statmove){
                 //System.out.println("Loop found on second move");
             }
             if(r.nextBoolean()){
                 board.collapseTile(move.loc, board.getMoveCount());
+                //System.out.println("Collapse on " + move.loc);
             }else{
                 board.collapseTile(move.loc2, board.getMoveCount());
+                //System.out.println("Collapse on " + move.loc2);
             }
             bresult = board.checkEntireBoard();
             if(bresult == 1){
