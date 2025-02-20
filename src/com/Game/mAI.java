@@ -55,7 +55,6 @@ public class mAI {
         int state = board.checkEntireBoard();
 
         //make it stop if it hits immediate win
-        //TODO figure out if the /depth is needed. If it is, make usage consistent
         if(state == 1){
             return (-100000 / depth);
         }else if(state == 2){
@@ -107,7 +106,6 @@ public class mAI {
             if(score == 0){
                 if(depth == minimax){
                     if(randomsearch){
-                        //TODO this is for working on
                         score = randomSearchManager(turn + 1, depth);
                     }else{
                         score = board.score();
@@ -152,37 +150,21 @@ public class mAI {
         //System.out.println("Time per branch: " + timeperthing);
         long end = start + timeperthing;
         ArrayList<Move> available = turnMoves(board.getAvailable(), turn);
-        //int searches = 0;
+        int searches = 0;
         while(System.nanoTime() < end){
             for(int i = 0; i < available.size(); i++){
-                Move move = available.get(i);
-                board.move(move);
-                randomSearch(move, turn + 1);
-                board.unmove(move);
+                board.move(available.get(i));
+                randomSearch(available.get(i), turn + 1);
+                board.unmove(available.get(i));
             }
-            //searches++; 
+            searches++; 
         }
 
-        //System.out.println(available.size() + " moves were each searched " + searches + " times");
+        System.out.println(available.size() + " moves were each searched " + searches + " times");
 
         //provides the score (between -1 and 1)
         //maximizes based on which player is looking
-        double wins;
-        if(turn % 2 == 0){
-            wins = -1;
-            for(int i = 0; i < available.size(); i++){
-                if(available.get(i).wins / available.get(i).total > wins){
-                    wins = available.get(i).wins / available.get(i).total;
-                }
-            }
-        }else{
-            wins = 1;
-            for(int i = 0; i < available.size(); i++){
-                if(available.get(i).wins / available.get(i).total < wins){
-                    wins = available.get(i).wins / available.get(i).total;
-                }
-            }
-        }
+        double wins = scoreRandomList(available);
 
         return wins;
     }
@@ -192,16 +174,22 @@ public class mAI {
         ArrayList<Move> pastMoveList = new ArrayList<>();
         //int totalOptions = 0;
         while(true){
-            //long t0 = System.nanoTime();
-            ArrayList<Move> available = turnMoves(board.getAvailable(), turn);
-            //long t1 = System.nanoTime();
+            long t0 = System.nanoTime();
+            //ArrayList<Move> available = turnMoves(board.getAvailable(), turn);
+            ArrayList<Integer> open = new ArrayList<>();
+            for(int i = 0; i < board.getTurnArray().length; i++){
+                if(board.getTurnArray()[i] == 0){
+                    open.add(i);
+                }
+            }
+            long t1 = System.nanoTime();
 
             //does some preliminary checks based on number of available moves
-            if(available.size() == 1 && gameType > 3){
+            if(open.size() == 1 && gameType > 3){
                 move.incrementTotal();
                 //System.out.println("Added stalemate");
                 break;
-            }else if(available.size() == 0){
+            }else if(open.size() == 0){
                 int result = board.checkEntireBoard();
                 if(result == 1){
                     move.decrementWins();
@@ -219,14 +207,26 @@ public class mAI {
                 }
             }
 
-            int move1 = r.nextInt(0, available.size());
-            Move choice = available.get(move1);
+            int move1 = r.nextInt(0, open.size());
+            int move2;
+            while(true){
+                move2 = r.nextInt(0, open.size());
+                if(move2 != move1){
+                    break;
+                }
+            }
+
+            move1 = open.get(move1);
+            move2 = open.get(move2);
+
+            Move choice = new Move(move1, move2);
+            choice.setTurn(turn);
             turn += 1;
 
-            //long t2 = System.nanoTime();
+            long t2 = System.nanoTime();
             board.move(choice);
             pastMoveList.add(choice);
-            //long t3 = System.nanoTime();
+            long t3 = System.nanoTime();
             if(gameType > 3){
                 int result = checkAndCollapse(board, choice, move);
                 if(result > 0){
@@ -245,7 +245,7 @@ public class mAI {
                 }
             }
 
-            //long t4 = System.nanoTime();
+            long t4 = System.nanoTime();
             //System.out.println("getting options took " + (t1 - t0) + " ns, checking stuff took " + (t2 - t1) + ", moving took " + (t3 - t2) + ", evaluating board took " + (t4 - t3));
         }
         //System.out.println(pastMoveList.size() + " moves till the end, " + totalOptions / pastMoveList.size() + "options per move");
@@ -259,15 +259,11 @@ public class mAI {
         int result = 0;
         int loop = board.checkLoops(move);
         if(loop != 0){
-            //tf is this doing? Not removing it yet because I don't know why it exists
-            if(move == statmove){
-                //System.out.println("Loop found on second move");
-            }
             if(r.nextBoolean()){
-                board.collapseTile(move.loc, board.getMoveCount());
+                board.collapseTile(move.loc, board.getTurn());
                 //System.out.println("Collapse on " + move.loc);
             }else{
-                board.collapseTile(move.loc2, board.getMoveCount());
+                board.collapseTile(move.loc2, board.getTurn());
                 //System.out.println("Collapse on " + move.loc2);
             }
             result = board.checkEntireBoard();
@@ -301,7 +297,7 @@ public class mAI {
         Move move2 = new Move(option2);
 
         while(System.nanoTime() < end){
-            board.collapseTile(option1, board.getMoveCount() - 1);
+            board.collapseTile(option1, board.getTurn() - 1);
             int result = board.checkEntireBoard();
             if(result == 1){
                 move1.decrementWins();
@@ -314,7 +310,7 @@ public class mAI {
             }
             board.uncollapseTile(option1);
 
-            board.collapseTile(option2, board.getMoveCount() - 1);
+            board.collapseTile(option2, board.getTurn() - 1);
             result = board.checkEntireBoard();
             if(result == 1){
                 move2.decrementWins();
@@ -330,9 +326,41 @@ public class mAI {
         double score1 = move1.wins / move1.total;
         double score2 = move2.wins / move2.total;
         if(score1 > score2){
-            board.collapseTile(option1, board.getMoveCount() - 1);
+            board.collapseTile(option1, board.getTurn() - 1);
         }else{
-            board.collapseTile(option2, board.getMoveCount() - 1);
+            board.collapseTile(option2, board.getTurn() - 1);
         }
+    }
+
+    public double scoreRandomList(ArrayList<Move> list){
+        if(list.size() == 0){
+            return 0;
+        }
+        double wins = 0;
+        //not do another minimax layer if too few options
+        if(list.get(0).total < 5){
+            for(int i = 0; i < list.size(); i++){
+                wins += list.get(i).wins;
+            }
+        }else{
+            if(list.get(0).turn % 2 == 0){
+                wins = -1;
+                for(int i = 0; i < list.size(); i++){
+                    //System.out.println(available.get(i).wins + " / " + available.get(i).total);
+                    if(list.get(i).wins / list.get(i).total > wins){
+                        wins = list.get(i).wins / list.get(i).total;
+                    }
+                }
+            }else{
+                wins = 1;
+                for(int i = 0; i < list.size(); i++){
+                    //System.out.println(available.get(i).wins + " / " + available.get(i).total);
+                    if(list.get(i).wins / list.get(i).total < wins){
+                        wins = list.get(i).wins / list.get(i).total;
+                    }
+                }
+            }
+        }
+        return wins;
     }
 }

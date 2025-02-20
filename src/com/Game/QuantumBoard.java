@@ -197,10 +197,10 @@ public class QuantumBoard extends Board{
         return result;
     }
 
-    public int getHighestMove(QuantumMove first, QuantumMove second, QuantumMove third){
-        int move1 = first.getTurn();
-        int move2 = second.getTurn();
-        int move3 = third.getTurn();
+    public int getHighestMove(Move first, Move second, Move third){
+        int move1 = first.turn;
+        int move2 = second.turn;
+        int move3 = third.turn;
 
         return Math.max(move1, Math.max(move2, move3));
     }
@@ -208,7 +208,7 @@ public class QuantumBoard extends Board{
     public void collapseTile(int loc, int turn){
 
         if(boardState[loc] != State.Blank){
-            System.out.println("Cannot collape tile " + loc + ", already occupied");
+            System.out.println("Cannot collapse tile " + loc + ", already occupied");
             return;
         }
 
@@ -333,15 +333,12 @@ public class QuantumBoard extends Board{
         return list;
     }
 
-    //What is this
-    public QuantumMove checkRows(boolean turn){
-        QuantumMove move = new QuantumMove(-1, -1);
-
-        return move;
-    }
-
     public ArrayList<Move>[] getQuantumCacheList(){
         return quantumCacheList;
+    }
+
+    public int[] getTurnArray(){
+        return boardTurn;
     }
 }
 

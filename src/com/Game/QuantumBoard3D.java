@@ -420,10 +420,10 @@ public class QuantumBoard3D extends Board{
         return result;
     }
 
-    public int getHighestMove(QuantumMove first, QuantumMove second, QuantumMove third){
-        int move1 = first.getTurn();
-        int move2 = second.getTurn();
-        int move3 = third.getTurn();
+    public int getHighestMove(Move first, Move second, Move third){
+        int move1 = first.turn;
+        int move2 = second.turn;
+        int move3 = third.turn;
 
         return Math.max(move1, Math.max(move2, move3));
     }
@@ -579,6 +579,10 @@ public class QuantumBoard3D extends Board{
         System.out.print(quantumCacheList[24].size() + " " + quantumCacheList[25].size() + " " + quantumCacheList[26].size() + "   ");
 
         System.out.println("\n");
+    }
+
+    public int[] getTurnArray(){
+        return boardTurn;
     }
 
 }

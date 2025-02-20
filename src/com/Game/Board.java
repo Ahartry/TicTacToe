@@ -45,9 +45,14 @@ public class Board {
         return 0;
     }
 
-    public int getMoveCount(){
-        System.out.println("Operation not supported (getMoveCount)");
-        return 0;
+    // public int getMoveCount(){
+    //     System.out.println("Operation not supported (getMoveCount)");
+    //     return 0;
+    // }
+
+    public int[] getTurnArray(){
+        System.out.println("Operation not supported (getTurnArray)");
+        return null;
     }
 
     public void print(){

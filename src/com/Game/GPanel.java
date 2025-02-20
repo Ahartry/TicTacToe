@@ -400,9 +400,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                 @Override
                                                 public void run() {
                                                     if(result != 0){
-                                                        //System.out.println(quantumBoard.getMoveCount());
-                                                        //qAI.checkCollapse(quantumBoard, recentSquare1, recentSquare2);
-                                                        //TODO mAI collapse code
                                                         mAI.chooseCollapse(quantumBoard, recentSquare1, recentSquare2);
                                                         result = 0;
                                                         if(turn){
@@ -714,10 +711,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
                                                 public void run() {
                                                     //if the previous move was a loop
                                                     if(result != 0){
-                                                        //System.out.println(quantumBoard3D.getMoveCount());
-                                                        //int choice = qAI3D.checkCollapse(quantumBoard3D, recentSquare1, recentSquare2);
-                                                        //quantumBoard3D.collapseTile(choice, turnCount - 1);
-                                                        //TODO collapse
                                                         mAI.chooseCollapse(quantumBoard3D, recentSquare1, recentSquare2);
                                                         result = 0;
                                                         if(turn){
@@ -2040,7 +2033,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
                     int qoffset2 = 0;
                     if(first == i){
                         qoffset1 = j;
-                        //TODO error is at this line
                         qoffset2 = board.getQuantumCacheList()[second].indexOf(board.getQuantumCacheList()[i].get(j));
                         //System.out.println("First is " + j + ", second is " + qoffset2 + " for move " + board.getQuantumCacheList()[i].get(j).getTurn());
                     }else{

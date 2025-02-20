@@ -268,7 +268,7 @@ public class GFrame extends JFrame{
         gbc.weighty=1;
     
         InputStream stream=ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
-        Font font=Font.createFont(Font.TRUETYPE_FONT,stream).deriveFont(20f);
+        font=Font.createFont(Font.TRUETYPE_FONT,stream).deriveFont(20f);
         InputStream stream2=ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
         Font font2=Font.createFont(Font.TRUETYPE_FONT,stream2).deriveFont(25f);
     
