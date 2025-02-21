@@ -53,7 +53,14 @@ public class SFrame extends JFrame{
             }
         });
 
-        ArrayList<String> saveList = new ArrayList<String>(Arrays.asList(directories));
+        ArrayList<String> saveList;
+        if(directories != null){
+            saveList = new ArrayList<String>(Arrays.asList(directories));
+        }else{
+            System.out.println("SparrowTail24 found this error");
+            saveList = new ArrayList<String>();
+        }
+
         int autoTally = 0;
         for(int i = 0; i < saveList.size(); i++){
             //bootleg solution

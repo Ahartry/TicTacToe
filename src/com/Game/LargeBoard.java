@@ -341,7 +341,7 @@ public class LargeBoard extends Board{
     }
 
     public void removeLast(){
-        locationList.removeLast();
+        locationList.remove(locationList.size() - 1);
     }
 
     public LargeLocation get(int i){

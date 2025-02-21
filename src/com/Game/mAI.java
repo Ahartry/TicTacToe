@@ -160,7 +160,7 @@ public class mAI {
             searches++; 
         }
 
-        System.out.println(available.size() + " moves were each searched " + searches + " times");
+        //System.out.println(available.size() + " moves were each searched " + searches + " times");
 
         //provides the score (between -1 and 1)
         //maximizes based on which player is looking

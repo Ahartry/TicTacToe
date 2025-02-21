@@ -236,7 +236,7 @@ public class GFrame extends JFrame{
             return;
         }
     
-        setResizable(false);
+        setResizable(true);
         gaming = false;
         for(int i = 0; i < buttonList.size(); i++){
             if(buttonList.get(i).hasTooltip()){
@@ -385,7 +385,7 @@ public class GFrame extends JFrame{
         add(startPanel);
         setTitle("Choose your game");
     
-        fancyResize(400,330);
+        fancyResize(420,330);
     }
 
     public void askIfUserWantsBot(int gameType, Font font){
@@ -748,6 +748,8 @@ public class GFrame extends JFrame{
         final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         final int width = screenSize.width - left - right;
         final int height = screenSize.height - top - bottom;
+
+        setMinimumSize(new Dimension(x, y));
     
         if(fullscreen && gaming){
             setBounds(0, 0, width, height);
