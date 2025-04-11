@@ -1811,6 +1811,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         AffineTransform transform = new AffineTransform(Math.cos(theta), (-1 * Math.sin(theta)) / 2, Math.sin(theta), Math.cos(theta) / 2, offsetx, offsety);
 
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.transform(transform);
 
         g.setColor(Color.BLACK);
@@ -1995,9 +1996,11 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         int boardoffset = height / 3;
 
-        BufferedImage image0 = new BufferedImage(2048, 2048, BufferedImage.TYPE_INT_ARGB);
-        BufferedImage image1 = new BufferedImage(2048, 2048, BufferedImage.TYPE_INT_ARGB);
-        BufferedImage image2 = new BufferedImage(2048, 2048, BufferedImage.TYPE_INT_ARGB);
+        int IMAGE_SCALE = 4;
+
+        BufferedImage image0 = new BufferedImage(1024 * IMAGE_SCALE, 1024 * IMAGE_SCALE, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image1 = new BufferedImage(1024 * IMAGE_SCALE, 1024 * IMAGE_SCALE, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image2 = new BufferedImage(1024 * IMAGE_SCALE, 1024 * IMAGE_SCALE, BufferedImage.TYPE_INT_ARGB);
 
         drawQuantumBoard3DSlice(image0, board, 0);
         drawQuantumBoard3DSlice(image1, board, 1);
@@ -2277,12 +2280,12 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         if(zoom > 1){
             zoom = 1;
+        }else if(zoom < Math.pow(0.75, 8)){
+            zoom = Math.pow(0.75, 8);
         }else{
             offsetx = offsetx + (int) (diffx * zoom);
             offsety = offsety + (int) (diffy * zoom);
         }
-
-        //System.out.println(zoom);
 
         repaint();
 

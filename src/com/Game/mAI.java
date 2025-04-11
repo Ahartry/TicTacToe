@@ -150,14 +150,14 @@ public class mAI {
         //System.out.println("Time per branch: " + timeperthing);
         long end = start + timeperthing;
         ArrayList<Move> available = turnMoves(board.getAvailable(), turn);
-        int searches = 0;
+        //int searches = 0;
         while(System.nanoTime() < end){
             for(int i = 0; i < available.size(); i++){
                 board.move(available.get(i));
                 randomSearch(available.get(i), turn + 1);
                 board.unmove(available.get(i));
             }
-            searches++; 
+            //searches++; 
         }
 
         //System.out.println(available.size() + " moves were each searched " + searches + " times");
