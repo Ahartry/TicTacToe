@@ -42,13 +42,9 @@ public class QuantumBoard extends Board{
     public int checkLoops(Move move){
 
         int start = move.loc;
-        //printTile(start % 3, start / 3);
-        //System.out.println(turn);
         int next = move.loc2;
 
         result = 0;
-
-        //System.out.println("\nStarting location: Square " + start);
 
         quantumSkipList.add(move);
         iterativeSearch(start, next);

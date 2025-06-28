@@ -4,58 +4,113 @@ import java.util.ArrayList;
 
 public class Board {
 
+    boolean quantum;
+    int scale;
+    ArrayList<int[]> boardArrays;
+    //qmlist is move list, stores locations. qtlist is turn list, stores turn numbers
+    int[][] qmlist;
+    int[][] qtlist;
+    int[] qcount;
+
+    //# of possible quantum moves is (n)(n-1)/2, where n is the number of tiles
+
+    //scale is exponent (3^scale tiles)
+    //2 is reg, 3 is 3d, 4 is ultimate, 6 is omega
+    public Board(int scale, boolean q){
+
+        //initializes the quantum move list
+        if(q){
+            qmlist = new int[3^scale][3^scale];
+            qtlist = new int[3^scale][3^scale];
+            qcount = new int[3^scale]; 
+        }
+        
+        quantum = q;
+        this.scale = scale;
+
+        //creates board with all tiles. meta boards are created based on exponents
+        int s_count = scale;
+        boardArrays = new ArrayList<>();
+        boardArrays.add(new int[3^scale]);
+        while(s_count > 3){
+            s_count -= 2;
+            boardArrays.add(new int[3^s_count]);
+        }
+    }
+
+    public void move(Move move, int turn){
+        //adds the quantum moves to the next open slot in the quantum move array, then increments indexes
+        if(quantum){
+            qmlist[move.loc][qcount[move.loc]] = move.loc2;
+            qmlist[move.loc2][qcount[move.loc2]] = move.loc;
+            qtlist[move.loc][qcount[move.loc]] = turn;
+            qtlist[move.loc2][qcount[move.loc2]] = turn;
+
+            qcount[move.loc]++;
+            qcount[move.loc2]++;
+
+        }else{
+            boardArrays.get(0)[move.loc] = turn;
+        }
+    }
+
+    //variant without turn, I don't know yet how I am doing it
     public void move(Move move){
-        System.out.println("Operation not supported (move)");
-    }
+        if(quantum){
+            qmlist[move.loc][qcount[move.loc]] = move.loc2;
+            qmlist[move.loc2][qcount[move.loc2]] = move.loc;
+            qtlist[move.loc][qcount[move.loc]] = move.turn;
+            qtlist[move.loc2][qcount[move.loc2]] = move.turn;
 
+            qcount[move.loc]++;
+            qcount[move.loc2]++;
+
+        }else{
+            boardArrays.get(0)[move.loc] = move.turn;
+        }
+    }
+    
     public void unmove(Move move){
-        System.out.println("Operation not supported (unmove)");
+        if(quantum){
+            //removes entries and decrements counts
+            qmlist[move.loc][qcount[move.loc]] = 0;
+            qmlist[move.loc2][qcount[move.loc2]] = 0;
+            qtlist[move.loc][qcount[move.loc]] = 0;
+            qtlist[move.loc2][qcount[move.loc2]] = 0;
+            qcount[move.loc]--;
+            qcount[move.loc2]--;
+
+            QuantumSolver.uncollapseTile(this, move.loc);
+        }else{
+            boardArrays.get(0)[move.loc] = 0;
+        }
     }
 
-    public ArrayList<Move> getAvailable(){
-        System.out.println("Operation not supported (getAvailable)");
-        return null;
+    public int[][] getQMList(){
+        return qmlist;
     }
 
-    public int checkEntireBoard(){
-        System.out.println("Operation not supported (checkEntireBoard)");
-        return 0;
+    public int[][] getQTList(){
+        return qtlist;
     }
 
-    public int checkLoops(Move move){
-        System.out.println("Operation not supported (checkLoops)");
-        return 0;
+    public int[] getQCount(){
+        return qcount;
     }
 
-    public void collapseTile(int location, int turn){
-        System.out.println("Operation not supported (collapseTile)");
+    public ArrayList<int[]> getBoardArrays(){
+        return boardArrays;
     }
 
-    public void uncollapseTile(int location){
-        System.out.println("Operation not supported (uncollapseTile)");
+    public int getScale(){
+        return scale;
     }
 
-    public int score(){
-        System.out.println("Operation not supported (score)");
-        return 0;
-    }
+    // public int[] getAvailableMoves(){
+    //     if(quantum){
 
-    public int getTurn(){
-        System.out.println("Operation not supported (getTurn)");
-        return 0;
-    }
+    //     }else{
 
-    // public int getMoveCount(){
-    //     System.out.println("Operation not supported (getMoveCount)");
-    //     return 0;
+    //     }
     // }
-
-    public int[] getTurnArray(){
-        System.out.println("Operation not supported (getTurnArray)");
-        return null;
-    }
-
-    public void print(){
-        System.out.println("Operation not supported (print)");
-    }
 }

@@ -142,15 +142,15 @@ public class GFrame extends JFrame{
             ex.printStackTrace();
         }
     
-        Dimension ddd=backButton.getPreferredSize();
-        ddd.width=70;
-        ddd.height=40;
-        backButton.setPreferredSize(ddd);
+        Dimension dd=backButton.getPreferredSize();
+        dd.width=70;
+        dd.height=40;
+        backButton.setPreferredSize(dd);
     
         leftPanel.add(backButton);
         centerPanel.add(topLabel);
     
-        Dimension dd=helpButton.getPreferredSize();
+        dd=helpButton.getPreferredSize();
         dd.width=90;
         helpButton.setPreferredSize(dd);
     
@@ -179,6 +179,10 @@ public class GFrame extends JFrame{
         gbc.gridx=2;
         gbc.weightx=0;
         topPanel.add(rightPanel,gbc);
+
+        dd = topPanel.getPreferredSize();
+        dd.height = 50;
+        topPanel.setPreferredSize(dd);
     
         add(topPanel,BorderLayout.NORTH);
         add(bottomPanel);
@@ -210,7 +214,7 @@ public class GFrame extends JFrame{
         addComponentListener(new ComponentAdapter(){
             @Override
             public void componentResized(ComponentEvent e){
-                bottomPanel.resizeVariables(getContentPane().getWidth(),getContentPane().getHeight() - 50);
+                bottomPanel.resizeVariables(getContentPane().getWidth(), getContentPane().getHeight() - 50, false);
             }
             @Override
             public void componentMoved(ComponentEvent e){
@@ -219,8 +223,8 @@ public class GFrame extends JFrame{
         });
     
         setTitle("Tic Tac Toe");
-        SwingUtilities.invokeLater(()->fancyResize(1000,600));
-        bottomPanel.resizeVariables(getContentPane().getWidth(),getContentPane().getHeight() - 50);
+        fancyResize(1000, 600);
+        bottomPanel.resizeVariables(getContentPane().getWidth(), getContentPane().getHeight() - 50, true);
         bottomPanel.repaint();
     }
 

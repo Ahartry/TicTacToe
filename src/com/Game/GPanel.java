@@ -61,22 +61,14 @@ public class GPanel extends JPanel implements MouseWheelListener{
     Color red = new Color(200, 30, 0);
     Color blue = new Color(10, 75, 190);
     Color buttonColor;
-    SimpleBoard simpleBoard;
-    LargeBoard largeBoard;
-    MassiveBoard massiveBoard;
-    QuantumBoard quantumBoard;
-    QuantumBoard3D quantumBoard3D;
+    Board board;
 
     JLabel displayLabel;
-
     JPanel replayPanel;
 
     GButton replayButton;
     GFrame frameobject;
 
-    //qAI qAI;
-    //qAI3D qAI3D;
-    //oAI oAI;
     mAI mAI;
 
     Sound sound;
@@ -132,42 +124,25 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         //instantiates boards and sets default zooms
         if(game == 1){
-            simpleBoard = new SimpleBoard();
+            board = new Board(2, false);
             zoom = 0.75;
-            offsetx = width / 2;
-            offsety = height / 2;
         }else if(game == 2){
-            largeBoard = new LargeBoard();
-            largeBoard.setActive(true);
+            board = new Board(4, false);
             zoom = Math.pow(0.75, 4);
-            offsetx = 325;
-            offsety = 100;
         }else if(game == 3){
-            massiveBoard = new MassiveBoard();
-            massiveBoard.setActive(true);
+            board = new Board(6, false);
             zoom = Math.pow(0.75, 8);
-            offsetx = 285;
-            offsety = 50;
         }else if(game == 4){
-            quantumBoard = new QuantumBoard();
+            board = new Board(2, true);
             zoom = 0.75;
-            offsetx = width / 2;
-            offsety = height / 2;
             turnCount = 1;
         }else if(game == 5){
-            quantumBoard3D = new QuantumBoard3D();
+            board = new Board(3, true);
             zoom = Math.pow(0.75, 5);
-            offsetx = 505;
-            offsety = 95;
             turnCount = 1;
         }
 
         repaint();
-
-        // qAI = new qAI();
-        // qAI3D = new qAI3D();
-        //oAI = new oAI();
-        //mAI = new mAI(gameType, depth);
 
         //replay button stuff
         InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
@@ -182,770 +157,14 @@ public class GPanel extends JPanel implements MouseWheelListener{
         replayPanel.add(replayButton);
         replayPanel.setOpaque(false);
 
-        // GridBagConstraints gbc = new GridBagConstraints();
-        // gbc.insets = new Insets(400, 50, 10, 50);
-
         displayLabel.setForeground(red);
 
         //all the clicking stuff
         addMouseListener(new MouseAdapter() { 
             public void mouseReleased(MouseEvent e) { 
                 if(movementCounter == 0){
-
-                    if(game == 1 && simpleBoard.getState() == State.Blank){
-                        if((e.getX() > xbound && e.getX() < (xbound + boundingSize) && e.getY() > ybound && e.getY() < (ybound + boundingSize)) && simpleBoard.getState() == State.Blank){
-                            int xboard = e.getX() - xbound;
-                            int yboard = e.getY() - ybound;
-    
-                            int xcell = (int) Math.floor(3 * xboard / boundingSize);
-                            int ycell = (int) Math.floor(3 * yboard / boundingSize);
-    
-                            if(simpleBoard.getBoardTile(xcell, ycell).getState() == State.Blank){
-
-                                count++;
-                                simpleBoard.setBoardTile(xcell, ycell, turn);
-
-                                int result = simpleBoard.checkBoard(xcell, ycell);
-
-                                turn = !turn;
-
-                                if(turn){
-                                    displayLabel.setText("Player 2's turn");
-                                    displayLabel.setForeground(blue);
-
-                                }else{
-                                    displayLabel.setText("Player 1's turn");
-                                    displayLabel.setForeground(red);
-                                    
-                                }
-
-                                if(result == 1){
-                                    simpleBoard.setState(State.Player1);
-                                    displayLabel.setText("Player 1 wins");
-                                    displayLabel.setForeground(red);
-
-                                    //replay button stuff
-                                    replay();
-                                    
-                                }else if(result == 2){
-                                    simpleBoard.setState(State.Player2);
-                                    displayLabel.setText("Player 2 wins");
-                                    displayLabel.setForeground(blue);
-
-                                    //replay button stuff
-                                    replay();
-                                    
-                                }
-
-                                if(count == 9 && result == 0){
-                                    displayLabel.setText("Stalemate");
-                                    displayLabel.setForeground(Color.BLACK);
-
-                                    //replay button stuff
-                                    replay();
-                                    
-                                }
-
-                                repaint();
-                            }
-
-                            
-                            //System.out.println("X: " + xcell + ", Y: " + ycell);
-    
-                        }
-                    }else if(game == 2 && largeBoard.getState() == State.Blank){
-                        //System.out.println("\nclick1");
-                        if((e.getX() > xbound && e.getX() < (xbound + (boundingSize * 3)) && e.getY() > ybound && e.getY() < (ybound + (boundingSize * 3))) && largeBoard.getState() == State.Blank){
-                            //System.out.println("click2");
-                            int relativeX = e.getX() - xbound;
-                            int relativeY = e.getY() - ybound;
-    
-                            int xboard = (int) Math.floor(relativeX / boundingSize);
-                            int yboard = (int) Math.floor(relativeY / boundingSize);
-
-                            //System.out.println("Board: " + xboard + ", " + yboard);
-
-                            int xcell = (int) Math.floor((3 * (relativeX - (xboard * boundingSize))) / boundingSize);
-                            int ycell = (int) Math.floor((3 * (relativeY - (yboard * boundingSize))) / boundingSize);
-    
-                            if(largeBoard.getBoardArray(xboard, yboard).getBoardTile(xcell, ycell).getState() == State.Blank && largeBoard.getBoardArray(xboard, yboard).getActive()){
-                                largeBoard.getBoardArray(xboard, yboard).setBoardTile(xcell, ycell, turn);
-                                largeBoard.add(xboard, yboard, xcell, ycell, turn);
-
-                                int end = largeMoveAftermath(xboard, yboard, xcell, ycell);
-
-                                if(bot && end == 0){
-                                    displayLabel.setText("Player 2 is thinking");
-                                    displayLabel.setForeground(blue);
-                                    repaint();
-
-                                    //from chatgpt to make the ui update
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            // Perform the long-running task
-                                            // int move = AI.checkLargeBoard(largeBoard, (((xboard + (yboard * 3)) * 10) + (xcell + (ycell * 3))));
-                                            // largeBoard.move(move, turn);
-                                            Move choice = mAI.check(largeBoard, depth, false);
-                                            int move = choice.loc;
-                                            //System.out.println("Moving to " + move);
-                                            int board = (int) Math.floor(move / 10);
-                                            int xboard2 = board % 3;
-                                            int yboard2 = (int) Math.floor(board / 3);
-                                            int cell = move - (board * 10);
-                                            int xcell2 = cell % 3;
-                                            int ycell2 = (int) Math.floor(cell / 3);
-                                            largeMoveAftermath(xboard2, yboard2, xcell2, ycell2);
-                                        }
-                                    });
-                                }
-
-                                //System.out.println("Eval: " + AI.evalBoard(largeBoard));
-                                repaint();
-                            }else{
-                                //System.out.println("Illegal click at board " + xboard + ", " + yboard + " and cell " + xcell + ", " + ycell);
-                            }
-
-                            
-                            //System.out.println("X: " + xcell + ", Y: " + ycell);
-    
-                        }else if((e.getX() > xbound && e.getX() < (xbound + (boundingSize * 3)) && e.getY() > ybound && e.getY() < (ybound + (boundingSize * 3))) && largeBoard.getState() != State.Blank){
-                            //System.out.println("Error here");
-                        }
-                    }else if(game == 3 && massiveBoard.getState() == State.Blank){
-                        if((e.getX() > xbound && e.getX() < (xbound + (boundingSize * 9)) && e.getY() > ybound && e.getY() < (ybound + (boundingSize * 9))) && massiveBoard.getState() == State.Blank){
-                            int relativeX = e.getX() - xbound;
-                            int relativeY = e.getY() - ybound;
-
-                            int xlargeboard = (int) Math.floor(3 * relativeX / (boundingSize * 9));
-                            int ylargeboard = (int) Math.floor(3 * relativeY / (boundingSize * 9));
-    
-                            int xboard = (int) Math.floor((3 * (relativeX - (xlargeboard * boundingSize * 3))) / (boundingSize * 3));
-                            int yboard = (int) Math.floor((3 * (relativeY - (ylargeboard * boundingSize * 3))) / (boundingSize * 3));
-
-                            int xcell = (int) Math.floor((3 * (relativeX - (xlargeboard * boundingSize * 3 + xboard * boundingSize))) / (boundingSize));
-                            int ycell = (int) Math.floor((3 * (relativeY - (ylargeboard * boundingSize * 3 + yboard * boundingSize))) / (boundingSize));
-    
-                            if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).getBoardTile(xcell, ycell).getState() == State.Blank && massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).getActive()){
-                                massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).setBoardTile(xcell, ycell, turn);
-
-                                int end = massiveMoveAftermath(xlargeboard, ylargeboard, xboard, yboard, xcell, ycell);
-
-                                if(bot && end == 0){
-                                    displayLabel.setText("Player 2 is thinking");
-                                    displayLabel.setForeground(blue);
-                                    repaint();
-
-                                    //from chatgpt to make the ui update
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            //maybe temporary, create new one
-                                            Move move = mAI.check(massiveBoard, depth, false);
-                                            int t3 = move.loc / 100;
-                                            int t2 = (move.loc - (t3 * 100)) / 10;
-                                            int t1 = (move.loc - (t3 * 100) - (t2 * 10));
-                                            massiveMoveAftermath(t3 % 3, t3 / 3, t2 % 3, t2 / 3, t1 % 3,t1 / 3);
-                                        }
-                                    });
-                                }
-                            }
-    
-                        }
-                    }else if(game == 4 && quantumBoard.getState() == State.Blank){
-                        if(quantumBoard.getState() == State.Blank && (e.getX() > xbound && e.getX() < (xbound + boundingSize) && e.getY() > ybound && e.getY() < (ybound + boundingSize)) && quantumBoard.getState() == State.Blank && result == 0){
-                            int xboard = e.getX() - xbound;
-                            int yboard = e.getY() - ybound;
-    
-                            int xcell = (int) Math.floor(3 * xboard / boundingSize);
-                            int ycell = (int) Math.floor(3 * yboard / boundingSize);
-
-                            theSquare = xcell + (ycell * 3);
-    
-                            if(quantumBoard.getState() == State.Blank && quantumBoard.getBoardStatelist()[theSquare] == State.Blank && e.getButton() == MouseEvent.BUTTON1){
-
-                                if(quantumMove && (xcell + (ycell * 3)) != recentCell){
-                                    Move move = new Move(xcell + (ycell * 3), recentCell);
-                                    move.setTurn(turnCount);
-                                    // quantumBoard.getBoardTile(xcell, ycell).addMove(turnCount);
-
-                                    // quantumBoard.getBoardTile(recentCell % 3, recentCell / 3).addMove(turnCount);
-
-                                    //don't really need this here I think
-                                    //quantumBoard.incrementMoveCount();
-
-                                    quantumBoard.move(move);
-
-                                    recentSquare1 = xcell + (ycell * 3);
-                                    recentSquare2 = recentCell;
-                                    //quantumBoard.printBoard();
-
-                                    result = quantumBoard.checkLoops(move);
-
-                                    turnCount++;
-                                    quantumMove = !quantumMove;
-
-                                    //display stuff
-                                    turn = !turn;
-                                    recentCell = -1;
-
-                                    if(turn){
-                                        displayLabel.setText("Player 2's turn");
-                                        displayLabel.setForeground(blue);
-                                        if(bot){
-                                            displayLabel.setText("Player 2 is thinking");
-                                            displayLabel.setForeground(blue);
-                                            repaint();
-                                            SwingUtilities.invokeLater(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    if(result != 0){
-                                                        mAI.chooseCollapse(quantumBoard, recentSquare1, recentSquare2);
-                                                        result = 0;
-                                                        if(turn){
-                                                            displayLabel.setText("Player 2's turn");
-                                                            displayLabel.setForeground(blue);
-                            
-                                                        }else{
-                                                            displayLabel.setText("Player 1's turn");
-                                                            displayLabel.setForeground(red);
-                                                            
-                                                        }
-                            
-                                                        int boardresult = quantumBoard.checkEntireBoard();
-                            
-                                                        result = 0;
-
-                                                        int blankCount = 0;
-                                                        for(int i = 0; i < 9; i++){
-                                                            if(quantumBoard.getBoardStatelist()[i].equals(State.Blank)){
-                                                                blankCount++;
-                                                            }
-                                                        }
-                                                        if(blankCount < 2){
-                                                            displayLabel.setText("Stalemate");
-                                                            displayLabel.setForeground(Color.BLACK);
-                                                            //quantumBoard.clear();
-
-                                                            //so that it can't be played on again
-                                                            quantumBoard.setState(State.Player1);
-                            
-                                                            result = 1;
-                                                            //replay button stuff
-                                                            replay();
-                                                        }
-
-                                                        if(boardresult == 1){
-                                                            quantumBoard.setState(State.Player1);
-                                                            displayLabel.setText("Player 1 wins");
-                                                            displayLabel.setForeground(red);
-                                                            //quantumBoard.clear();
-
-                                                            result = 1;
-                                                            //replay button stuff
-                                                            replay();
-                                                            quantumBoard.setState(State.Player1);
-                                                            
-                                                        }else if(boardresult == 2){
-                                                            quantumBoard.setState(State.Player2);
-                                                            displayLabel.setText("Player 2 wins");
-                                                            displayLabel.setForeground(blue);
-                                                            //quantumBoard.clear();
-                            
-                                                            result = 1;
-                                                            //replay button stuff
-                                                            replay();
-                                                            quantumBoard.setState(State.Player2);
-                                                            
-                                                        }
-                                                        repaint();
-                                                    }
-                                                    //these are actually using result completely differently. First is if there is a loop, second is game end
-                                                    if(result == 1){
-                                                        return;
-                                                    }
-                                                    Move move;
-                                                    move = mAI.check(quantumBoard, 1, true);
-
-                                                    recentSquare1 = move.loc;
-                                                    recentSquare2 = move.loc2;
-                                                    result = quantumBoard.checkLoops(move);
-                                                    turnCount++;
-                                                    turn = !turn;
-                                                    if(quantumBoard.getState() == State.Blank){
-                                                        displayLabel.setText("Player 1's turn");
-                                                        displayLabel.setForeground(red);
-                                                        int blankCount = 0;
-                                                        for(int i = 0; i < 9; i++){
-                                                            if(quantumBoard.getBoardStatelist()[i].equals(State.Blank)){
-                                                                blankCount++;
-                                                            }
-                                                        }
-                                                        if(blankCount < 2){
-                                                            displayLabel.setText("Stalemate");
-                                                            displayLabel.setForeground(Color.BLACK);
-                                                            //quantumBoard.clear();
-                            
-                                                            //replay button stuff
-                                                            replay();
-                                                        }
-                                                    }else{
-                                                        //quantumBoard.clear();
-                                                    }
-                                                    //does stuff if a loop is found
-                                                    if(result == 0){
-                                                        //System.out.println("No loop");
-                                                    }else{
-                                                        //System.out.println("Loop");
-                                                        if(turn){
-                                                            displayLabel.setText("Player 2 chooses collapse");
-                        
-                                                        }else{
-                                                            displayLabel.setText("Player 1 chooses collapse");
-                                                            
-                                                        }
-
-                                                        moveDrawLoc = recentSquare1;
-                                                    }
-                                                    
-                                                    repaint();
-                                                }
-                                            });
-
-                                        }
-
-                                    }else{
-                                        displayLabel.setText("Player 1's turn");
-                                        displayLabel.setForeground(red);
-                                        
-                                    }
-
-                                    //does stuff if a loop is found
-                                    if(result == 0){
-                                        //System.out.println("No loop");
-                                    }else{
-                                        //System.out.println("Loop");
-                                        if(turn){
-                                            displayLabel.setText("Player 2 chooses collapse");
-        
-                                        }else{
-                                            displayLabel.setText("Player 1 chooses collapse");
-                                            
-                                        }
-
-                                        moveDrawLoc = recentSquare1;
-                                    }
-
-                                //thing to unselect
-                                }else if(quantumMove && (xcell + (ycell * 3)) == recentCell){
-                                    quantumMove = false;
-                                    recentCell = -1;
-
-                                //handles second click
-                                }else if((xcell + (ycell * 3)) != recentCell){
-                                    recentCell = xcell + (ycell * 3);
-                                    quantumMove = !quantumMove;
-                                }
-
-                                // count++;
-                                // quantumBoard.setBoardTile(xcell, ycell, turn);
-
-                                // if(count == 9 && result == 0){
-                                //     displayLabel.setText("Stalemate");
-                                //     displayLabel.setForeground(Color.BLACK);
-                                // }
-
-                                repaint();
-                            }else if(e.getButton() == MouseEvent.BUTTON3){
-                                //quantumBoard.printTile(xcell, ycell);
-                            }
-
-                            
-                            //System.out.println("X: " + xcell + ", Y: " + ycell);
-    
-                        }else if(result == 1 && quantumBoard.getState() == State.Blank){
-                            //choosing the collpase
-                            int selection = -1;
-                            if(((e.getX() > (xbound + ((recentSquare1 % 3) * cellSize))) && (e.getX() < (xbound + ((recentSquare1 % 3) * cellSize) + cellSize)) && (e.getY() > (ybound + ((int) (Math.floor(recentSquare1 / 3)) * cellSize))) && (e.getY() < (ybound + ((int) (Math.floor(recentSquare1 / 3)) * cellSize) + cellSize)))){
-                                selection = recentSquare1;
-                            }else if(((e.getX() > (xbound + ((recentSquare2 % 3) * cellSize))) && (e.getX() < (xbound + ((recentSquare2 % 3) * cellSize) + cellSize)) && (e.getY() > (ybound + ((int) (Math.floor(recentSquare2 / 3)) * cellSize))) && (e.getY() < (ybound + ((int) (Math.floor(recentSquare2 / 3)) * cellSize) + cellSize)))){
-                                selection = recentSquare2;
-                            }
-
-                            if(selection != -1){
-                                //int otherLink = quantumBoard.getLink(turnCount - 1, selection);
-                                //quantumBoard.getBoardTile(otherLink % 3, (int) Math.floor(otherLink / 3)).getMovesList().remove(quantumBoard.getMoveLocationInArray(otherLink, turnCount - 1));
-                                quantumBoard.collapseTile(selection, turnCount - 1);
-                                result = 0;
-
-                                //all the other stuff
-                                if(turn){
-                                    displayLabel.setText("Player 2's turn");
-                                    displayLabel.setForeground(blue);
-    
-                                }else{
-                                    displayLabel.setText("Player 1's turn");
-                                    displayLabel.setForeground(red);
-                                    
-                                }
-    
-                                int blankCount = 0;
-                                for(int i = 0; i < 9; i++){
-                                    if(quantumBoard.getBoardStatelist()[i].equals(State.Blank)){
-                                        blankCount++;
-                                    }
-                                }
-                                if(blankCount < 2){
-                                    displayLabel.setText("Stalemate");
-                                    displayLabel.setForeground(Color.BLACK);
-                                    moveDrawLoc = -1;
-
-                                    //so that it can't be played on again
-                                    quantumBoard.setState(State.Player1);
-    
-                                    //replay button stuff
-                                    replay();
-                                    
-                                }
-    
-                                int boardresult = quantumBoard.checkEntireBoard();
-    
-                                if(boardresult == 1){
-                                    quantumBoard.setState(State.Player1);
-                                    displayLabel.setText("Player 1 wins");
-                                    displayLabel.setForeground(red);
-                                    moveDrawLoc = -1;
-    
-                                    //replay button stuff
-                                    replay();
-                                    
-                                }else if(boardresult == 2){
-                                    quantumBoard.setState(State.Player2);
-                                    displayLabel.setText("Player 2 wins");
-                                    displayLabel.setForeground(blue);
-                                    moveDrawLoc = -1;
-    
-                                    //replay button stuff
-                                    replay();
-                                    
-                                }
-                                repaint();
-                            }
-                            
-                        }
-                    }else if(game == 5 && quantumBoard3D.getState() == State.Blank){
-                        AffineTransform transform = new AffineTransform(Math.cos(theta), (-1 * Math.sin(theta)) / 2, Math.sin(theta), Math.cos(theta) / 2, offsetx, offsety);
-                        try {
-                            transform.invert();
-                        } catch (NoninvertibleTransformException e1) {
-                            System.out.println("Non invertible transform");
-                        }
-
-                        int boardZ = 0;
-
-                        Point2D.Double click1 = new Point2D.Double(e.getX(), e.getY());
-                        if(e.getY() < height / 3){
-                            boardZ = 2;
-                            click1.setLocation(e.getX() - offsetx, e.getY() - offsety);
-                        }else if(e.getY() > height / 3 && e.getY() < (2 * (height / 3))){
-                            boardZ = 1;
-                            click1.setLocation(e.getX() - offsetx, e.getY() - offsety - (height / 3));
-                        }else{
-                            click1.setLocation(e.getX() - offsetx, e.getY() - offsety - (2 * height / 3));
-                        }
-
-                        Point2D.Double click2 = new Point2D.Double();
-                        transform.deltaTransform(click1, click2);
-
-                        if(quantumBoard3D.getState() == State.Blank && (click2.getX() > xbound && click2.getX() < (xbound + boundingSize) && click2.getY() > ybound && click2.getY() < (ybound + boundingSize)) && quantumBoard3D.getState() == State.Blank && result == 0){
-                            int xboard = (int) click2.getX() - xbound;
-                            int yboard = (int) click2.getY() - ybound;
-    
-                            int xcell = (int) Math.floor(3 * xboard / boundingSize);
-                            int ycell = (int) Math.floor(3 * yboard / boundingSize);
-
-                            theSquare = xcell + (ycell * 3) + (boardZ * 9);
-
-                            //System.out.println("Square " + xcell + ", " + ycell + " on board" + boardZ);
-    
-                            if(quantumBoard3D.getState() == State.Blank && quantumBoard3D.getBoardStatelist()[xcell + (ycell * 3) + (boardZ * 9)] == State.Blank && e.getButton() == MouseEvent.BUTTON1){
-
-                                if(quantumMove && (xcell + (ycell * 3) + (boardZ * 9)) != recentCell){
-                                    //quantumBoard3D.getBoardTile(xcell, ycell, boardZ).addMove(turnCount);
-
-                                    //quantumBoard3D.getBoardTile(recentCell % 3, (recentCell - ((recentCell / 9) * 9)) / 3, recentCell / 9).addMove(turnCount);
-
-                                    //don't really need this here I think
-                                    //quantumBoard3D.incrementMoveCount();
-
-                                    Move move = new Move(recentCell, (xcell + (ycell * 3) + (boardZ * 9)));
-                                    //System.out.println(move.loc + " " + move.loc2);
-                                    move.setTurn(turnCount);
-
-                                    quantumBoard3D.move(move);
-
-                                    //quantumBoard3D.print();
-
-                                    recentSquare1 = xcell + (ycell * 3) + (boardZ * 9);
-                                    recentSquare2 = recentCell;
-                                    //quantumBoard3D.printBoard();
-
-                                    result = quantumBoard3D.checkLoops(move);
-
-                                    turnCount++;
-                                    quantumMove = !quantumMove;
-
-                                    //display stuff
-                                    turn = !turn;
-                                    recentCell = -1;
-
-                                    if(turn){
-                                        displayLabel.setText("Player 2's turn");
-                                        displayLabel.setForeground(blue);
-                                        if(bot){
-                                            displayLabel.setText("Player 2 is thinking");
-                                            displayLabel.setForeground(blue);
-                                            repaint();
-                                            SwingUtilities.invokeLater(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    //if the previous move was a loop
-                                                    if(result != 0){
-                                                        mAI.chooseCollapse(quantumBoard3D, recentSquare1, recentSquare2);
-                                                        result = 0;
-                                                        if(turn){
-                                                            displayLabel.setText("Player 2's turn");
-                                                            displayLabel.setForeground(blue);
-                            
-                                                        }else{
-                                                            displayLabel.setText("Player 1's turn");
-                                                            displayLabel.setForeground(red);
-                                                            
-                                                        }
-                            
-                                                        int boardresult = quantumBoard3D.checkEntireBoard();
-                            
-                                                        result = 0;
-
-                                                        int blankCount = 0;
-                                                        for(int i = 0; i < 27; i++){
-                                                            if(quantumBoard3D.getBoardStatelist()[i].equals(State.Blank)){
-                                                                blankCount++;
-                                                            }
-                                                        }
-                                                        if(blankCount < 2){
-                                                            displayLabel.setText("Stalemate");
-                                                            displayLabel.setForeground(Color.BLACK);
-                                                            //quantumBoard3D.clear();
-
-                                                            //so that it can't be played on again
-                                                            quantumBoard3D.setState(State.Player1);
-                            
-                                                            result = 1;
-                                                            //replay button stuff
-                                                            replay();
-                                                        }
-
-                                                        if(boardresult == 1){
-                                                            quantumBoard3D.setState(State.Player1);
-                                                            displayLabel.setText("Player 1 wins");
-                                                            displayLabel.setForeground(red);
-                                                            //quantumBoard3D.clear();
-
-                                                            result = 1;
-                                                            //replay button stuff
-                                                            replay();
-                                                            quantumBoard3D.setState(State.Player1);
-                                                            
-                                                        }else if(boardresult == 2){
-                                                            quantumBoard3D.setState(State.Player2);
-                                                            displayLabel.setText("Player 2 wins");
-                                                            displayLabel.setForeground(blue);
-                                                            //quantumBoard3D.clear();
-                            
-                                                            result = 1;
-                                                            //replay button stuff
-                                                            replay();
-                                                            quantumBoard3D.setState(State.Player2);
-                                                            
-                                                        }
-                                                        repaint();
-                                                    }
-                                                    //this uses the same variable, but is actually for the game ending
-                                                    if(result == 1){
-                                                        return;
-                                                    }
-                                                    Move move;
-                                                    move = mAI.check(quantumBoard3D, 1, true);
-
-                                                    recentSquare1 = move.loc;
-                                                    recentSquare2 = move.loc2;
-                                                    result = quantumBoard3D.checkLoops(move);
-                                                    turnCount++;
-                                                    turn = !turn;
-                                                    if(quantumBoard3D.getState() == State.Blank){
-                                                        displayLabel.setText("Player 1's turn");
-                                                        displayLabel.setForeground(red);
-                                                        int blankCount = 0;
-                                                        for(int i = 0; i < 27; i++){
-                                                            if(quantumBoard3D.getBoardStatelist()[i] == State.Blank){
-                                                                blankCount++;
-                                                            }
-                        
-                                                        }
-                                                        if(blankCount < 2){
-                                                            displayLabel.setText("Stalemate");
-                                                            displayLabel.setForeground(Color.BLACK);
-                                                            //quantumBoard3D.clear();
-                            
-                                                            //replay button stuff
-                                                            replay();
-                                                        }
-                                                    }else{
-                                                        //quantumBoard3D.clear();
-                                                    }
-                                                    //does stuff if a loop is found
-                                                    if(result == 0){
-                                                        //System.out.println("No loop");
-                                                    }else{
-                                                        //System.out.println("Loop");
-                                                        if(turn){
-                                                            displayLabel.setText("Player 2 chooses collapse");
-                        
-                                                        }else{
-                                                            displayLabel.setText("Player 1 chooses collapse");
-                                                            
-                                                        }
-
-                                                        moveDrawLoc = recentSquare1;
-                                                    }
-                                                    
-                                                    repaint();
-                                                }
-                                            });
-
-                                        }
-
-                                    }else{
-                                        displayLabel.setText("Player 1's turn");
-                                        displayLabel.setForeground(red);
-                                        
-                                    }
-
-                                    //does stuff if a loop is found
-                                    if(result == 0){
-                                        //System.out.println("No loop");
-                                    }else{
-                                        //System.out.println("Loop");
-                                        if(turn){
-                                            displayLabel.setText("Player 2 chooses collapse");
-        
-                                        }else{
-                                            displayLabel.setText("Player 1 chooses collapse");
-                                            
-                                        }
-
-                                        moveDrawLoc = recentSquare1;
-                                    }
-
-                                //thing to unselect
-                                }else if(quantumMove && (xcell + (ycell * 3) + (boardZ * 9)) == recentCell){
-                                    quantumMove = false;
-                                    recentCell = -1;
-
-                                //handles second click
-                                }else if((xcell + (ycell * 3) + (boardZ * 9)) != recentCell){
-                                    recentCell = xcell + (ycell * 3) + (boardZ * 9);
-                                    quantumMove = !quantumMove;
-                                }
-
-                                repaint();
-                            }else if(e.getButton() == MouseEvent.BUTTON3){
-                                //quantumBoard3D.printTile(xcell, ycell, boardZ);
-                            }
-
-                            
-                            //System.out.println("X: " + xcell + ", Y: " + ycell);
-    
-                        }else if(result == 1 && quantumBoard3D.getState() == State.Blank){
-                            //choosing the collpase
-                            int selection = -1;
-                            int adjustedSquare1X = xbound + ((recentSquare1 % 3) * cellSize);
-                            int adjustedSquare1Y = ybound + ((recentSquare1 - ((recentSquare1 / 9) * 9)) / 3) * cellSize;
-                            int adjustedSquare2X = xbound + ((recentSquare2 % 3) * cellSize);
-                            int adjustedSquare2Y = ybound + ((recentSquare2 - ((recentSquare2 / 9) * 9)) / 3) * cellSize;
-
-                            if(click2.getX() > adjustedSquare1X && click2.getX() < adjustedSquare1X + cellSize && click2.getY() > adjustedSquare1Y && click2.getY() < adjustedSquare1Y + cellSize){
-                                selection = recentSquare1;
-                            }else if(click2.getX() > adjustedSquare2X && click2.getX() < adjustedSquare2X + cellSize && click2.getY() > adjustedSquare2Y && click2.getY() < adjustedSquare2Y + cellSize){
-                                selection = recentSquare2;
-                            }
-
-                            if(selection != -1){
-                                //int otherLink = quantumBoard3D.getLink(turnCount - 1, selection);
-                                //quantumBoard3D.getBoardTile(otherLink % 3, (int) Math.floor(otherLink / 3)).getMovesList().remove(quantumBoard3D.getMoveLocationInArray(otherLink, turnCount - 1));
-                                quantumBoard3D.collapseTile(selection, turnCount - 1);
-                                result = 0;
-
-                                //all the other stuff
-                                if(turn){
-                                    displayLabel.setText("Player 2's turn");
-                                    displayLabel.setForeground(blue);
-    
-                                }else{
-                                    displayLabel.setText("Player 1's turn");
-                                    displayLabel.setForeground(red);
-                                    
-                                }
-    
-                                int blankCount = 0;
-                                for(int i = 0; i < 27; i++){
-                                    if(quantumBoard3D.getBoardStatelist()[i] == State.Blank){
-                                        blankCount++;
-                                    }
-
-                                }
-                                if(blankCount < 2){
-                                    displayLabel.setText("Stalemate");
-                                    displayLabel.setForeground(Color.BLACK);
-                                    moveDrawLoc = -1;
-
-                                    //so that it can't be played on again
-                                    quantumBoard3D.setState(State.Player1);
-    
-                                    //replay button stuff
-                                    replay();
-                                    
-                                }
-    
-                                int boardresult = quantumBoard3D.checkEntireBoard();
-    
-                                if(boardresult == 1){
-                                    quantumBoard3D.setState(State.Player1);
-                                    displayLabel.setText("Player 1 wins");
-                                    displayLabel.setForeground(red);
-                                    moveDrawLoc = -1;
-    
-                                    //replay button stuff
-                                    replay();
-                                    
-                                }else if(boardresult == 2){
-                                    quantumBoard3D.setState(State.Player2);
-                                    displayLabel.setText("Player 2 wins");
-                                    displayLabel.setForeground(blue);
-                                    moveDrawLoc = -1;
-    
-                                    //replay button stuff
-                                    replay();
-                                    
-                                }
-                                repaint();
-                            }
-                            
-                        }
-                    }
+                    handleClick(e);
                 }
-              
                 movementCounter = 0;
             }
         }); 
@@ -968,23 +187,23 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                 double boardSize = Math.min(width, height) * zoom;
 
-                if(game == 2){
-                    boardSize *= 3;
-                }else if(game == 3){
-                    boardSize *= 9;
-                }
+                // if(game == 2){
+                //     boardSize *= 3;
+                // }else if(game == 3){
+                //     boardSize *= 9;
+                // }
 
                 //stuff for keeping it close to view
-                if(offsetx > width + (boardSize / 2)){
-                    offsetx = width + (int) (boardSize / 2);
+                if(offsetx > width){
+                    offsetx = width;
                     return;
                 }
                 if(offsetx + boardSize < 0){
                     offsetx = -1 * (int) boardSize;
                     return;
                 }
-                if(offsety > height + (boardSize / 2)){
-                    offsety = height + (int) (boardSize / 2);
+                if(offsety > height){
+                    offsety = height;
                     return;
                 }
                 if(offsety + boardSize < 0){
@@ -994,6 +213,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                 offsetx = offsetx + deltax;
                 offsety = offsety + deltay;
+
+                //System.out.println(offsetx);
     
                 movementCounter++;
 
@@ -1076,6 +297,78 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         });
 
+    }
+
+    public void handleClick(MouseEvent e){
+
+    }
+
+    //current plan is to split the board into 28x28 tiles, borders are 1 wide, individual squares are 8
+    public void drawBoard(Graphics2D g){
+        int scale = 6;
+
+        //draws all the board grids
+        drawGrid(g, 0, 0);
+        //iterates through all the scale levels
+        for(int i = 2; i < scale; i += 2){ // 2 4 6
+            //iterates through each board on the scale level
+            int tileCount = (int) Math.pow(9, i/2);
+            for(int j = 0; j < tileCount; j++){
+                drawGrid(g, i / 2, j);
+            }
+        }
+    }
+
+    public void drawGrid(Graphics2D g, int scale, int location){
+        //gets board size, multiplied by scale coeffecient. Each board is 8/28 of the larger one
+        boundingSize = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, scale));
+        double d_cellSize = (double) boundingSize / 28.0;
+        cellSize = (int) d_cellSize;
+
+        //useful lengths
+        int b1_3rd = (int) (d_cellSize * 9);
+        int b2_3rd = (int) (d_cellSize * 18);
+        int length = (int) (d_cellSize * 26);
+
+        Point loc = locToCoord(scale, location);
+
+        int offx = loc.x;
+        int offy = loc.y;
+
+        g.setColor(Color.BLACK);
+        g.fillRect(offsetx + b1_3rd + offx, offsety + cellSize + offy, cellSize, length);
+        g.fillRect(offsetx + b2_3rd + offx, offsety + cellSize + offy, cellSize, length);
+        g.fillRect(offsetx + cellSize + offx, offsety + b1_3rd + offy, length, cellSize);
+        g.fillRect(offsetx + cellSize + offx, offsety + b2_3rd + offy, length, cellSize);
+    }
+
+    public Point locToCoord(int scale, int location){
+        //int bound = (int) (Math.min(width, height) * zoom);
+
+        int x = 0;
+        int y = 0;
+
+        for(int i = 0; i < scale; i++){
+            //scale of each tile
+            int cell = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, i + 1));
+
+            int loc = 0;
+            if(i + 1 == scale){
+                loc = location % 9;
+            }else{
+                loc = location / (9^(scale - i));
+            }
+
+            int bx = loc % 3;
+            int by = loc / 3;
+
+            x += bx * cell * (9.0/8.0) + cell / 8;
+            y += by * cell * (9.0/8.0) + cell / 8;
+        }
+
+        boundingSize = (int) (Math.min(width, height) * zoom);
+
+        return new Point(x, y);
     }
 
     public int largeMoveAftermath(int xboard, int yboard, int xcell, int ycell){
@@ -1281,23 +574,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        if(game == 1){
-            drawSimpleBoard(g, simpleBoard, true, 0, 0);
-        }else if(game == 2){
-            drawLargeBoard(g, largeBoard, true, 0);
-        }else if(game == 3){
-            drawMassiveBoard(g, massiveBoard);
-        }else if(game == 4){
-            drawQuantumBoard(g, quantumBoard);
-            if(quantumMove){
-                drawMouseLine(g, quantumBoard);
-            }
-        }else if(game == 5){
-            drawQuantumBoard3D(g, quantumBoard3D);
-            if(quantumMove){
-                drawMouseLine3D(g, quantumBoard3D);
-            }
-        }
+        drawBoard(g);
         
         frameobject.revalidate();
         Toolkit.getDefaultToolkit().sync();
@@ -2278,10 +1555,10 @@ public class GPanel extends JPanel implements MouseWheelListener{
         int diffx = (getRealX(e) - realx);
         int diffy = (getRealY(e) - realy);
 
-        if(zoom > 1){
-            zoom = 1;
-        }else if(zoom < Math.pow(0.75, 8)){
-            zoom = Math.pow(0.75, 8);
+        if(zoom > Math.pow(0.75, -8)){
+            zoom = Math.pow(0.75, -8);
+        }else if(zoom < Math.pow(0.75, 4)){
+            zoom = Math.pow(0.75, 4);
         }else{
             offsetx = offsetx + (int) (diffx * zoom);
             offsety = offsety + (int) (diffy * zoom);
@@ -2291,7 +1568,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     }
     
-    public void resizeVariables(int width1, int height1){
+    public void resizeVariables(int width1, int height1, boolean firstTime){
         width = width1;
         height = height1;
 
@@ -2303,14 +1580,24 @@ public class GPanel extends JPanel implements MouseWheelListener{
         double xoffsetc = offsetx - pmidx;
         double yoffsetc = offsety - pmidy;
 
-        offsetx = (int) ((width / 2) + xoffsetc);
-        if(game != 5){
-            offsety = (int) ((height / 2) + yoffsetc);
+        //the first time code runs when window is created, after that it is for when user resized
+        if(firstTime){
+            //makes default offset
+            boundingSize = (int) (Math.min(width, height) * zoom);
+            offsetx = (width - boundingSize) / 2;
+            //System.out.println(boundingSize + ", " + offsetx + ", " + width);
+            offsety = (height - boundingSize) / 2;
+        }else{
+            offsetx = (int) ((width / 2) + xoffsetc);
+            if(game != 5){
+                offsety = (int) ((height / 2) + yoffsetc);
+            }
         }
 
         //sets the new previous size
         pwidth = width;
         pheight = height;
+
     }
 
     public int getRealX(MouseEvent e){

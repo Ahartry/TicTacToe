@@ -19,10 +19,6 @@ public class Move {
         this.loc = loc;
     }
 
-    public Move(int t1, int t2, int t3){
-        loc = t3 + (10 * t2) + (100 * t1);
-    }
-
     //for quantum
     public Move(int loc, int loc2){
         this.loc = loc;
@@ -35,7 +31,7 @@ public class Move {
 
     public void setTurn(boolean turn){
         if(turn){
-            this.turn = 0;
+            this.turn = 2;
         }else{
             this.turn = 1;
         }

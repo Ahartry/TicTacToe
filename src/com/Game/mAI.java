@@ -63,7 +63,21 @@ public class mAI {
 
         ArrayList<Move> moveList = turnMoves(board.getAvailable(), turn);
 
-        for(int i = 0; i < moveList.size(); i++){
+        for(int i = 0; i < board.getBoardArrays().get(0).length; i++){
+            //goes onto next loop if tile is full
+            if(board.getBoardArrays().get(0)[i] != 0){
+                continue;
+            }
+
+            if(board.quantum){
+                for(int j = i + 1; j < board.getBoardArrays().get(0).length; j++){
+                    if(board.getBoardArrays().get(0)[i] != 0){
+                        continue;
+                    }
+                }
+            }else{
+
+            }
             Move move = moveList.get(i);
             board.move(move);
 
