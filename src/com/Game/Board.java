@@ -20,9 +20,9 @@ public class Board {
 
         //initializes the quantum move list
         if(q){
-            qmlist = new int[3^scale][3^scale];
-            qtlist = new int[3^scale][3^scale];
-            qcount = new int[3^scale]; 
+            qmlist = new int[(int) Math.pow(3, scale)][(int) Math.pow(3, scale)];
+            qtlist = new int[(int) Math.pow(3, scale)][(int) Math.pow(3, scale)];
+            qcount = new int[(int) Math.pow(3, scale)]; 
         }
         
         quantum = q;
@@ -31,10 +31,10 @@ public class Board {
         //creates board with all tiles. meta boards are created based on exponents
         int s_count = scale;
         boardArrays = new ArrayList<>();
-        boardArrays.add(new int[3^scale]);
+        boardArrays.add(new int[(int) Math.pow(3, scale)]);
         while(s_count > 3){
             s_count -= 2;
-            boardArrays.add(new int[3^s_count]);
+            boardArrays.add(new int[(int) Math.pow(3, s_count)]);
         }
     }
 

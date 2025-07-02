@@ -7,7 +7,7 @@ public class QuantumSolver {
 
     public static int checkLoops(Board b, int move1, int move2){
 
-        skipList = new boolean[3 ^ b.getScale()];
+        skipList = new boolean[(int) Math.pow(3, b.getScale())];
 
         int start = move1;
         int next = move2;
