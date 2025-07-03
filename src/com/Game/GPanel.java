@@ -49,7 +49,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
     int pheight = 550;
     double zoom = 1;
     int buffer = 50;
-    boolean turn;
     int movementCounter = 0;
     int mouseLocx = 0;
     int mouseLocy = 0;
@@ -74,7 +73,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     Sound sound;
 
     int count = 0;
-    int turnCount = 0;
+    int turn = 1;
     boolean quantumMove = false;
     boolean quantumLineMode = true;
     int result = 0;
@@ -141,11 +140,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }else if(game == 4){
             board = new Board(2, true);
             zoom = 0.75;
-            turnCount = 1;
         }else if(game == 5){
             board = new Board(3, true);
             zoom = Math.pow(0.75, 5);
-            turnCount = 1;
         }
 
         repaint();
@@ -306,7 +303,29 @@ public class GPanel extends JPanel implements MouseWheelListener{
     }
 
     public void handleClick(MouseEvent e){
-        System.out.println(coordToLoc(e.getX(), e.getY()));
+        int loc = coordToLoc(e.getX(), e.getY());
+
+        //makes sure that click is in a valid location
+        if(loc == -1){
+            return;
+        }
+        if(board.getBoardArrays().get(0)[loc] != 0){
+            return;
+        }
+
+        //actually moves once it passes the checks
+        board.move(loc, turn);
+        turn++;
+
+        //updates UI
+        if(turn % 2 == 0){
+            displayLabel.setText("Player 2's turn");
+            displayLabel.setForeground(blue);
+
+        }else{
+            displayLabel.setText("Player 1's turn");
+            displayLabel.setForeground(red);
+        }
     }
 
     //current plan is to split the board into 28x28 tiles, borders are 1 wide, individual squares are 8
@@ -423,218 +442,18 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         }
 
-        locToCoord(scale / 2 - 1, rangeStart);
+        locToCoord(scale / 2, rangeStart);
 
         normx = x - offsetx;
         normy = y - offsety;
-
                 
         int tileSize = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, (scale / 2)));
-
-        System.out.println(coords[0] + " " + coords[1] + ", " + normx + " " + normy + ", " + tileSize);
 
         if(normx > coords[0] && normx < coords[0] + tileSize && normy > coords[1] && normy < coords[1] + tileSize){
             loc = rangeStart;
         }
 
-        System.out.println(rangeStart);
-
         return loc;
-    }
-
-    public int largeMoveAftermath(int xboard, int yboard, int xcell, int ycell){
-        int result = largeBoard.getBoardArray(xboard, yboard).checkBoard(xcell, ycell);
-
-        int end = 0;
-
-        turn = !turn;
-
-        if(turn){
-            displayLabel.setText("Player 2's turn");
-            displayLabel.setForeground(blue);
-
-        }else{
-            displayLabel.setText("Player 1's turn");
-            displayLabel.setForeground(red);
-            
-        }
-
-        if(result == 1){
-            largeBoard.getBoardArray(xboard, yboard).setState(State.Player1);
-            largeBoard.clearLocationList(xboard, yboard);
-            // displayLabel.setText("Player 1 wins");
-            // displayLabel.setForeground(red);
-        }else if(result == 2){
-            largeBoard.getBoardArray(xboard, yboard).setState(State.Player2);
-            largeBoard.clearLocationList(xboard, yboard);
-            // displayLabel.setText("Player 2 wins");
-            // displayLabel.setForeground(blue);
-        }
-
-        //calculates new active tiles
-        if(largeBoard.getBoardArray(xcell, ycell).getState() == State.Blank && largeBoard.getBoardArray(xcell, ycell).getMoveTally() != 9){
-            largeBoard.setActive(false);
-            largeBoard.getBoardArray(xcell, ycell).setActive(true);
-        }else{
-            largeBoard.setActive(true);
-        }
-
-        if(largeBoard.getMoveTally() == 9){
-            displayLabel.setText("Stalemate");
-            displayLabel.setForeground(Color.BLACK);
-            largeBoard.setActive(false);
-
-            end = 1;
-
-            //replay button stuff
-            replay();
-            
-        }
-
-        //checks the larger board
-        result = largeBoard.checkBoard(xboard, yboard);
-        if(result == 1){
-            largeBoard.setState(State.Player1);
-            displayLabel.setText("Player 1 wins");
-            displayLabel.setForeground(red);
-            largeBoard.setActive(false);
-
-            end = 1;
-
-            //replay button stuff
-            replay();
-            
-        }else if(result == 2){
-            largeBoard.setState(State.Player2);
-            displayLabel.setText("Player 2 wins");
-            displayLabel.setForeground(blue);
-            largeBoard.setActive(false);
-
-            end = 1;
-
-            //replay button stuff
-            replay();
-            
-
-        }
-        repaint();
-
-        return end;
-    }
-
-    public int massiveMoveAftermath(int xlargeboard, int ylargeboard, int xboard, int yboard, int xcell, int ycell){
-        //checks each scale of board
-        int resultsmall = massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).checkBoard(xcell, ycell);
-
-        turn = !turn;
-
-        massiveBoard.setActive(false);
-
-        if(massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).getState() == State.Blank && massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).getMoveTally() != 9){
-            massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xcell, ycell).setActive(true);
-        }else{
-            massiveBoard.getBoardArray(xlargeboard, ylargeboard).setActive(true);
-        }
-
-        if(turn){
-            displayLabel.setText("Player 2's turn");
-            displayLabel.setForeground(blue);
-
-        }else{
-            displayLabel.setText("Player 1's turn");
-            displayLabel.setForeground(red);
-            
-        }
-        
-
-        if(resultsmall == 1){
-            massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).setState(State.Player1);
-            massiveBoard.setActive(false);
-
-            if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
-                massiveBoard.getBoardArray(xboard, yboard).setActive(true);
-            }else{
-                massiveBoard.setActive(true);
-            }
-            
-            
-        }else if(resultsmall == 2){
-            massiveBoard.getBoardArray(xlargeboard, ylargeboard).getBoardArray(xboard, yboard).setState(State.Player2);
-            massiveBoard.setActive(false);
-
-            if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
-                massiveBoard.getBoardArray(xboard, yboard).setActive(true);
-            }else{
-                massiveBoard.setActive(true);
-            }
-        }
-
-        int resultlarge = massiveBoard.getBoardArray(xlargeboard, ylargeboard).checkBoard(xboard, yboard);
-
-        if(resultlarge == 1){
-            massiveBoard.getBoardArray(xlargeboard, ylargeboard).setState(State.Player1);
-            massiveBoard.setActive(false);
-
-            if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
-                massiveBoard.getBoardArray(xboard, yboard).setActive(true);
-            }else{
-                massiveBoard.setActive(true);
-            }
-             
-        }else if(resultlarge == 2){
-            massiveBoard.getBoardArray(xlargeboard, ylargeboard).setState(State.Player2);
-            massiveBoard.setActive(false);
-
-            if(massiveBoard.getBoardArray(xboard, yboard).getState() == State.Blank){
-                massiveBoard.getBoardArray(xboard, yboard).setActive(true);
-            }else{
-                massiveBoard.setActive(true);
-            }
-        }
-
-        int resultmassive = massiveBoard.checkBoard(xlargeboard, ylargeboard);
-
-        if(massiveBoard.getMoveTally() == 9){
-            displayLabel.setText("Stalemate");
-            displayLabel.setForeground(Color.BLACK);
-            massiveBoard.setActive(false);
-
-            //replay button stuff
-            replay();
-            
-        }
-        
-        if(resultmassive == 1){
-            displayLabel.setText("Player 1 wins");
-            displayLabel.setForeground(red);
-            massiveBoard.setActive(false);
-
-            //replay button stuff
-            replay();
-            
-        }else if(resultmassive == 2){
-            displayLabel.setText("Player 2 wins");
-            displayLabel.setForeground(blue);
-            massiveBoard.setActive(false);
-
-            //replay button stuff
-            replay();
-            
-        }
-
-        repaint();
-
-        recentLarge = xlargeboard + (3 * ylargeboard);
-        recentSimple = xboard + (3 * yboard);
-        recentCell = xcell + (3 * ycell);
-
-        try {
-            outputBoard(massiveBoard);
-        } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
-        }
-
-        return resultmassive;
     }
 
     @Override
@@ -655,281 +474,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
         setVisible(false);
         JFrame parent = (JFrame) this.getTopLevelAncestor();
         parent.dispose();
-    }
-
-    public void drawSimpleBoard(Graphics2D g, SimpleBoard board, boolean single, int boardIndex, int secondBoardIndex){
-        //revalidate();
-        if(board.getActive()){
-            if(turn){
-                g.setColor(blue);
-            }else{
-                g.setColor(red);
-            }
-        }else{
-            g.setColor(Color.BLACK);
-        }
-        
-        boundingSize = Math.min(width, height);
-        thickness = boundingSize / 50;
-        xbound = (width - boundingSize) / 2;
-        ybound = (height - boundingSize) / 2;
-        cellSize = (int) boundingSize / 3;
-
-        if(zoom > 1){
-            zoom = 1;
-        }
-
-        //applies zoom
-        buffer = (int) (buffer * zoom);
-        thickness = (int) (thickness * zoom);
-        boundingSize = (int) (boundingSize * zoom);
-        xbound = (int) (xbound * zoom);
-        ybound = (int) (ybound * zoom);
-        cellSize = (int) (cellSize * zoom);
-
-        ybound = -1 * (boundingSize / 2);
-        xbound = -1 * (boundingSize / 2);
-
-        if(thickness < 1){
-            thickness = 1;
-        }
-
-        buffer = (int) ((width / 40) * zoom);
-
-        xbound = xbound + offsetx;
-        ybound = ybound + offsety;
-
-        if(single){
-            g.fillRect(xbound + cellSize - (thickness / 2), ybound, thickness, boundingSize);
-            g.fillRect(xbound + (2 * cellSize) - (thickness / 2), ybound, thickness, boundingSize);
-    
-            g.fillRect(xbound, ybound + cellSize - (thickness / 2), boundingSize, thickness);
-            g.fillRect(xbound, ybound + (2 * cellSize) - (thickness / 2), boundingSize, thickness);
-
-            //loops through the board
-            double iconScale = 0.8;
-            for(int i = 0; i < 3; i++){
-                for(int j = 0; j < 3; j++){
-                    if(simpleBoard.getBoardTile(i, j).getState() == State.Player1){
-                        g.drawImage(xImage, (int) (xbound + (i * cellSize) + ((cellSize - (cellSize * iconScale)) / 2)), (int) (ybound + (j * cellSize) + ((cellSize - (cellSize * iconScale)) / 2)), (int) (cellSize * iconScale), (int) (cellSize * iconScale), null);
-                    }else if(simpleBoard.getBoardTile(i, j).getState() == State.Player2){
-                        g.drawImage(oImage, (int) (xbound + (i * cellSize) + ((cellSize - (cellSize * iconScale)) / 2)), (int) (ybound + (j * cellSize) + ((cellSize - (cellSize * iconScale)) / 2)), (int) (cellSize * iconScale), (int) (cellSize * iconScale), null);
-                    }
-                }
-            }
-        }else{
-            int cellX = boardIndex % 3;
-            int cellY = (int) Math.floor(boardIndex /3);
-
-            int boardx = secondBoardIndex % 3;
-            int boardy = (int) Math.floor(secondBoardIndex /3);
-
-            g.fillRect(xbound + cellSize - (thickness / 2) + (boundingSize * cellX) + (boundingSize * 3 * boardx), ybound + (boundingSize * cellY) + buffer + (boundingSize * 3 * boardy), thickness, boundingSize - buffer - buffer);
-            g.fillRect(xbound + (2 * cellSize) - (thickness / 2) + (boundingSize * cellX) + (boundingSize * 3 * boardx), ybound + (boundingSize * cellY) + buffer + (boundingSize * 3 * boardy), thickness, boundingSize - buffer - buffer);
-    
-            g.fillRect(xbound + (boundingSize * cellX) + buffer + (boundingSize * 3 * boardx), ybound + cellSize - (thickness / 2) + (boundingSize * cellY) + (boundingSize * 3 * boardy), boundingSize - buffer - buffer, thickness);
-            g.fillRect(xbound + (boundingSize * cellX) + buffer + (boundingSize * 3 * boardx), ybound + (2 * cellSize) - (thickness / 2) + (boundingSize * cellY) + (boundingSize * 3 * boardy), boundingSize - buffer - buffer, thickness);
-
-            //loops through the board
-            double iconScale = 0.8;
-            double iconOffset = (cellSize - (cellSize * iconScale)) / 2;
-            for(int i = 0; i < 3; i++){
-                for(int j = 0; j < 3; j++){
-                    if(board.getBoardTile(i, j).getState() == State.Player1){
-                        g.drawImage(xImage, (int) (xbound + (i * cellSize) + iconOffset) + (boundingSize * cellX) + (boundingSize * 3 * boardx), (int) (ybound + (j * cellSize) + iconOffset) + (boundingSize  * cellY) + (boundingSize * 3 * boardy), (int) (cellSize * iconScale), (int) (cellSize * iconScale), null);
-                    }else if(board.getBoardTile(i, j).getState() == State.Player2){
-                        g.drawImage(oImage, (int) (xbound + (i * cellSize) + iconOffset) + (boundingSize  * cellX) + (boundingSize * 3 * boardx), (int) (ybound + (j * cellSize) + iconOffset) + (boundingSize  * cellY) + (boundingSize * 3 * boardy), (int) (cellSize * iconScale), (int) (cellSize * iconScale), null);
-                    }
-                }
-            }
-
-            int x = boardIndex % 3;
-            int y = (int) Math.floor(boardIndex / 3);
-
-            iconOffset = (boundingSize - (boundingSize * iconScale)) / 2;
-            if(board.getState() == State.Player1){
-                g.drawImage(xImage, (int) (xbound + iconOffset) + (x * boundingSize) + (boundingSize * 3 * boardx), (int) (ybound + iconOffset) + (y * boundingSize) + (boundingSize * 3 * boardy), (int) (boundingSize * iconScale), (int) (boundingSize * iconScale), null);
-            }else if (board.getState() == State.Player2){
-                g.drawImage(oImage, (int) (xbound + iconOffset) + (x * boundingSize) + (boundingSize * 3 * boardx), (int) (ybound + iconOffset) + (y * boundingSize) + (boundingSize * 3 * boardy), (int) (boundingSize * iconScale), (int) (boundingSize * iconScale), null);
-            }
-        }
-
-    }
-
-    public void drawLargeBoard(Graphics2D g, LargeBoard board, boolean single, int boardIndex){
-        if(board.getActive()){
-            if(turn){
-                g.setColor(blue);
-            }else{
-                g.setColor(red);
-            }
-        }else{
-            g.setColor(Color.BLACK);
-        }
-
-        for(int i = 0; i < 9; i++){
-
-            int x = i % 3;
-            int y = (int) Math.floor(i / 3);
-            drawSimpleBoard(g, board.getBoardArray(x, y), false, i, boardIndex);
-        }
-
-        //larger lines
-        if(board.getActive()){
-            if(turn){
-                g.setColor(blue);
-            }else{
-                g.setColor(red);
-            }
-        }else{
-            g.setColor(Color.BLACK);
-        }
-
-        // double xscale = (double) width / (double) pwidth;
-        // double yscale = (double) height / (double) pheight;
-        
-        boundingSize = Math.min(width, height);
-        thickness = boundingSize / 25;
-        xbound = (width - boundingSize) / 2;
-        ybound = (height - boundingSize) / 2;
-        cellSize = (int) boundingSize / 3;
-
-        if(zoom > 1){
-            zoom = 1;
-        }
-
-        //applies zoom
-        thickness = (int) (thickness * zoom);
-        boundingSize = (int) (boundingSize * zoom);
-        xbound = (int) (xbound * zoom);
-        ybound = (int) (ybound * zoom);
-        cellSize = (int) (cellSize * zoom);
-
-        ybound = -1 * (boundingSize / 2);
-        xbound = -1 * (boundingSize / 2);
-
-        if(thickness < 1){
-            thickness = 1;
-        }
-
-        buffer = (int) ((width / 50) * zoom);
-
-        // xbound = xbound + (int) (offsetx * xscale);
-        // ybound = ybound + (int) (offsety * yscale);
-
-        xbound = xbound + offsetx;
-        ybound = ybound + offsety;
-
-        if(single){
-            g.fillRect(xbound + boundingSize - (thickness / 2), ybound + buffer, thickness, boundingSize * 3 - buffer- buffer);
-            g.fillRect(xbound + (2 * boundingSize) - (thickness / 2), ybound + buffer, thickness, boundingSize * 3 - buffer- buffer);
-    
-            g.fillRect(xbound + buffer, ybound + boundingSize - (thickness / 2), boundingSize * 3 - buffer- buffer, thickness);
-            g.fillRect(xbound + buffer, ybound + (2 * boundingSize) - (thickness / 2), boundingSize * 3 - buffer- buffer, thickness);
-        }else{
-            int boardX = boardIndex % 3;
-            int boardY = boardIndex /3;
-
-            g.fillRect(xbound + boundingSize - (thickness / 2) + (boundingSize * 3 * boardX), ybound + buffer + (boundingSize * 3 * boardY), thickness, boundingSize * 3 - buffer- buffer);
-            g.fillRect(xbound + (2 * boundingSize) - (thickness / 2) + (boundingSize * 3 * boardX), ybound + buffer + (boundingSize * 3 * boardY), thickness, boundingSize * 3 - buffer- buffer);
-    
-            g.fillRect(xbound + buffer + (boundingSize * 3 * boardX), ybound + boundingSize - (thickness / 2) + (boundingSize * 3 * boardY), boundingSize * 3 - buffer- buffer, thickness);
-            g.fillRect(xbound + buffer + (boundingSize * 3 * boardX), ybound + (2 * boundingSize) - (thickness / 2) + (boundingSize * 3 * boardY), boundingSize * 3 - buffer- buffer, thickness);
-
-            //for some reason, this causes visual bug (don't want to figure out why, this just works as a fix)
-            // int x = boardIndex % 3;
-            // int y = boardIndex / 3;
-
-            // double iconScale = 0.8;
-            // double iconOffset = (boundingSize - (boundingSize * iconScale)) / 2;
-            // // if(board.getState() == State.Player1){
-            // //     g.drawImage(xImage, (int) (xbound + iconOffset) + (x * boundingSize) + (boundingSize * 9 * boardX), (int) (ybound + iconOffset) + (y * boundingSize) + (boundingSize * 9 * boardY), (int) (boundingSize * iconScale), (int) (boundingSize * iconScale), null);
-            // // }else if (board.getState() == State.Player2){
-            // //     g.drawImage(oImage, (int) (xbound + iconOffset) + (x * boundingSize) + (boundingSize * 9 * boardX), (int) (ybound + iconOffset) + (y * boundingSize) + (boundingSize * 9 * boardY), (int) (boundingSize * iconScale), (int) (boundingSize * iconScale), null);
-            // // }
-        }
-
-
-    }
-    
-    public void drawMassiveBoard(Graphics2D g, MassiveBoard board){
-        if(board.getActive()){
-            if(turn){
-                g.setColor(blue);
-            }else{
-                g.setColor(red);
-            }
-        }else{
-            g.setColor(Color.BLACK);
-        }
-
-        //larger lines
-        if(board.getActive()){
-            if(turn){
-                g.setColor(blue);
-            }else{
-                g.setColor(red);
-            }
-        }else{
-            g.setColor(Color.BLACK);
-        }
-        
-        // double xscale = (double) width / (double) pwidth;
-        // double yscale = (double) height / (double) pheight;
-       
-        boundingSize = Math.min(width, height);
-        thickness = boundingSize / 15;
-        xbound = (width - boundingSize) / 2;
-        ybound = (height - boundingSize) / 2;
-        cellSize = (int) boundingSize / 3;
-
-        if(zoom > 1){
-            zoom = 1;
-        }
-
-        //applies zoom
-        thickness = (int) (thickness * zoom);
-        boundingSize = (int) (boundingSize * zoom);
-        xbound = (int) (xbound * zoom);
-        ybound = (int) (ybound * zoom);
-        cellSize = (int) (cellSize * zoom);
-
-        ybound = -1 * (boundingSize / 2);
-        xbound = -1 * (boundingSize / 2);
-
-        if(thickness < 1){
-            thickness = 1;
-        }
-
-        buffer = (int) ((width / 60) * zoom);
-        
-        // xbound = xbound + (int) (offsetx * xscale);
-        // ybound = ybound + (int) (offsety * yscale);
-
-        xbound = xbound + offsetx;
-        ybound = ybound + offsety;
-        
-        g.fillRect(xbound + (boundingSize * 3) - (thickness / 2), ybound + buffer, thickness, boundingSize * 9 - buffer- buffer);
-        g.fillRect(xbound + (6 * boundingSize) - (thickness / 2), ybound + buffer, thickness, boundingSize * 9 - buffer- buffer);
-
-        g.fillRect(xbound + buffer, ybound + (boundingSize * 3) - (thickness / 2), boundingSize * 9 - buffer- buffer, thickness);
-        g.fillRect(xbound + buffer, ybound + (6 * boundingSize) - (thickness / 2), boundingSize * 9 - buffer- buffer, thickness);
-
-        for(int i = 0; i < 9; i++){
-
-            int x = i % 3;
-            int y = i / 3;
-
-            drawLargeBoard(g, massiveBoard.getBoardArray(x, y), false, i);
-
-            double iconScale = 0.9;
-            double iconOffset = ((3 * boundingSize) - (3 * boundingSize * iconScale)) / 2;
-            if(board.getBoardArray(x, y).getState() == State.Player1){
-                g.drawImage(xImage, (int) (xbound + iconOffset) + (x * boundingSize * 3), (int) (ybound + iconOffset) + (y * boundingSize * 3), (int) (boundingSize * 3 * iconScale), (int) (boundingSize * 3 * iconScale), null);
-            }else if (board.getBoardArray(x, y).getState() == State.Player2){
-                g.drawImage(oImage, (int) (xbound + iconOffset) + (x * boundingSize * 3), (int) (ybound + iconOffset) + (y * boundingSize * 3), (int) (boundingSize * 3* iconScale), (int) (boundingSize * 3 * iconScale), null);
-            }
-        }
     }
 
     public void drawQuantumBoard(Graphics2D g, QuantumBoard board){
@@ -1822,21 +1366,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
         outputDir = file;
         outputPath = outputDir.toString();
     }
-
-    // public Image getTurnImage(int turn){
-    //     switch (turn){
-    //         case 1: return Image1;
-    //         case 2: return Image2;
-    //         case 3: return Image3;
-    //         case 4: return Image4;
-    //         case 5: return Image5;
-    //         case 6: return Image6;
-    //         case 7: return Image7;
-    //         case 8: return Image8;
-    //         case 9: return Image9;
-    //         default: return null;
-    //     }
-    // }
 
     public void setDepth(int x){
         depth = x;

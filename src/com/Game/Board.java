@@ -38,52 +38,37 @@ public class Board {
         }
     }
 
-    public void move(Move move, int turn){
-        //adds the quantum moves to the next open slot in the quantum move array, then increments indexes
-        if(quantum){
-            qmlist[move.loc][qcount[move.loc]] = move.loc2;
-            qmlist[move.loc2][qcount[move.loc2]] = move.loc;
-            qtlist[move.loc][qcount[move.loc]] = turn;
-            qtlist[move.loc2][qcount[move.loc2]] = turn;
-
-            qcount[move.loc]++;
-            qcount[move.loc2]++;
-
-        }else{
-            boardArrays.get(0)[move.loc] = turn;
-        }
+    //for reg
+    public void move(int loc, int turn){
+        boardArrays.get(0)[loc] = turn;
     }
 
-    //variant without turn, I don't know yet how I am doing it
-    public void move(Move move){
-        if(quantum){
-            qmlist[move.loc][qcount[move.loc]] = move.loc2;
-            qmlist[move.loc2][qcount[move.loc2]] = move.loc;
-            qtlist[move.loc][qcount[move.loc]] = move.turn;
-            qtlist[move.loc2][qcount[move.loc2]] = move.turn;
+    //for quantum
+    public void move(int loc, int loc2, int turn){
+        qmlist[loc][qcount[loc]] = loc2;
+        qmlist[loc2][qcount[loc2]] = loc;
+        qtlist[loc][qcount[loc]] = turn;
+        qtlist[loc2][qcount[loc2]] = turn;
 
-            qcount[move.loc]++;
-            qcount[move.loc2]++;
-
-        }else{
-            boardArrays.get(0)[move.loc] = move.turn;
-        }
+        qcount[loc]++;
+        qcount[loc2]++;
     }
     
-    public void unmove(Move move){
-        if(quantum){
-            //removes entries and decrements counts
-            qmlist[move.loc][qcount[move.loc]] = 0;
-            qmlist[move.loc2][qcount[move.loc2]] = 0;
-            qtlist[move.loc][qcount[move.loc]] = 0;
-            qtlist[move.loc2][qcount[move.loc2]] = 0;
-            qcount[move.loc]--;
-            qcount[move.loc2]--;
+    //for reg
+    public void unmove(int loc){
+        boardArrays.get(0)[loc] = 0;
+    }
+    
+    //for quantum
+    public void unmove(int loc, int loc2){
+        qmlist[loc][qcount[loc]] = 0;
+        qmlist[loc2][qcount[loc2]] = 0;
+        qtlist[loc][qcount[loc]] = 0;
+        qtlist[loc2][qcount[loc2]] = 0;
+        qcount[loc]--;
+        qcount[loc2]--;
 
-            QuantumSolver.uncollapseTile(this, move.loc);
-        }else{
-            boardArrays.get(0)[move.loc] = 0;
-        }
+        QuantumSolver.uncollapseTile(this, loc);
     }
 
     public int[][] getQMList(){
