@@ -326,20 +326,41 @@ public class GPanel extends JPanel implements MouseWheelListener{
             displayLabel.setText("Player 1's turn");
             displayLabel.setForeground(red);
         }
+
+        repaint();
     }
 
     //current plan is to split the board into 28x28 tiles, borders are 1 wide, individual squares are 8
     public void drawBoard(Graphics2D g){
-        int scale = 6;
-
         //draws all the board grids
         drawGrid(g, 0, 0);
         //iterates through all the scale levels
-        for(int i = 2; i < scale; i += 2){ // 2 4 6
+        for(int i = 2; i < board.getScale(); i += 2){ // 2 4 6
             //iterates through each board on the scale level
             int tileCount = (int) Math.pow(9, i/2);
             for(int j = 0; j < tileCount; j++){
                 drawGrid(g, i / 2, j);
+            }
+        }
+
+        //iterates over all tiles
+        for(int i = 0; i < board.getBoardArrays().size(); i++){
+            for(int j = 0; j < board.getBoardArrays().get(i).length; j++){
+                int t = board.getBoardArrays().get(i)[j];
+                if(t == 0){
+                    continue;
+                }
+                int scale = board.getBoardArrays().size() - i;
+                int size = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, scale) * 26.0/28.0);
+                locToCoord(scale, j);
+
+                System.out.println((offsetx + coords[0]) + ", " +  (offsety + coords[1]) + ", " + size + ", " + scale);
+
+                if(t % 2 == 0){
+                    g.drawImage(oImage, offsetx + coords[0], offsety + coords[1], size, size, null);
+                }else{
+                    g.drawImage(xImage, offsetx + coords[0], offsety + coords[1], size, size, null);
+                }
             }
         }
     }

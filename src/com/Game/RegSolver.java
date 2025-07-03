@@ -8,10 +8,8 @@ public class RegSolver {
      * 6 7 8
      */
     
-    public static int checkMove(Board b, Move move){
+    public static int checkMove(Board b, int loc, int scale){
         int result = 0;
-
-        int loc = move.loc;
 
         //if even scale (non 3d)
         if(b.getScale() % 2 == 0){
@@ -26,7 +24,7 @@ public class RegSolver {
             for(int i = 0; i < 3; i++){
                 //row
                 //loc - board_loc is first square on board, then add offsets to make row
-                int val = b.getBoardArrays().get(0)[loc - board_loc + (row * 3) + i];
+                int val = b.getBoardArrays().get(scale)[loc - board_loc + (row * 3) + i];
                 if(val % 2 == 1){
                     vals[0] += 1;
                 }else if(val > 0){
@@ -34,7 +32,7 @@ public class RegSolver {
                 }
 
                 //col
-                val = b.getBoardArrays().get(0)[loc - board_loc + col + (i * 3)];
+                val = b.getBoardArrays().get(scale)[loc - board_loc + col + (i * 3)];
                 if(val % 2 == 1){
                     vals[2] += 1;
                 }else if(val > 0){
@@ -45,7 +43,7 @@ public class RegSolver {
                 //I'm just going to check both
                 if(board_loc % 2 == 0){
                     //forward diagonal (0 4 8)
-                    val = b.getBoardArrays().get(0)[loc - board_loc + (i * 4)];
+                    val = b.getBoardArrays().get(scale)[loc - board_loc + (i * 4)];
                     if(val % 2 == 1){
                         vals[4] += 1;
                     }else if(val > 0){
@@ -53,7 +51,7 @@ public class RegSolver {
                     }
 
                     //back diagonal (2 4 6)
-                    val = b.getBoardArrays().get(0)[loc - board_loc + 2 + (i * 2)];
+                    val = b.getBoardArrays().get(scale)[loc - board_loc + 2 + (i * 2)];
                     if(val % 2 == 1){
                         vals[6] += 1;
                     }else if(val > 0){

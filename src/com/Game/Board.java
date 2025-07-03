@@ -29,10 +29,11 @@ public class Board {
         this.scale = scale;
 
         //creates board with all tiles. meta boards are created based on exponents
+        //81 9 1
         int s_count = scale;
         boardArrays = new ArrayList<>();
         boardArrays.add(new int[(int) Math.pow(3, scale)]);
-        while(s_count > 3){
+        while(s_count > 1){
             s_count -= 2;
             boardArrays.add(new int[(int) Math.pow(3, s_count)]);
         }
@@ -41,6 +42,8 @@ public class Board {
     //for reg
     public void move(int loc, int turn){
         boardArrays.get(0)[loc] = turn;
+
+        regResolveMove(loc, 0, turn);
     }
 
     //for quantum
@@ -69,6 +72,14 @@ public class Board {
         qcount[loc2]--;
 
         QuantumSolver.uncollapseTile(this, loc);
+    }
+
+    public void regResolveMove(int loc, int scale, int turn){
+        int result = RegSolver.checkMove(this, loc, scale);
+        if(result != 0){
+            boardArrays.get(scale)[loc / 9] = turn;
+            RegSolver.checkMove(this, loc / 9, scale + 1);
+        }
     }
 
     public int[][] getQMList(){
