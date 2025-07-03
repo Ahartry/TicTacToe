@@ -130,7 +130,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         //instantiates boards and sets default zooms
         if(game == 1){
-            board = new Board(2, false);
+            board = new Board(6, false);
             zoom = 0.75;
         }else if(game == 2){
             board = new Board(4, false);
@@ -311,7 +311,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     //current plan is to split the board into 28x28 tiles, borders are 1 wide, individual squares are 8
     public void drawBoard(Graphics2D g){
-        int scale = 4;
+        int scale = 6;
 
         //draws all the board grids
         drawGrid(g, 0, 0);
@@ -344,10 +344,10 @@ public class GPanel extends JPanel implements MouseWheelListener{
         int offy = coords[1];
 
         g.setColor(Color.BLACK);
-        g.fillRect(offsetx + b1_3rd + offx, offsety + cellSize + offy, cellSize, length);
-        g.fillRect(offsetx + b2_3rd + offx, offsety + cellSize + offy, cellSize, length);
-        g.fillRect(offsetx + cellSize + offx, offsety + b1_3rd + offy, length, cellSize);
-        g.fillRect(offsetx + cellSize + offx, offsety + b2_3rd + offy, length, cellSize);
+        g.fillRect(offsetx + b1_3rd + offx - cellSize, offsety + offy, cellSize, length);
+        g.fillRect(offsetx + b2_3rd + offx - cellSize, offsety + offy, cellSize, length);
+        g.fillRect(offsetx + offx, offsety + b1_3rd + offy - cellSize, length, cellSize);
+        g.fillRect(offsetx + offx, offsety + b2_3rd + offy - cellSize, length, cellSize);
         // if(scale == 2){
         //     g.drawString(Integer.toString(location), offsetx + offx + length / 2, offsety + offy + length / 2);
         // }
@@ -356,14 +356,18 @@ public class GPanel extends JPanel implements MouseWheelListener{
     //IMPORTANT: Takes in board.getScale() / 2
     public void locToCoord(int scale, int location){
 
+        double board = ((Math.min(width, height) * zoom) * Math.pow(8/28.0, scale + 1));
+
+        double d_cell = board / 8;
+
         coords[0] = 0;
         coords[1] = 0;
 
         //i is n in my formula
         for(int i = 1; i < scale + 1; i++){
-            double board = ((Math.min(width, height) * zoom) * Math.pow(8/28.0, i));
+            board = ((Math.min(width, height) * zoom) * Math.pow(8/28.0, i));
 
-            double d_cell = board / 8;
+            d_cell = board / 8;
 
             int loc = (location / (int) Math.pow(9, scale-i)) % 9;
             // System.out.println("K: " + location + ", n: " + scale + ", L: " + loc);
@@ -374,6 +378,13 @@ public class GPanel extends JPanel implements MouseWheelListener{
             coords[0] = coords[0] + (int) d_cell + (int) (locx * d_cell * 9);
             coords[1] = coords[1] + (int) d_cell + (int) (locy * d_cell * 9);
         }
+
+        boundingSize = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, scale));
+        double d_cellSize = (double) boundingSize / 28.0;
+        cellSize = (int) d_cellSize;
+
+        coords[0] = coords[0] + cellSize;
+        coords[1] = coords[1] + cellSize;
         
     }
 
@@ -387,37 +398,46 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         //offset and width of possible tiles in memory. Gets refined each loop by checking which nonant the click is in
         int rangeStart = 0;
-        int range = (int) Math.pow(3, scale);
-
-        System.out.println("Click at " + x + ", " + y + ". Normed to " + normx + ", " + normy);
+        int range = board.getTileCount();
 
         //0 1 2 (if scale = 6)
-        for(int i = 0; i < scale / 2 + 1; i++){
+        for(int i = 0; i < scale / 2; i++){
             boundingSize = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, i));
-            int tile = boundingSize / 3;
+            //trims off the ends
+            normx -= boundingSize / 28;
+            normy -= boundingSize / 28;
+
+            int tile = (int) (boundingSize * (9.0/28.0));
             int tx = normx / tile;
             int ty = normy / tile;
 
             //the tile from 0-8
             int t = tx + 3 * ty;
 
-            System.out.println(i + ", " + t);
-
             range /= 9;
             rangeStart += t * range;
 
-            normx += tx * tile;
-            normy += ty * tile;
+            //renormalizes to smaller board
+            normx -= tx * tile;
+            normy -= ty * tile;
 
         }
 
-        //System.out.println(rangeStart);
+        locToCoord(scale / 2 - 1, rangeStart);
 
-        locToCoord(scale / 2, rangeStart);
-        int tileSize = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, (scale / 2) + 1));
+        normx = x - offsetx;
+        normy = y - offsety;
+
+                
+        int tileSize = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, (scale / 2)));
+
+        System.out.println(coords[0] + " " + coords[1] + ", " + normx + " " + normy + ", " + tileSize);
+
         if(normx > coords[0] && normx < coords[0] + tileSize && normy > coords[1] && normy < coords[1] + tileSize){
             loc = rangeStart;
         }
+
+        System.out.println(rangeStart);
 
         return loc;
     }

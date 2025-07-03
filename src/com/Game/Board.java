@@ -106,6 +106,10 @@ public class Board {
         return scale;
     }
 
+    public int getTileCount(){
+        return boardArrays.get(0).length;
+    }
+
     // public int[] getAvailableMoves(){
     //     if(quantum){
 
