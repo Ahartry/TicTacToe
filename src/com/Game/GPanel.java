@@ -344,17 +344,20 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
 
         //iterates over all tiles
-        for(int i = 0; i < board.getBoardArrays().size(); i++){
+        for(int i = 0; i < board.getBoardArrays().size() - 1; i++){
+
+            int scale = board.getBoardArrays().size() - i - 1;
+            if(((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, scale - 1)) / 28.0 < 1){
+                continue;
+            }
+
             for(int j = 0; j < board.getBoardArrays().get(i).length; j++){
                 int t = board.getBoardArrays().get(i)[j];
                 if(t == 0){
                     continue;
                 }
-                int scale = board.getBoardArrays().size() - i;
                 int size = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, scale) * 26.0/28.0);
                 locToCoord(scale, j);
-
-                System.out.println((offsetx + coords[0]) + ", " +  (offsety + coords[1]) + ", " + size + ", " + scale);
 
                 if(t % 2 == 0){
                     g.drawImage(oImage, offsetx + coords[0], offsety + coords[1], size, size, null);
