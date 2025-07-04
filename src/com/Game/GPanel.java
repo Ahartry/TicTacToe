@@ -309,9 +309,12 @@ public class GPanel extends JPanel implements MouseWheelListener{
         if(loc == -1){
             return;
         }
-        if(board.getBoardArrays().get(0)[loc] != 0){
-            return;
+        for(int i = 0; i < board.getBoardArrays().size(); i++){
+            if(board.getBoardArrays().get(i)[loc / (int) (Math.pow(9, i))] != 0){
+                return;
+            }
         }
+
 
         //actually moves once it passes the checks
         board.move(loc, turn);
