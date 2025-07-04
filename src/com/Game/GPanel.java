@@ -190,13 +190,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                 double boardSize = Math.min(width, height) * zoom;
 
-                // if(game == 2){
-                //     boardSize *= 3;
-                // }else if(game == 3){
-                //     boardSize *= 9;
-                // }
-
-                //stuff for keeping it close to view
+                //stuff for keeping it close to view (disables panning past board)
                 if(offsetx > width){
                     offsetx = width;
                     return;
@@ -216,8 +210,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                 offsetx = offsetx + deltax;
                 offsety = offsety + deltay;
-
-                //System.out.println(offsetx);
     
                 movementCounter++;
 
@@ -232,28 +224,28 @@ public class GPanel extends JPanel implements MouseWheelListener{
         // Add this panel as a MouseWheelListener
         this.addMouseWheelListener(this);
 
-        button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if(gameType == 3){
-                    try {
-                        outputBoard(massiveBoard);
-                    } catch (FileNotFoundException e1) {
-                        e1.printStackTrace();
-                    }
-                }else if(gameType == 4 || gameType == 5){
-                    quantumLineMode = !quantumLineMode;
-                    if(quantumLineMode){
-                        button.setText("Hide Lines");
-                    }else{
-                        button.setText("Show Lines");
-                    }
-                    repaint();
-                }
+        // button.addMouseListener(new MouseAdapter() {
+        //     @Override
+        //     public void mouseClicked(MouseEvent e) {
+        //         if(gameType == 3){
+        //             try {
+        //                 outputBoard(massiveBoard);
+        //             } catch (FileNotFoundException e1) {
+        //                 e1.printStackTrace();
+        //             }
+        //         }else if(gameType == 4 || gameType == 5){
+        //             quantumLineMode = !quantumLineMode;
+        //             if(quantumLineMode){
+        //                 button.setText("Hide Lines");
+        //             }else{
+        //                 button.setText("Show Lines");
+        //             }
+        //             repaint();
+        //         }
                 
-            }
+        //     }
 
-        });
+        // });
 
         replayButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -563,7 +555,6 @@ public class GPanel extends JPanel implements MouseWheelListener{
     }
 
     public int getRealY(MouseEvent e){
-        //System.out.println(e.getY() / zoom);
         return (int) ((e.getY() - offsety) / zoom);
     }
 

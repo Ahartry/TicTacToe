@@ -78,7 +78,7 @@ public class Board {
         int result = RegSolver.checkMove(this, loc, scale);
         if(result != 0){
             boardArrays.get(scale + 1)[loc / 9] = turn;
-            RegSolver.checkMove(this, loc / 9, scale + 1);
+            regResolveMove(loc / 9, scale + 1, turn);
         }
     }
 
