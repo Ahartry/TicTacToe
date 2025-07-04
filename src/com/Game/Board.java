@@ -12,6 +12,8 @@ public class Board {
     int[][] qtlist;
     int[] qcount;
 
+    int[] active;
+
     //# of possible quantum moves is (n)(n-1)/2, where n is the number of tiles
 
     //scale is exponent (3^scale tiles)
@@ -37,11 +39,19 @@ public class Board {
             s_count -= 2;
             boardArrays.add(new int[(int) Math.pow(3, s_count)]);
         }
+
+        //two numbers (scale and loc) of active board
+        active = new int[2];
+        active[0] = scale / 2;
+        active[1] = 0;
     }
 
     //for reg
     public void move(int loc, int turn){
         boardArrays.get(0)[loc] = turn;
+        
+        //sets active layer (+1 will be added in regResolve)
+        active[0] = 0;
 
         regResolveMove(loc, 0, turn);
     }
@@ -74,11 +84,23 @@ public class Board {
         QuantumSolver.uncollapseTile(this, loc);
     }
 
-    public void regResolveMove(int loc, int scale, int turn){
-        int result = RegSolver.checkMove(this, loc, scale);
+    public void regResolveMove(int loc, int level, int turn){
+        int result = RegSolver.checkMove(this, loc, level);
+        
+        if(level + 1 == scale / 2){
+            //idk
+        }else{
+            //sets active board
+            active[0] = active[0] + 1;
+            //not quite sure why or how this works
+            active[1] = (loc / 81) * 9 + loc % 9;
+        }
+
+        escalateActive();
+
         if(result != 0){
-            boardArrays.get(scale + 1)[loc / 9] = turn;
-            regResolveMove(loc / 9, scale + 1, turn);
+            boardArrays.get(level + 1)[loc / 9] = turn;
+            regResolveMove(loc / 9, level + 1, turn);
         }
     }
 
@@ -106,11 +128,29 @@ public class Board {
         return boardArrays.get(0).length;
     }
 
-    // public int[] getAvailableMoves(){
-    //     if(quantum){
+    public int[] getActive(){
+        return active;
+    }
 
-    //     }else{
+    public boolean isActive(int scale, int loc){
+        boolean res = (scale == active[0]) && (loc == active[1]);
 
-    //     }
-    // }
+        if(scale == getScale() / 2 + 1){
+            return false;
+        }
+
+        if(res){
+            return true;
+        }else{
+            return isActive(scale + 1, loc / 9);
+        }
+    }
+
+    public void escalateActive(){
+        if(boardArrays.get(active[0])[active[1]] != 0){
+            active[0] = active[0] + 1;
+            active[1] = active[1] / 9;
+            escalateActive();
+        }
+    }
 }

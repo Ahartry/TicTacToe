@@ -288,6 +288,9 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 return;
             }
         }
+        if(!board.isActive(0, loc)){
+            return;
+        }
 
         //actually moves once it passes the checks
         board.move(loc, turn);
@@ -352,6 +355,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         }
     }
 
+    //IMPORTANT: Takes in board.getScale() / 2
     public void drawGrid(Graphics2D g, int scale, int location){
         //gets board size, multiplied by scale coeffecient. Each board is 8/28 of the larger one
         boundingSize = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, scale));
@@ -370,7 +374,19 @@ public class GPanel extends JPanel implements MouseWheelListener{
         int offx = coords[0];
         int offy = coords[1];
 
-        g.setColor(Color.BLACK);
+        //scale counting from other direction
+        int bscale = board.getScale() / 2 - scale;
+
+        //decies what color to draw
+        if(board.isActive(bscale, location) && board.getBoardArrays().get(bscale)[location] == 0){
+            if(turn % 2 == 0){
+                g.setColor(blue);
+            }else{
+                g.setColor(red);
+            }
+        }else{
+            g.setColor(Color.BLACK);
+        }
 
         //draws all 4 rectangles that make up a board
         g.fillRect(offsetx + b1_3rd + offx - cellSize, offsety + offy, cellSize, length);
