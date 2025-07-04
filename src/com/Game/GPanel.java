@@ -224,28 +224,8 @@ public class GPanel extends JPanel implements MouseWheelListener{
                 repaint();
             }
             public void mouseMoved(MouseEvent e){
-                if(result == 1){
-                    if(((e.getX() > (xbound + ((recentSquare1 % 3) * cellSize))) && (e.getX() < (xbound + ((recentSquare1 % 3) * cellSize) + cellSize)) && (e.getY() > (ybound + ((int) (Math.floor(recentSquare1 / 3)) * cellSize))) && (e.getY() < (ybound + (Math.floor(recentSquare1 / 3) * cellSize) + cellSize)))){
-                        moveDrawLoc = recentSquare1;
-                    }else if(((e.getX() > (xbound + ((recentSquare2 % 3) * cellSize))) && (e.getX() < (xbound + ((recentSquare2 % 3) * cellSize) + cellSize)) && (e.getY() > (ybound + ((int) (Math.floor(recentSquare2 / 3)) * cellSize))) && (e.getY() < (ybound + ((recentSquare2 / 3) * cellSize) + cellSize)))){
-                        moveDrawLoc = recentSquare2;
-                    }else{
-                        moveDrawLoc = -1;
-                    }
-                }else{
-                    moveDrawLoc = -1;
-                }
 
-                //makes it skip this unless game 5
-                if(game != 5){
-                    repaint();
-                    return;
-                }
-
-                if(result == 1){
-                    calculateHover3D(e.getX(), e.getY());
-                }
-                repaint();
+                //repaint();
             }
         }); 
         
@@ -303,18 +283,19 @@ public class GPanel extends JPanel implements MouseWheelListener{
     }
 
     public void handleClick(MouseEvent e){
+        //board tile that has been clicked
         int loc = coordToLoc(e.getX(), e.getY());
 
         //makes sure that click is in a valid location
         if(loc == -1){
             return;
         }
+        //checks at every level if the tile is already taken
         for(int i = 0; i < board.getBoardArrays().size(); i++){
             if(board.getBoardArrays().get(i)[loc / (int) (Math.pow(9, i))] != 0){
                 return;
             }
         }
-
 
         //actually moves once it passes the checks
         board.move(loc, turn);
@@ -350,16 +331,24 @@ public class GPanel extends JPanel implements MouseWheelListener{
         for(int i = 0; i < board.getBoardArrays().size() - 1; i++){
 
             int scale = board.getBoardArrays().size() - i - 1;
+
+            //skips drawing if it is too small
             if(((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, scale - 1)) / 28.0 < 1){
                 continue;
             }
 
             for(int j = 0; j < board.getBoardArrays().get(i).length; j++){
                 int t = board.getBoardArrays().get(i)[j];
+
+                //t=0 means blank tile
                 if(t == 0){
                     continue;
                 }
+
+                //dimension of tile
                 int size = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, scale) * 26.0/28.0);
+
+                //loads drawing coordinates into coords[]
                 locToCoord(scale, j);
 
                 if(t % 2 == 0){
@@ -390,30 +379,25 @@ public class GPanel extends JPanel implements MouseWheelListener{
         int offy = coords[1];
 
         g.setColor(Color.BLACK);
+
+        //draws all 4 rectangles that make up a board
         g.fillRect(offsetx + b1_3rd + offx - cellSize, offsety + offy, cellSize, length);
         g.fillRect(offsetx + b2_3rd + offx - cellSize, offsety + offy, cellSize, length);
         g.fillRect(offsetx + offx, offsety + b1_3rd + offy - cellSize, length, cellSize);
         g.fillRect(offsetx + offx, offsety + b2_3rd + offy - cellSize, length, cellSize);
-        // if(scale == 2){
-        //     g.drawString(Integer.toString(location), offsetx + offx + length / 2, offsety + offy + length / 2);
-        // }
     }
 
     //IMPORTANT: Takes in board.getScale() / 2
     public void locToCoord(int scale, int location){
-
-        double board = ((Math.min(width, height) * zoom) * Math.pow(8/28.0, scale + 1));
-
-        double d_cell = board / 8;
 
         coords[0] = 0;
         coords[1] = 0;
 
         //i is n in my formula
         for(int i = 1; i < scale + 1; i++){
-            board = ((Math.min(width, height) * zoom) * Math.pow(8/28.0, i));
+            double board = ((Math.min(width, height) * zoom) * Math.pow(8/28.0, i));
 
-            d_cell = board / 8;
+            double d_cell = board / 8;
 
             int loc = (location / (int) Math.pow(9, scale-i)) % 9;
             // System.out.println("K: " + location + ", n: " + scale + ", L: " + loc);
@@ -425,18 +409,21 @@ public class GPanel extends JPanel implements MouseWheelListener{
             coords[1] = coords[1] + (int) d_cell + (int) (locy * d_cell * 9);
         }
 
+        //gets sizes to add final offset
         boundingSize = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, scale));
         double d_cellSize = (double) boundingSize / 28.0;
         cellSize = (int) d_cellSize;
 
+        //adds final offset
         coords[0] = coords[0] + cellSize;
         coords[1] = coords[1] + cellSize;
         
     }
 
-    //TODO actually make this work
     public int coordToLoc(int x, int y){
         int loc = -1;
+
+        //norm is space relative to board (instead of window)
         int normx = x - offsetx;
         int normy = y - offsety;
 
@@ -453,6 +440,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             normx -= boundingSize / 28;
             normy -= boundingSize / 28;
 
+            //size of tile for dividing coordinates
             int tile = (int) (boundingSize * (9.0/28.0));
             int tx = normx / tile;
             int ty = normy / tile;
@@ -460,6 +448,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
             //the tile from 0-8
             int t = tx + 3 * ty;
 
+            //narrows the range of possible tiles (until it is just one tile)
             range /= 9;
             rangeStart += t * range;
 
@@ -471,11 +460,13 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         locToCoord(scale / 2, rangeStart);
 
+        //reset norm for checking if click is within tile
         normx = x - offsetx;
         normy = y - offsety;
                 
         int tileSize = (int) ((Math.min(width, height) * zoom) * Math.pow(8.0/28.0, (scale / 2)));
 
+        //checks if click is within the found tile
         if(normx > coords[0] && normx < coords[0] + tileSize && normy > coords[1] && normy < coords[1] + tileSize){
             loc = rangeStart;
         }
@@ -489,6 +480,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         super.paintComponent(g1);
         Graphics2D g = (Graphics2D) g1;
 
+        //TODO find where this should actually go
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         drawBoard(g);
@@ -512,26 +504,10 @@ public class GPanel extends JPanel implements MouseWheelListener{
         int realx = getRealX(e);
         int realy = getRealY(e);
 
-        if (e.getWheelRotation() < 0) {
-            if(game != 5){
-                zoom = zoom / 0.75;
-            }else{
-                theta += Math.PI / divisor;
-                calculateHover3D(getMousePosition().getX(), getMousePosition().getY());
-                repaint();
-                //zoom = zoom / 0.75;
-            }  
-
-
+        if(e.getWheelRotation() < 0){
+            zoom = zoom / 0.75;
         }else{
-            if(game != 5){
-                zoom = zoom * 0.75;
-            }else{
-                theta -= Math.PI / divisor;
-                calculateHover3D(getMousePosition().getX(), getMousePosition().getY());
-                repaint();
-                //zoom = zoom * 0.75;
-            }  
+            zoom = zoom * 0.75;
         }
 
         int diffx = (getRealX(e) - realx);
