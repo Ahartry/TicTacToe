@@ -101,7 +101,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
     int imagex = 0;
     int imagey = 0;
 
-    int zoomMax = -8;
+    int zoomMax = -18;
 
     File outputDir;
     String outputPath;
@@ -129,7 +129,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         //instantiates boards and sets default zooms
         if(game == 1){
-            board = new Board(6, false);
+            board = new Board(2, false);
             zoom = 0.75;
         }else if(game == 2){
             board = new Board(4, false);
@@ -296,15 +296,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         board.move(loc, turn);
         turn++;
 
-        //updates UI
-        if(turn % 2 == 0){
-            displayLabel.setText("Player 2's turn");
-            displayLabel.setForeground(blue);
-
-        }else{
-            displayLabel.setText("Player 1's turn");
-            displayLabel.setForeground(red);
-        }
+        updateLabel();
 
         repaint();
     }
@@ -378,7 +370,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
         int bscale = board.getScale() / 2 - scale;
 
         //decies what color to draw
-        if(board.isActive(bscale, location) && board.getBoardArrays().get(bscale)[location] == 0){
+        if(board.isActive(bscale, location) && board.getBoardArrays().get(bscale)[location] == 0 && board.getScale() > 2){
             if(turn % 2 == 0){
                 g.setColor(blue);
             }else{
@@ -614,5 +606,32 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     public Image getoImage2(){
         return oImage2;
+    }
+
+    public void updateLabel(){
+
+        //updates UI
+        if(turn % 2 == 0){
+            displayLabel.setText("Player 2's turn");
+            displayLabel.setForeground(blue);
+
+        }else{
+            displayLabel.setText("Player 1's turn");
+            displayLabel.setForeground(red);
+        }
+
+        int result = board.getBoardArrays().get(board.getBoardArrays().size() - 1)[0];
+
+        if(result == 0){
+            return;
+        }
+
+        if(result % 2 == 0){
+            displayLabel.setText("Player 2 wins");
+            displayLabel.setForeground(blue);
+        }else{
+            displayLabel.setText("Player 1 wins");
+            displayLabel.setForeground(red);
+        }
     }
 }

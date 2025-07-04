@@ -85,6 +85,10 @@ public class Board {
     }
 
     public void regResolveMove(int loc, int level, int turn){
+        if(level == scale / 2){
+            return;
+        }
+
         int result = RegSolver.checkMove(this, loc, level);
         
         if(level + 1 == scale / 2){
