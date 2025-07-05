@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 
 public class SaveMenu extends JPanel{
     
-    public SaveMenu(String saveName, LFrame frame, int game, Sound sound, Color color){
+    public SaveMenu(String saveName, LFrame frame, Sound sound, Color color){
 
         //make font
         Font font = new Font(null);
@@ -49,7 +49,7 @@ public class SaveMenu extends JPanel{
         add(deleteButton);
 
         //gets move number
-        String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + Integer.toString(game) + File.separator + saveName;
+        String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + saveName;
         File file = new File(path);
         int fileCount=file.list().length;
         String savePath = path + File.separator + "move" + (fileCount - 1);

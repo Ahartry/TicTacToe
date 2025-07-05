@@ -27,12 +27,9 @@ public class LFrame extends JFrame{
     Sound sound;
     Color c;
 
-    int gameType;
-
-    public LFrame(GFrame frame, int game, Sound sound, Color color){
+    public LFrame(GFrame frame, Sound sound, Color color){
         c = color;
 
-        gameType = game;
         this.sound = sound;
 
         Font font = new Font(null);
@@ -46,7 +43,7 @@ public class LFrame extends JFrame{
         this.frame = frame;
         
         //gets all the saves
-        String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + Integer.toString(game);
+        String path = System.getProperty("user.dir") + File.separator + "Saves";
         File file = new File(path);
         
         String[] directories = file.list(new FilenameFilter() {
@@ -67,7 +64,7 @@ public class LFrame extends JFrame{
         //adds the saves
         for(int i = 0; i < saveList.size(); i++){
             gbc.gridy = i;
-            panel.add(new SaveMenu(saveList.get(i), this, gameType, sound, color), gbc);
+            panel.add(new SaveMenu(saveList.get(i), this, sound, color), gbc);
         }
 
         if(saveList.size() == 0){
@@ -110,7 +107,7 @@ public class LFrame extends JFrame{
         saveList.clear();
         panel.removeAll();
         //gets all the saves
-        String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + Integer.toString(gameType);
+        String path = System.getProperty("user.dir") + File.separator + "Saves";
         File file = new File(path);
         
         String[] directories = file.list(new FilenameFilter() {
@@ -132,7 +129,7 @@ public class LFrame extends JFrame{
         for(int i = 0; i < saveList.size(); i++){
             //System.out.println(i);
             gbc.gridy = i;
-            panel.add(new SaveMenu(saveList.get(i), frame, gameType, sound, c), gbc);
+            panel.add(new SaveMenu(saveList.get(i), frame, sound, c), gbc);
         }
 
         if(saveList.size() == 0){
@@ -158,7 +155,7 @@ public class LFrame extends JFrame{
 
         ArrayList<File> fileList = new ArrayList<File>();
         for(int i = 0; i < input.size(); i++){
-            String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + Integer.toString(gameType) + File.separator + input.get(i);
+            String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + input.get(i);
             File file = new File(path);
             int fileCount=file.list().length;
             String savePath = path + File.separator + "move" + fileCount;

@@ -228,6 +228,7 @@ public class GFrame extends JFrame{
         bottomPanel.repaint();
     }
 
+    @SuppressWarnings("unused")
     public void setupWindow()throws Exception{
         if(!SwingUtilities.isEventDispatchThread()){
             SwingUtilities.invokeLater(()->{
@@ -240,7 +241,7 @@ public class GFrame extends JFrame{
             return;
         }
     
-        setResizable(true);
+        setResizable(false);
         gaming = false;
         for(int i = 0; i < buttonList.size(); i++){
             if(buttonList.get(i).hasTooltip()){
@@ -248,17 +249,11 @@ public class GFrame extends JFrame{
             }
         }
         buttonList.clear();
-        Image image = null;
-        try{
-            image=ImageIO.read(getClass().getClassLoader().getResource("settings.png"));
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
     
         //setVisible(false);
         getContentPane().removeAll();
     
-        startPanel=new JPanel();
+        startPanel = new JPanel();
         startPanel.setLayout(new BorderLayout());
         startPanel.setFocusable(true);
         startPanel.requestFocus();
@@ -276,80 +271,56 @@ public class GFrame extends JFrame{
         InputStream stream2=ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
         Font font2=Font.createFont(Font.TRUETYPE_FONT,stream2).deriveFont(25f);
     
-        GButton regButton=new GButton("Regular");
-        GButton ultButton=new GButton("Ultimate");
-        GButton tranButton=new GButton("Omega");
-        GButton quanButton=new GButton("Quantum");
-        GButton quan3DButton=new GButton("Quantum 3D");
-        GButton settingsButton=new GButton("  ");
+        GButton newButton=new GButton("New Game");
+        GButton loadButton=new GButton("Load Save");
+        GButton optionButton=new GButton("Options");
+        GButton exitButton=new GButton("Exit");
     
         JLabel titleLabel1=new JLabel("Ultimate Tic Tac Toe Collection");
         titleLabel1.setFont(font2);
     
-        settingsButton.setImage(image);
+        newButton.setFont(font);
+        loadButton.setFont(font);
+        optionButton.setFont(font);
+        exitButton.setFont(font);
     
-        regButton.setFont(font);
-        ultButton.setFont(font);
-        tranButton.setFont(font);
-        quanButton.setFont(font);
-        quan3DButton.setFont(font);
+        newButton.setFocusable(false);
+        loadButton.setFocusable(false);
+        optionButton.setFocusable(false);
+        exitButton.setFocusable(false);
     
-        regButton.setFocusable(false);
-        ultButton.setFocusable(false);
-        tranButton.setFocusable(false);
-        quanButton.setFocusable(false);
-        quan3DButton.setFocusable(false);
-        settingsButton.setFocusable(false);
+        newButton.setPreferredSize(new Dimension(180,40));
+        loadButton.setPreferredSize(new Dimension(180,40));
+        optionButton.setPreferredSize(new Dimension(180,40));
+        exitButton.setPreferredSize(new Dimension(180,40));
     
-        regButton.setPreferredSize(new Dimension(180,40));
-        ultButton.setPreferredSize(new Dimension(180,40));
-        tranButton.setPreferredSize(new Dimension(180,40));
-        quanButton.setPreferredSize(new Dimension(180,40));
-        quan3DButton.setPreferredSize(new Dimension(180,40));
-        settingsButton.setPreferredSize(new Dimension(50,40));
+        newButton.setSound(sound);
+        loadButton.setSound(sound);
+        optionButton.setSound(sound);
+        exitButton.setSound(sound);
     
-        regButton.setSound(sound);
-        ultButton.setSound(sound);
-        tranButton.setSound(sound);
-        quanButton.setSound(sound);
-        quan3DButton.setSound(sound);
-        settingsButton.setSound(sound);
+        newButton.setColor(color);
+        loadButton.setColor(color);
+        optionButton.setColor(color);
+        exitButton.setColor(color);
     
-        regButton.setColor(color);
-        ultButton.setColor(color);
-        tranButton.setColor(color);
-        quanButton.setColor(color);
-        quan3DButton.setColor(color);
-        settingsButton.setColor(color);
-    
-        buttonList.add(regButton);
-        buttonList.add(ultButton);
-        buttonList.add(tranButton);
-        buttonList.add(quanButton);
-        buttonList.add(quan3DButton);
-        buttonList.add(settingsButton);
-    
-        regButton.setSubtext(" The classic 3x3 board ");
-        ultButton.setSubtext(" A larger 9x9 board, made of regular boards");
-        tranButton.setSubtext("​ A huge, 27x27 board, composed of ultimate boards​");
-        quanButton.setSubtext(" There's no explaining this one");
-        quan3DButton.setSubtext(" A 3D variant of quantum tic tac toe");
+        buttonList.add(newButton);
+        buttonList.add(loadButton);
+        buttonList.add(optionButton);
+        buttonList.add(exitButton);
     
         gbc.gridx=0;
         gbc.gridy=2;
-        buttonPanel.add(regButton,gbc);
+        buttonPanel.add(newButton,gbc);
     
         gbc.gridy=3;
-        buttonPanel.add(ultButton,gbc);
+        buttonPanel.add(loadButton,gbc);
     
         gbc.gridy=4;
-        buttonPanel.add(tranButton,gbc);
+        buttonPanel.add(optionButton,gbc);
     
         gbc.gridy=5;
-        buttonPanel.add(quanButton,gbc);
-    
-        gbc.gridy=6;
-        buttonPanel.add(quan3DButton,gbc);
+        buttonPanel.add(exitButton,gbc);
     
         gbc.gridy=1;
         gbc.gridx=0;
@@ -359,18 +330,15 @@ public class GFrame extends JFrame{
         topPanel.setMinimumSize(new Dimension(400,100));
         startPanel.add(topPanel,BorderLayout.SOUTH);
     
-        gbc.anchor=GridBagConstraints.NORTHEAST;
-        gbc.weightx=1;
-        gbc.weighty=1;
-        topPanel.add(settingsButton,gbc);
-    
         gbc.anchor=GridBagConstraints.CENTER;
         gbc.gridy=0;
         buttonPanel.add(titleLabel1,gbc);
         gbc.gridy=1;
-        buttonPanel.add(Box.createVerticalStrut(15),gbc);
+        buttonPanel.add(Box.createVerticalStrut(50),gbc);
+        gbc.gridy=6;
+        buttonPanel.add(Box.createVerticalStrut(20),gbc);
     
-        regButton.addActionListener(e->{
+        newButton.addActionListener(e->{
             try{
                 setupGame(1,false);
                 System.out.println("Chandelier wanted a line here");
@@ -380,11 +348,17 @@ public class GFrame extends JFrame{
             }
         });
     
-        ultButton.addActionListener(e->askIfUserWantsBot(2,font));
-        tranButton.addActionListener(e->askLoad(3,font));
-        quanButton.addActionListener(e->askIfUserWantsBot(4,font));
-        quan3DButton.addActionListener(e->askIfUserWantsBot(5,font));
-        settingsButton.addActionListener(e->new CFrame(GFrame.this,sound,music,font,color));
+        loadButton.addActionListener(e->{
+            new LFrame(GFrame.this, sound, color);
+        });
+
+        optionButton.addActionListener(e->{
+            new CFrame(GFrame.this,sound,music,font,color);
+        });
+
+        exitButton.addActionListener(e->{
+            System.exit(0);
+        });
     
         add(startPanel);
         setTitle("Choose your game");
@@ -493,42 +467,6 @@ public class GFrame extends JFrame{
         GButton eightButton = new GButton("8");
 
         titleLabel.setFont(font);
-        
-        oneButton.setFont(font);
-        twoButton.setFont(font);
-        threeButton.setFont(font);
-        fourButton.setFont(font);
-        fiveButton.setFont(font);
-        sixButton.setFont(font);
-        sevenButton.setFont(font);
-        eightButton.setFont(font);
-
-        oneButton.setSound(sound);
-        twoButton.setSound(sound);
-        threeButton.setSound(sound);
-        fourButton.setSound(sound);
-        fiveButton.setSound(sound);
-        sixButton.setSound(sound);
-        sevenButton.setSound(sound);
-        eightButton.setSound(sound);
-
-        oneButton.setColor(color);
-        twoButton.setColor(color);
-        threeButton.setColor(color);
-        fourButton.setColor(color);
-        fiveButton.setColor(color);
-        sixButton.setColor(color);
-        sevenButton.setColor(color);
-        eightButton.setColor(color);
-        
-        oneButton.setPreferredSize(new Dimension(100, 40));
-        twoButton.setPreferredSize(new Dimension(100, 40));
-        threeButton.setPreferredSize(new Dimension(100, 40));
-        fourButton.setPreferredSize(new Dimension(100, 40));
-        fiveButton.setPreferredSize(new Dimension(100, 40));
-        sixButton.setPreferredSize(new Dimension(100, 40));
-        sevenButton.setPreferredSize(new Dimension(100, 40));
-        eightButton.setPreferredSize(new Dimension(100, 40));
 
         buttonList.add(oneButton);
         buttonList.add(twoButton);
@@ -548,32 +486,28 @@ public class GFrame extends JFrame{
         gbc.weightx = 1;
         gbc.weighty = 1;
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
+        for(int i = 0; i < buttonList.size(); i++){
+            buttonList.get(i).setFont(font);
+            buttonList.get(i).setSound(sound);
+            buttonList.get(i).setColor(color);
+            buttonList.get(i).setPreferredSize(new Dimension(100, 40));
 
-        buttonPanel.add(oneButton, gbc);
+            gbc.gridx = i % 4;
+            gbc.gridy = i / 4;
+            buttonPanel.add(buttonList.get(i), gbc);
 
-        gbc.gridx = 1;
-        buttonPanel.add(twoButton, gbc);
-        
-        gbc.gridx = 2;
-        buttonPanel.add(threeButton, gbc);
-        
-        gbc.gridx = 3;
-        buttonPanel.add(fourButton, gbc);
-        
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        buttonPanel.add(fiveButton, gbc);
-        
-        gbc.gridx = 1;
-        buttonPanel.add(sixButton, gbc);
-        
-        gbc.gridx = 2;
-        buttonPanel.add(sevenButton, gbc);
-        
-        gbc.gridx = 3;
-        buttonPanel.add(eightButton, gbc);
+            int difficulty = i + 1;
+
+            buttonList.get(i).addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) { 
+                try {
+                    botStart(gameType, difficulty);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        }
 
         GridBagConstraints gbc2 = new GridBagConstraints();
         gbc2.anchor = GridBagConstraints.CENTER;
@@ -591,143 +525,6 @@ public class GFrame extends JFrame{
         startPanel.revalidate();
         startPanel.setVisible(true);
 
-        oneButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                try {
-                    botStart(gameType, 1);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-        
-        twoButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                try {
-                    botStart(gameType, 2);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-        
-        threeButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                try {
-                    botStart(gameType, 3);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-        
-        fourButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                try {
-                    botStart(gameType, 4);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-        
-        fiveButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                try {
-                    botStart(gameType, 5);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-        
-        sixButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                try {
-                    botStart(gameType, 6);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-        
-        sevenButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                try {
-                    botStart(gameType, 7);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-        
-        eightButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                try {
-                    botStart(gameType, 8);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-    }
-
-    public void askLoad(int gameType, Font font){
-        buttonList.clear();
-        startPanel.removeAll();
-        startPanel.repaint();
-        startPanel.setLayout(new GridBagLayout());
-
-        GButton newButton = new GButton("New Game");
-        GButton loadButton = new GButton("Load Game");
-
-        newButton.setFont(font);
-        loadButton.setFont(font);
-
-        newButton.setSound(sound);
-        loadButton.setSound(sound);
-
-        newButton.setPreferredSize(new Dimension(200, 40));
-        loadButton.setPreferredSize(new Dimension(200, 40));
-
-        newButton.setColor(color);
-        loadButton.setColor(color);
-
-        buttonList.add(newButton);
-        buttonList.add(loadButton);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-
-        gbc.gridx = 0;
-
-        startPanel.add(newButton, gbc);
-
-        gbc.gridx = 1;
-
-        startPanel.add(loadButton, gbc);
-
-        startPanel.repaint();
-        startPanel.revalidate();
-        startPanel.setVisible(true);
-
-        newButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-                askIfUserWantsBot(gameType, font);
-                //new SFrame(GFrame.this);
-            } 
-            
-        });
-        loadButton.addActionListener(new ActionListener() { 
-            public void actionPerformed(ActionEvent e) { 
-
-                new LFrame(GFrame.this, gameType, sound, color);
-
-            } 
-            
-        });
     }
 
     public GPanel getGPanel(){

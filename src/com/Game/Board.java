@@ -46,6 +46,10 @@ public class Board {
         active[1] = 0;
     }
 
+    public Board(String data){
+        
+    }
+
     //for reg
     public void move(int loc, int turn){
         boardArrays.get(0)[loc] = turn;
@@ -157,4 +161,5 @@ public class Board {
             escalateActive();
         }
     }
+
 }
