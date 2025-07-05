@@ -43,17 +43,12 @@ public class LFrame extends JFrame{
         this.frame = frame;
         
         //gets all the saves
-        String path = System.getProperty("user.dir") + File.separator + "Saves";
+        String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator;
         File file = new File(path);
         
-        String[] directories = file.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File current, String name) {
-                return new File(current, name).isDirectory();
-            }
-        });
+        String[] files = file.list();
 
-        saveList = new ArrayList<String>(Arrays.asList(directories));
+        saveList = new ArrayList<String>(Arrays.asList(files));
 
         panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -110,14 +105,11 @@ public class LFrame extends JFrame{
         String path = System.getProperty("user.dir") + File.separator + "Saves";
         File file = new File(path);
         
-        String[] directories = file.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File current, String name) {
-                return new File(current, name).isDirectory();
-            }
-        });
+        String[] files = file.list();
 
-        saveList = new ArrayList<String>(Arrays.asList(directories));
+        saveList = new ArrayList<String>(Arrays.asList(files));
+
+        saveList = sortList(saveList);
 
         //System.out.println(saveList);
 
@@ -157,16 +149,13 @@ public class LFrame extends JFrame{
         for(int i = 0; i < input.size(); i++){
             String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + input.get(i);
             File file = new File(path);
-            int fileCount=file.list().length;
-            String savePath = path + File.separator + "move" + fileCount;
-            File saveFile = new File(savePath);
-            fileList.add(saveFile);
+            fileList.add(file);
         }
 
         fileList.sort(Comparator.comparingLong(File::lastModified));
 
         for(int i = 0; i < input.size(); i++){
-            output.add(fileList.get(i).getParentFile().getName().toString());
+            output.add(fileList.get(i).getName().toString());
         }
 
         Collections.reverse(output);

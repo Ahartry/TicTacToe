@@ -50,10 +50,7 @@ public class SaveMenu extends JPanel{
 
         //gets move number
         String path = System.getProperty("user.dir") + File.separator + "Saves" + File.separator + saveName;
-        File file = new File(path);
-        int fileCount=file.list().length;
-        String savePath = path + File.separator + "move" + (fileCount - 1);
-        File saveFile = new File(savePath);
+        File saveFile = new File(path);
 
 
         //button functionality
@@ -74,14 +71,7 @@ public class SaveMenu extends JPanel{
         deleteButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                File fileD = new File(path + File.separator);
-                System.out.println("Deleting " + fileD);
-                String[]entries = fileD.list();
-                for(String s: entries){
-                    File currentFile = new File(fileD.getPath(),s);
-                    currentFile.delete();
-                }
-                fileD.delete();
+                saveFile.delete();
                 frame.refreshList(frame);
             }
 

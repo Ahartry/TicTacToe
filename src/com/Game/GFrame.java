@@ -16,15 +16,20 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.security.CodeSource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -32,7 +37,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 
 public class GFrame extends JFrame{
 
@@ -54,6 +63,7 @@ public class GFrame extends JFrame{
     Image oImage2 = new ImageIcon(getClass().getClassLoader().getResource("o2.png")).getImage();
     boolean fullscreen = false;
     boolean gaming = false;
+    boolean clicked = false;
     
     public GFrame() throws Exception{
 
@@ -74,11 +84,11 @@ public class GFrame extends JFrame{
 
     }
 
-    public void setupGame(int gameType, boolean bot)throws Exception{
+    public void setupGame(int gameType, boolean bot, int difficulty)throws Exception{
         if(!SwingUtilities.isEventDispatchThread()){
             SwingUtilities.invokeLater(()->{
                 try{
-                    setupGame(gameType,bot);
+                    setupGame(gameType, bot, difficulty);
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -157,6 +167,7 @@ public class GFrame extends JFrame{
         rightPanel.add(helpButton);
     
         bottomPanel = new GPanel(gameType,topLabel,functionButton,bot,this,sound);
+        bottomPanel.setDepth(difficulty);
     
         InputStream stream=ClassLoader.getSystemClassLoader().getResourceAsStream("font.ttf");
         font=Font.createFont(Font.TRUETYPE_FONT,stream).deriveFont(30f);
@@ -339,13 +350,7 @@ public class GFrame extends JFrame{
         buttonPanel.add(Box.createVerticalStrut(20),gbc);
     
         newButton.addActionListener(e->{
-            try{
-                setupGame(1,false);
-                System.out.println("Chandelier wanted a line here");
-                repaint();
-            }catch(Exception e1){
-                e1.printStackTrace();
-            }
+            askGame(font, font2);
         });
     
         loadButton.addActionListener(e->{
@@ -361,12 +366,12 @@ public class GFrame extends JFrame{
         });
     
         add(startPanel);
-        setTitle("Choose your game");
+        setTitle("Ultimate Tic Tac Toe Collection");
     
         fancyResize(420,330);
     }
 
-    public void askIfUserWantsBot(int gameType, Font font){
+    public void askIfUserWantsBot(int gameType, Font font, Font font2){
         buttonList.clear();
         startPanel.removeAll();
         startPanel.repaint();
@@ -390,18 +395,67 @@ public class GFrame extends JFrame{
         singleplayerButton.setPreferredSize(new Dimension(200, 40));
         multiplayerButton.setPreferredSize(new Dimension(200, 40));
 
+        //backbutton setup
+        GButton backButton = new GButton("     ");
+        backButton.setFont(font);
+        backButton.setSound(sound);
+        backButton.setColor(color);
+        backButton.setPreferredSize(new Dimension(70, 40));
+        try{
+            Image image=ImageIO.read(getClass().getClassLoader().getResource("back4.png"));
+            backButton.setImage(image);
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    askGame(font, font2);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+            
+        });
+
+        JPanel buttonPanel = new JPanel();
+        JPanel topPanel = new JPanel();
+        buttonPanel.setLayout(new GridBagLayout());
+        topPanel.setLayout(new GridBagLayout());
+        startPanel.setLayout(new GridBagLayout());
+
+        buttonPanel.add(singleplayerButton);
+        buttonPanel.add(multiplayerButton);
+
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
+        gbc.anchor=GridBagConstraints.CENTER;
+        gbc.weightx=1;
+        gbc.weighty=1;
 
+        //top pane;
+        gbc.anchor = GridBagConstraints.NORTH;
         gbc.gridx = 0;
-
-        startPanel.add(singleplayerButton, gbc);
-
+        gbc.gridy = 0;
+        topPanel.add(backButton, gbc);
         gbc.gridx = 1;
+        topPanel.add(Box.createHorizontalStrut(345), gbc);
 
-        startPanel.add(multiplayerButton, gbc);
+
+        //main panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        startPanel.add(Box.createVerticalStrut(10), gbc);
+        gbc.gridy = 1;
+        startPanel.add(topPanel, gbc);
+
+        gbc.gridy = 2;
+        startPanel.add(Box.createVerticalStrut(60), gbc);
+
+        gbc.gridy = 3;
+        startPanel.add(buttonPanel, gbc);
+
+        gbc.gridy = 4;
+        startPanel.add(Box.createVerticalStrut(100), gbc);
 
         startPanel.repaint();
         startPanel.revalidate();
@@ -409,48 +463,19 @@ public class GFrame extends JFrame{
 
         singleplayerButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
-
-                try {
-                    //new GFrame(gameType, true);
-                    if(gameType == 2 || gameType == 3 || gameType == 4 || gameType == 5){
-                        askDifficulty(gameType, font);
-                    }else{
-                        //setupGame(gameType, true);
-                        setupGame(gameType, true);
-                        repaint();
-                        //setupWindow();
-                    }
-                    
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-
+                askDifficulty(gameType, font, font2);
             } 
             
         });
         multiplayerButton.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
-
-                try {
-                    if(gameType == 3){
-                        new SFrame(GFrame.this, false, 4, gameType, sound, color);
-                    }else{
-                        //setupGame(gameType, false);
-                        setupGame(gameType, false);
-                        repaint();
-                    }
-
-                    //setupWindow();
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-
+                askSave(font, font2, gameType, false, 0);
             } 
             
         });
     }
 
-    public void askDifficulty(int gameType, Font font){
+    public void askDifficulty(int gameType, Font font, Font font2){
         buttonList.clear();
         startPanel.removeAll();
         startPanel.repaint();
@@ -500,11 +525,7 @@ public class GFrame extends JFrame{
 
             buttonList.get(i).addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) { 
-                try {
-                    botStart(gameType, difficulty);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
+                askSave(font, font2, gameType, true, difficulty);
             }
         });
         }
@@ -525,6 +546,252 @@ public class GFrame extends JFrame{
         startPanel.revalidate();
         startPanel.setVisible(true);
 
+    }
+
+    public void askGame(Font font, Font font2){
+        buttonList.clear();
+        startPanel.removeAll();
+        startPanel.repaint();
+
+        JLabel titleLabel = new JLabel("Select your gamemode");
+
+        GButton oneButton = new GButton("Regular");
+        GButton twoButton = new GButton("Ultimate");
+        GButton threeButton = new GButton("Omega");
+        GButton fourButton = new GButton("glub");
+        GButton fiveButton = new GButton("Dear god");
+        GButton sixButton = new GButton("3D");
+        GButton sevenButton = new GButton("Quantum");
+        GButton eightButton = new GButton("Quantum 3D");
+
+        titleLabel.setFont(font2);
+
+        buttonList.add(oneButton);
+        buttonList.add(twoButton);
+        buttonList.add(threeButton);
+        buttonList.add(fourButton);
+        buttonList.add(fiveButton);
+        buttonList.add(sixButton);
+        buttonList.add(sevenButton);
+        buttonList.add(eightButton);
+
+        JPanel buttonPanel = new JPanel();
+        JPanel topPanel = new JPanel();
+        buttonPanel.setLayout(new GridBagLayout());
+        topPanel.setLayout(new GridBagLayout());
+        startPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor=GridBagConstraints.CENTER;
+        gbc.weightx=1;
+        gbc.weighty=1;
+
+        for(int i = 0; i < buttonList.size(); i++){
+            buttonList.get(i).setFont(font);
+            buttonList.get(i).setSound(sound);
+            buttonList.get(i).setColor(color);
+            buttonList.get(i).setPreferredSize(new Dimension(180, 40));
+
+            int val = i + 1;
+
+            gbc.gridx = i / 4;
+            gbc.gridy = i % 4 + 2;
+            buttonPanel.add(buttonList.get(i), gbc);
+
+            buttonList.get(i).addActionListener(new ActionListener() { 
+                public void actionPerformed(ActionEvent e) { 
+                    askIfUserWantsBot(val, font, font2);
+                }
+            });
+        }
+
+        //backbutton setup
+        GButton backButton = new GButton("     ");
+        backButton.setFont(font);
+        backButton.setSound(sound);
+        backButton.setColor(color);
+        backButton.setPreferredSize(new Dimension(70, 40));
+        try{
+            Image image=ImageIO.read(getClass().getClassLoader().getResource("back4.png"));
+            backButton.setImage(image);
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    setupWindow();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+            
+        });
+
+        //top pane;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        topPanel.add(backButton, gbc);
+        gbc.gridx = 1;
+        topPanel.add(Box.createHorizontalStrut(10), gbc);
+        gbc.gridx = 2;
+        topPanel.add(titleLabel, gbc);
+        gbc.gridx = 3;
+        topPanel.add(Box.createHorizontalStrut(50), gbc);
+
+
+        //main panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        startPanel.add(Box.createVerticalStrut(10), gbc);
+        gbc.gridy = 1;
+        startPanel.add(topPanel, gbc);
+
+        gbc.gridy = 2;
+        startPanel.add(Box.createVerticalStrut(50), gbc);
+
+        gbc.gridy = 3;
+        startPanel.add(buttonPanel, gbc);
+
+        startPanel.repaint();
+        startPanel.revalidate();
+        startPanel.setVisible(true);
+
+    }
+
+    public void askSave(Font font, Font font2, int gameType, boolean bot, int difficulty){
+
+        buttonList.clear();
+        startPanel.removeAll();
+        startPanel.repaint();
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        //set name based on other folders
+        String path = System.getProperty("user.dir") + File.separator + "Saves";
+        File file = new File(path);
+        
+        String[] directories = file.list(new FilenameFilter() {
+            @Override
+            public boolean accept(File current, String name) {
+                return new File(current, name).isFile();
+            }
+        });
+
+        ArrayList<String> saveList;
+        if(directories != null){
+            saveList = new ArrayList<String>(Arrays.asList(directories));
+        }else{
+            System.out.println("Sparrowtail24 found this error");
+            saveList = new ArrayList<String>();
+        }
+
+        int autoTally = 0;
+        for(int i = 0; i < saveList.size(); i++){
+            //bootleg solution
+            if(saveList.get(i).startsWith("Game ") && Character.isDigit(saveList.get(i).charAt(saveList.get(i).length()-1))){
+                autoTally++;
+            }
+        }
+
+        //sets the new folder name
+        autoTally++;
+
+        JTextField nameField = new JTextField(10);
+        nameField.setText("Game " + autoTally);
+        nameField.setForeground(new Color(150, 150, 150));
+        nameField.setFont(font);
+
+        GButton okButton = new GButton("Start");
+        okButton.setFont(font);
+        okButton.setSound(sound);
+        okButton.setColor(color);
+
+        nameField.addMouseListener(new MouseAdapter(){
+            public void mouseClicked(MouseEvent e){
+                if(!clicked){
+                    setFocusable(true);
+                    clicked = true;
+                    nameField.setText("");
+                    repaint();
+                    revalidate();
+                    nameField.setForeground(Color.BLACK);
+                }           
+            }
+        });
+
+        Dimension d = okButton.getPreferredSize();
+        d.width = 120;
+        okButton.setPreferredSize(d); 
+
+        JLabel label = new JLabel("Enter game name for autosaves");
+        label.setFont(font);
+
+        gbc.gridy = 0;
+        startPanel.add(label, gbc);
+
+        gbc.gridy = 1;
+        startPanel.add(nameField, gbc);
+
+        gbc.gridy = 2;
+        startPanel.add(Box.createRigidArea(new Dimension(0, 30)), gbc);
+
+        gbc.gridy = 3;
+        startPanel.add(okButton, gbc);
+
+        okButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String output = file.toString() + File.separator + nameField.getText();
+                File outputFile = new File(output);
+
+                try {
+                    outputFile.createNewFile();
+                    setupGame(gameType, bot, difficulty);
+                    FileWriter fw = new FileWriter("myfile.txt", true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+                    PrintWriter out = new PrintWriter(bw);
+                    getGPanel().setFileOutput(out);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+        });
+
+        nameField.getDocument().addDocumentListener(new DocumentListener(){
+    
+            public void changedUpdate(DocumentEvent arg0){
+                editCheck(arg0);
+            }
+
+            public void insertUpdate(DocumentEvent arg0){
+                editCheck(arg0);
+            }
+
+            public void removeUpdate(DocumentEvent arg0){
+                editCheck(arg0);
+            }
+
+            public void editCheck(DocumentEvent arg0){
+                if(!clicked){
+                    setFocusable(true);
+                    clicked = true;
+                    try {
+                        nameField.setText(arg0.getDocument().getText(nameField.getText().length() - 1, 1));
+                    } catch (BadLocationException e) {
+                        e.printStackTrace();
+                    }
+                    repaint();
+                    revalidate();
+                    nameField.setForeground(Color.BLACK);
+                }
+            }
+        });
+    
+        startPanel.repaint();
+        startPanel.revalidate();
+        startPanel.setVisible(true);
     }
 
     public GPanel getGPanel(){
@@ -567,17 +834,6 @@ public class GFrame extends JFrame{
         if(gaming){
             getGPanel().repaint();
         }
-    }
-
-    public void botStart(int gameType, int depth) throws Exception{
-        if(gameType != 3){
-            setupGame(gameType, true);
-            //setupGame(gameType, true);
-            bottomPanel.setDepth(depth);
-        }else{
-            new SFrame(GFrame.this, true, depth, gameType, sound, color);
-        }
-
     }
 
     public void setTopText(String s){

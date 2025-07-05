@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 
@@ -103,8 +104,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
     int zoomMax = -18;
 
-    File outputDir;
-    String outputPath;
+    PrintWriter writer;
 
     public GPanel(int gameType, JLabel displayLabel1, GButton button, boolean bot, GFrame frame, Sound sound) throws FontFormatException, IOException{
 
@@ -127,22 +127,26 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
         coords = new int[2];
 
+        zoom = 0.75;
+
         //instantiates boards and sets default zooms
-        if(game == 1){
-            board = new Board(2, false);
-            zoom = 0.75;
-        }else if(game == 2){
-            board = new Board(4, false);
-            zoom = Math.pow(0.75, 4);
-        }else if(game == 3){
-            board = new Board(6, false);
-            zoom = Math.pow(0.75, 8);
-        }else if(game == 4){
-            board = new Board(2, true);
-            zoom = 0.75;
-        }else if(game == 5){
-            board = new Board(3, true);
-            zoom = Math.pow(0.75, 5);
+        switch(game){
+            case 1:
+                board = new Board(2, false); break;
+            case 2:
+                board = new Board(4, false); break;
+            case 3:
+                board = new Board(6, false); break;
+            case 4:
+                board = new Board(8, false); break;
+            case 5:
+                board = new Board(10, false); break;
+            case 6:
+                board = new Board(3, false); break;
+            case 7:
+                board = new Board(2, true); break;
+            case 8:
+                board = new Board(3, true); break;
         }
 
         repaint();
@@ -253,17 +257,7 @@ public class GPanel extends JPanel implements MouseWheelListener{
 
                 //closeWindow();
                 try {
-                    if(gameType != 3){
-                        frame.setupGame(gameType, bot);
-
-                        //handles difficulty
-                        if(gameType != 1){
-                            frame.setDepth(depth);
-                        
-                        }
-                    }else{
-                        new SFrame(frame, bot, depth, 3, sound, buttonColor);
-                    }
+                    frame.setupGame(gameType, bot, depth);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -566,14 +560,16 @@ public class GPanel extends JPanel implements MouseWheelListener{
         return (int) ((e.getY() - offsety) / zoom);
     }
 
-    public void setOutputDir(File file){
-        outputDir = file;
-        outputPath = outputDir.toString();
+    public void setFileOutput(PrintWriter writer){
+        this.writer = writer;
     }
 
     public void setDepth(int x){
         depth = x;
-        mAI = new mAI(game, x);
+
+        if(bot){
+            mAI = new mAI(game, x);
+        }
     }
 
     public void replay(){
